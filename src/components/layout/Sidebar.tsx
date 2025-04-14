@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -175,13 +176,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <NavItem
               icon={<Users className="h-5 w-5" />}
               label="Clients"
-              hasSubmenu
+              to="/clients"
+              active={location.pathname === "/clients"}
             >
-              <SubNavItem label="Commercial" />
-              <SubNavItem label="Private" />
-              <SubNavItem label="Accident" />
-              <SubNavItem label="Personal Injuries" />
-              <SubNavItem label="Third Party Injuries" />
+              <SubNavItem label="Commercial" to="/clients?filter=commercial" />
+              <SubNavItem label="Private" to="/clients?filter=private" />
+              <SubNavItem label="Accident" to="/clients?filter=accident" />
+              <SubNavItem label="Personal Injuries" to="/clients?filter=personal-injuries" />
+              <SubNavItem label="Third Party Injuries" to="/clients?filter=third-party" />
             </NavItem>
 
             <NavItem

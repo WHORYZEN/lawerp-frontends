@@ -9,6 +9,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Index from "./pages/Index";
 import Calculator from "./pages/Calculator";
+import Clients from "./pages/Clients";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 
@@ -36,6 +37,11 @@ function App() {
                 <Route path="/calculator" element={
                   <ProtectedRoute>
                     <Calculator />
+                  </ProtectedRoute>
+                } />
+                <Route path="/clients" element={
+                  <ProtectedRoute>
+                    <Clients />
                   </ProtectedRoute>
                 } />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
