@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -27,20 +26,17 @@ const LienCalculator = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    // Allow only numbers and decimal point
     const sanitizedValue = value.replace(/[^\d.]/g, "");
     setFormData((prev) => ({ ...prev, [name]: sanitizedValue }));
   };
 
   const calculateLienReduction = () => {
-    // Convert input strings to numbers
     const settlementAmount = parseFloat(formData.settlementAmount) || 0;
     const attorneyFees = parseFloat(formData.attorneyFees) || 0;
     const caseExpenses = parseFloat(formData.caseExpenses) || 0;
     const medicalBills = parseFloat(formData.medicalBills) || 0;
     const lienAmount = parseFloat(formData.lienAmount) || 0;
 
-    // Validation
     if (settlementAmount === 0) {
       toast({
         title: "Error",
@@ -50,21 +46,16 @@ const LienCalculator = () => {
       return;
     }
 
-    // Calculate net settlement
     const netSettlement = settlementAmount - attorneyFees - caseExpenses;
 
-    // Calculate reduced lien based on a proportional formula
     let reducedLien = 0;
     if (medicalBills > 0) {
-      // Typical lien reduction formula - can be adjusted based on specific legal requirements
       const ratio = netSettlement / (medicalBills + netSettlement);
       reducedLien = Math.min(lienAmount * ratio, lienAmount);
     }
 
-    // Calculate client recovery
     const clientRecovery = netSettlement - reducedLien;
 
-    // Calculate reduction percentage
     const lienReductionPercentage = lienAmount > 0 
       ? ((lienAmount - reducedLien) / lienAmount) * 100 
       : 0;
@@ -94,7 +85,7 @@ const LienCalculator = () => {
       <CardHeader className="bg-lawfirm-light-blue bg-opacity-10">
         <div className="flex items-center gap-2">
           <Calculator className="h-5 w-5 text-lawfirm-light-blue" />
-          <CardTitle className="text-lg font-medium">AT Lien Reduction Calculator</CardTitle>
+          <CardTitle className="text-lg font-medium">AI Lien Reduction Calculator</CardTitle>
         </div>
         <CardDescription>
           Calculate potential lien reductions for personal injury cases

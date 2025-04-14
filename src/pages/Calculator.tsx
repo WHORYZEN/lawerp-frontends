@@ -15,7 +15,7 @@ const Calculator = () => {
       <main className="pt-16 md:pl-64">
         <div className="container mx-auto px-4 py-6">
           <div className="mb-6">
-            <h1 className="text-2xl font-bold">AT Lien Reduction Calculator</h1>
+            <h1 className="text-2xl font-bold">AI Lien Reduction Calculator</h1>
             <p className="text-muted-foreground mt-1">
               Calculate potential lien reductions for personal injury cases
             </p>

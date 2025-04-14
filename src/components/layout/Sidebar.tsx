@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -131,7 +130,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   return (
     <>
-      {/* Sidebar backdrop for mobile */}
       {isOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/40 md:hidden"
@@ -197,7 +195,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
             <NavItem
               icon={<Calculator className="h-5 w-5" />}
-              label="AT Lien Reduction Calculator"
+              label="AI Lien Reduction Calculator"
               to="/calculator"
               active={location.pathname === "/calculator"}
             />
