@@ -130,6 +130,10 @@ const SubNavItem = ({ label, active = false, to }: { label: string; active?: boo
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation();
+  const pathname = location.pathname;
+  // Get the tab parameter for documents if it exists
+  const urlParams = new URLSearchParams(location.search);
+  const documentsTab = urlParams.get('tab');
 
   return (
     <>
@@ -152,7 +156,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               icon={<Home className="h-5 w-5" />}
               label="Home"
               to="/"
-              active={location.pathname === "/"}
+              active={pathname === "/"}
             />
 
             <NavItem
@@ -167,19 +171,37 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <NavItem
               icon={<FileText className="h-5 w-5" />}
               label="Documents"
+              to="/documents"
+              active={pathname === "/documents"}
               hasSubmenu
             >
-              <SubNavItem label="LOR" />
-              <SubNavItem label="LOP" />
-              <SubNavItem label="Insurance" />
-              <SubNavItem label="Bills" />
+              <SubNavItem 
+                label="LOP" 
+                to="/documents?tab=lop" 
+                active={pathname === "/documents" && documentsTab === "lop"} 
+              />
+              <SubNavItem 
+                label="LOR" 
+                to="/documents?tab=lor" 
+                active={pathname === "/documents" && documentsTab === "lor"} 
+              />
+              <SubNavItem 
+                label="Insurance" 
+                to="/documents?tab=insurance" 
+                active={pathname === "/documents" && documentsTab === "insurance"} 
+              />
+              <SubNavItem 
+                label="Bills" 
+                to="/documents?tab=bills" 
+                active={pathname === "/documents" && documentsTab === "bills"} 
+              />
             </NavItem>
 
             <NavItem
               icon={<Users className="h-5 w-5" />}
               label="Clients"
               to="/clients"
-              active={location.pathname === "/clients"}
+              active={pathname === "/clients"}
             >
               <SubNavItem label="Commercial" to="/clients?filter=commercial" />
               <SubNavItem label="Private" to="/clients?filter=private" />
@@ -192,17 +214,18 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               icon={<BarChart4 className="h-5 w-5" />}
               label="Reports"
               to="/reports"
-              active={location.pathname === "/reports"}
+              active={pathname === "/reports"}
               hasSubmenu
             >
               <SubNavItem 
                 label="Medical Reports" 
                 to="/reports" 
-                active={location.pathname === "/reports"} 
+                active={pathname === "/reports" && (!urlParams.has('tab') || urlParams.get('tab') === 'medical')} 
               />
               <SubNavItem 
                 label="Reduction Statements" 
                 to="/reports?tab=reduction" 
+                active={pathname === "/reports" && urlParams.get('tab') === 'reduction'} 
               />
             </NavItem>
 
@@ -210,7 +233,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               icon={<Calculator className="h-5 w-5" />}
               label="AI Lien Reduction Calculator"
               to="/calculator"
-              active={location.pathname === "/calculator"}
+              active={pathname === "/calculator"}
             />
           </nav>
         </div>

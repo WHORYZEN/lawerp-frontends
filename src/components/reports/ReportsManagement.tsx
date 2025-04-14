@@ -1,11 +1,21 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MedicalReportsSheet from "./MedicalReportsSheet";
 import ReductionStatementsSheet from "./ReductionStatementsSheet";
 
 const ReportsManagement = () => {
-  const [activeTab, setActiveTab] = useState("medical");
+  const location = useLocation();
+  const urlParams = new URLSearchParams(location.search);
+  const tabFromUrl = urlParams.get('tab') || 'medical';
+  
+  const [activeTab, setActiveTab] = useState(tabFromUrl);
+
+  // Update active tab when URL changes
+  useEffect(() => {
+    setActiveTab(tabFromUrl);
+  }, [tabFromUrl]);
 
   return (
     <div className="bg-white rounded-lg border shadow-sm">
