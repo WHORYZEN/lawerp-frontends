@@ -21,8 +21,8 @@ function App() {
     <React.StrictMode>
       <BrowserRouter>
         <QueryClientProvider client={queryClient}>
-          <TooltipProvider>
-            <AuthProvider>
+          <AuthProvider>
+            <TooltipProvider>
               <Toaster />
               <Sonner />
               <Routes>
@@ -47,8 +47,8 @@ function App() {
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </AuthProvider>
-          </TooltipProvider>
+            </TooltipProvider>
+          </AuthProvider>
         </QueryClientProvider>
       </BrowserRouter>
     </React.StrictMode>
