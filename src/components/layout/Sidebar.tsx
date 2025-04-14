@@ -12,6 +12,8 @@ import {
   Calculator,
   ChevronDown,
   ChevronRight,
+  FileBarChart,
+  FileDigit
 } from "lucide-react";
 
 interface SidebarProps {
@@ -189,10 +191,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <NavItem
               icon={<BarChart4 className="h-5 w-5" />}
               label="Reports"
+              to="/reports"
+              active={location.pathname === "/reports"}
               hasSubmenu
             >
-              <SubNavItem label="Medical Reports" />
-              <SubNavItem label="Reduction Statements" />
+              <SubNavItem 
+                label="Medical Reports" 
+                to="/reports" 
+                active={location.pathname === "/reports"} 
+              />
+              <SubNavItem 
+                label="Reduction Statements" 
+                to="/reports?tab=reduction" 
+              />
             </NavItem>
 
             <NavItem
