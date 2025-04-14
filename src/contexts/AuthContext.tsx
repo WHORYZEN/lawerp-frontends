@@ -11,7 +11,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const navigate = useNavigate();
 
   // Check if user is already authenticated on mount
@@ -20,11 +20,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsAuthenticated(authStatus === 'true');
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<void> => {
     // For demo purposes, we'll just set isAuthenticated to true
     // In a real app, you would validate credentials with a backend service
-    localStorage.setItem('isAuthenticated', 'true');
-    setIsAuthenticated(true);
+    return new Promise<void>((resolve) => {
+      localStorage.setItem('isAuthenticated', 'true');
+      setIsAuthenticated(true);
+      resolve();
+    });
   };
 
   const logout = () => {

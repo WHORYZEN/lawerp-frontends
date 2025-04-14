@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { FcGoogle } from "react-icons/fc";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -13,8 +15,15 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { login, isAuthenticated } = useAuth();
 
-  const handleLogin = (e: React.FormEvent) => {
+  // If already authenticated, redirect to home
+  if (isAuthenticated) {
+    navigate("/");
+    return null;
+  }
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -29,17 +38,43 @@ const Login = () => {
       return;
     }
 
-    // Mock authentication - in a real app, you would connect this to Supabase or another auth provider
-    setTimeout(() => {
-      // Simulate successful login
-      localStorage.setItem("isAuthenticated", "true");
+    try {
+      await login(email, password);
       toast({
         title: "Success",
         description: "You have successfully logged in",
       });
       navigate("/");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to log in. Please check your credentials.",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setIsLoading(true);
+    try {
+      // For demo purposes, we'll just log in with a predefined Google account
+      await login("google@example.com", "google-auth");
+      toast({
+        title: "Success",
+        description: "You have successfully logged in with Google",
+      });
+      navigate("/");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to log in with Google.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -90,6 +125,26 @@ const Login = () => {
               disabled={isLoading}
             >
               {isLoading ? "Logging in..." : "Log in"}
+            </Button>
+            
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-gray-500">Or continue with</span>
+              </div>
+            </div>
+            
+            <Button 
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={handleGoogleLogin}
+              disabled={isLoading}
+            >
+              <FcGoogle className="mr-2 h-5 w-5" />
+              Google Account
             </Button>
           </form>
         </CardContent>
