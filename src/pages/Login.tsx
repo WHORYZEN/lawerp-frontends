@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,10 +17,9 @@ const Login = () => {
   const { toast } = useToast();
   const { login, isAuthenticated } = useAuth();
 
-  // If already authenticated, redirect to home
+  // If already authenticated, redirect to dashboard
   if (isAuthenticated) {
-    navigate("/");
-    return null;
+    return <Navigate to="/dashboard" />;
   }
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -44,7 +43,7 @@ const Login = () => {
         title: "Success",
         description: "You have successfully logged in",
       });
-      navigate("/");
+      navigate("/dashboard");
     } catch (error) {
       toast({
         title: "Error",
@@ -65,7 +64,7 @@ const Login = () => {
         title: "Success",
         description: "You have successfully logged in with Google",
       });
-      navigate("/");
+      navigate("/dashboard");
     } catch (error) {
       toast({
         title: "Error",
