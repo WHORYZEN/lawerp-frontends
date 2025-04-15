@@ -68,7 +68,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
               LYZ
             </div>
             <div className="flex flex-col">
-              <span className="hidden md:inline-block leading-tight">LYZ Law Firm</span>
+              <span className="hidden md:inline-block leading-tight">LYZ LAW FIRM</span>
               <span className="hidden md:inline-block text-xs text-gray-500">LAW EMR 500</span>
             </div>
           </div>
