@@ -75,22 +75,22 @@ const CalendarManagement = () => {
             <TabsTrigger value="calendar">Calendar</TabsTrigger>
             <TabsTrigger value="tasks">Tasks</TabsTrigger>
           </TabsList>
+          
+          <div className="bg-white rounded-lg border shadow-sm mt-4">
+            <TabsContent value="calendar" className="mt-0">
+              <CalendarSchedule onDateSelect={handleDateSelect} />
+            </TabsContent>
+            
+            <TabsContent value="tasks" className="mt-0">
+              <TaskManagement />
+            </TabsContent>
+          </div>
         </Tabs>
         
-        <Button onClick={() => activeTab === "calendar" ? setShowEventForm(true) : setShowTaskForm(true)} className="gap-1">
+        <Button onClick={() => activeTab === "calendar" ? setShowEventForm(true) : setShowTaskForm(true)} className="gap-1 md:ml-4">
           <Plus className="h-4 w-4" />
           {activeTab === "calendar" ? "New Event" : "New Task"}
         </Button>
-      </div>
-
-      <div className="bg-white rounded-lg border shadow-sm">
-        <TabsContent value="calendar" className="mt-0">
-          <CalendarSchedule onDateSelect={handleDateSelect} />
-        </TabsContent>
-        
-        <TabsContent value="tasks" className="mt-0">
-          <TaskManagement />
-        </TabsContent>
       </div>
 
       {/* Event Form Dialog */}

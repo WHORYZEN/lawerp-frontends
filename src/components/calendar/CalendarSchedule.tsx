@@ -9,7 +9,6 @@ import { ChevronLeft, ChevronRight, Clock, MapPin } from "lucide-react";
 import { calendarApi } from "@/lib/api/calendar-api";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EventDetails from "./EventDetails";
 
 interface CalendarScheduleProps {
@@ -155,29 +154,29 @@ const CalendarSchedule = ({ onDateSelect }: CalendarScheduleProps) => {
             </div>
           </div>
           
-          <TabsList>
-            <TabsTrigger 
-              value="month" 
+          <div className="grid grid-cols-3 gap-1">
+            <Button 
+              variant={viewMode === "month" ? "default" : "outline"} 
+              size="sm"
               onClick={() => setViewMode("month")}
-              className={viewMode === "month" ? "bg-primary text-primary-foreground" : ""}
             >
               Month
-            </TabsTrigger>
-            <TabsTrigger 
-              value="week" 
+            </Button>
+            <Button 
+              variant={viewMode === "week" ? "default" : "outline"} 
+              size="sm"
               onClick={() => setViewMode("week")}
-              className={viewMode === "week" ? "bg-primary text-primary-foreground" : ""}
             >
               Week
-            </TabsTrigger>
-            <TabsTrigger 
-              value="day" 
+            </Button>
+            <Button 
+              variant={viewMode === "day" ? "default" : "outline"} 
+              size="sm"
               onClick={() => setViewMode("day")}
-              className={viewMode === "day" ? "bg-primary text-primary-foreground" : ""}
             >
               Day
-            </TabsTrigger>
-          </TabsList>
+            </Button>
+          </div>
         </div>
 
         {viewMode === "month" ? (
