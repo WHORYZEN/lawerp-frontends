@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -27,7 +26,8 @@ import {
   Building,
   Briefcase,
   Scale,
-  Mail
+  Mail,
+  LogOut
 } from "lucide-react";
 
 interface SidebarProps {
@@ -145,7 +145,6 @@ const SubNavItem = ({ label, active = false, to }: { label: string; active?: boo
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation();
   const pathname = location.pathname;
-  // Get the tab parameter for documents if it exists
   const urlParams = new URLSearchParams(location.search);
   const documentsTab = urlParams.get('tab');
   const filesTab = urlParams.get('tab');
@@ -156,6 +155,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const calendarTab = urlParams.get('tab');
   const messagesTab = urlParams.get('tab');
   const adminTab = urlParams.get('tab');
+  const { logout } = useAuth();
 
   return (
     <>
@@ -181,7 +181,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               active={pathname === "/dashboard"}
             />
 
-            {/* Clients Management */}
             <NavItem
               icon={<Users className="h-5 w-5" />}
               label="Clients"
@@ -221,7 +220,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               />
             </NavItem>
 
-            {/* Case Management */}
             <NavItem
               icon={<Briefcase className="h-5 w-5" />}
               label="Case Management"
@@ -251,7 +249,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               />
             </NavItem>
 
-            {/* Documents */}
             <NavItem
               icon={<FileText className="h-5 w-5" />}
               label="Documents"
@@ -296,7 +293,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               />
             </NavItem>
 
-            {/* Files */}
             <NavItem
               icon={<FolderOpen className="h-5 w-5" />}
               label="Files"
@@ -311,7 +307,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               />
             </NavItem>
 
-            {/* Medical Management */}
             <NavItem
               icon={<FileHeart className="h-5 w-5" />}
               label="Medical Management"
@@ -346,7 +341,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               />
             </NavItem>
 
-            {/* Billing & Settlements */}
             <NavItem
               icon={<DollarSign className="h-5 w-5" />}
               label="Billing & Settlements"
@@ -355,12 +349,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               hasSubmenu
             >
               <SubNavItem 
-                label="All Bills" 
+                label="Invoices" 
                 to="/billing" 
                 active={pathname === "/billing" && !billingTab} 
               />
               <SubNavItem 
-                label="Add Bill" 
+                label="Add Invoice" 
                 to="/billing/add" 
                 active={pathname === "/billing/add"} 
               />
@@ -376,7 +370,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               />
             </NavItem>
 
-            {/* AI Lien Reduction */}
             <NavItem
               icon={<Calculator className="h-5 w-5" />}
               label="AI Lien Reduction Calculator"
@@ -384,7 +377,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               active={pathname === "/calculator"}
             />
 
-            {/* Reports */}
             <NavItem
               icon={<BarChart4 className="h-5 w-5" />}
               label="Reports"
@@ -404,7 +396,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               />
             </NavItem>
 
-            {/* Calendar & Tasks */}
             <NavItem
               icon={<Calendar className="h-5 w-5" />}
               label="Calendar & Tasks"
@@ -434,7 +425,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               />
             </NavItem>
 
-            {/* Messaging & Notifications */}
             <NavItem
               icon={<MessageSquare className="h-5 w-5" />}
               label="Messaging"
@@ -459,7 +449,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               />
             </NavItem>
 
-            {/* Admin */}
             <NavItem
               icon={<UserCog className="h-5 w-5" />}
               label="Admin Panel"
@@ -483,6 +472,21 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 active={pathname === "/admin/logs"} 
               />
             </NavItem>
+
+            <div className="pt-6 mt-6 border-t">
+              <NavItem
+                icon={<Settings className="h-5 w-5" />}
+                label="Settings"
+                to="/settings"
+                active={pathname === "/settings"}
+              />
+              
+              <NavItem
+                icon={<LogOut className="h-5 w-5" />}
+                label="Sign Out"
+                onClick={logout}
+              />
+            </div>
           </nav>
         </div>
       </aside>
