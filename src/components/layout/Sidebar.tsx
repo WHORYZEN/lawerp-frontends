@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -29,7 +28,8 @@ import {
   Briefcase,
   Scale,
   Mail,
-  LogOut
+  LogOut,
+  Shield
 } from "lucide-react";
 
 interface SidebarProps {
@@ -174,8 +174,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="h-full overflow-auto py-4">
-          <nav className="space-y-1 px-3">
+        <div className="flex flex-col h-full overflow-auto">
+          <nav className="flex-1 space-y-1 px-3 py-4">
             <NavItem
               icon={<Home className="h-5 w-5" />}
               label="Dashboard"
@@ -474,22 +474,43 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 active={pathname === "/admin/logs"} 
               />
             </NavItem>
-
-            <div className="pt-6 mt-6 border-t">
+          </nav>
+          
+          <div className="border-t border-gray-200 pt-2 mt-auto">
+            <div className="px-3 py-2">
               <NavItem
-                icon={<Settings className="h-5 w-5" />}
+                icon={<Settings className="h-5 w-5 text-gray-600" />}
                 label="Settings"
                 to="/settings"
                 active={pathname === "/settings"}
               />
               
               <NavItem
-                icon={<LogOut className="h-5 w-5" />}
+                icon={<Shield className="h-5 w-5 text-gray-600" />}
+                label="Security"
+                to="/settings?tab=security"
+                active={pathname === "/settings" && urlParams.get('tab') === 'security'}
+              />
+              
+              <NavItem
+                icon={<LogOut className="h-5 w-5 text-red-500" />}
                 label="Sign Out"
                 onClick={logout}
               />
             </div>
-          </nav>
+            
+            <div className="px-4 py-3 border-t border-gray-200">
+              <div className="flex items-center">
+                <div className="w-8 h-8 bg-lawfirm-light-blue rounded-full flex items-center justify-center text-white text-xs font-bold">
+                  JD
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-gray-700">John Doe</p>
+                  <p className="text-xs text-gray-500">john.doe@example.com</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </aside>
     </>
