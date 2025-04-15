@@ -62,7 +62,7 @@ const DashboardOverview = () => {
       </div>
 
       {/* Client Analytics Chart */}
-      <ClientAnalyticsChart data={{ clients, loading }} />
+      <ClientAnalyticsChart clients={clients} loading={loading} />
 
       {showCalculator && (
         <Card>

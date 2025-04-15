@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ClientList from "./ClientList";
 import ClientForm from "./ClientForm";
+import ClientDetails from "./ClientDetails";
 import { Client } from "@/types/client";
 import { clientsApi } from "@/lib/api/mongodb-api";
 import { useToast } from "@/hooks/use-toast";
@@ -10,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 const ClientManagement = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [activeTab, setActiveTab] = useState("view");
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [clientToEdit, setClientToEdit] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -69,7 +71,15 @@ const ClientManagement = () => {
         );
         
         setClients(updatedClients);
-        setActiveTab("view");
+        
+        // If we're editing from the details view, update the selected client too
+        if (selectedClient && selectedClient.id === updatedClient.id) {
+          setSelectedClient(updatedClient);
+          setActiveTab("details");
+        } else {
+          setActiveTab("view");
+        }
+        
         setClientToEdit(null);
         toast({
           title: "Client Updated",
@@ -95,6 +105,13 @@ const ClientManagement = () => {
       
       if (success) {
         setClients(clients.filter(client => client.id !== clientId));
+        
+        // If the deleted client was selected, clear the selection
+        if (selectedClient && selectedClient.id === clientId) {
+          setSelectedClient(null);
+          setActiveTab("view");
+        }
+        
         toast({
           title: "Client Deleted",
           description: `${clientName} has been removed from your clients.`,
@@ -110,6 +127,11 @@ const ClientManagement = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleViewClient = (client: Client) => {
+    setSelectedClient(client);
+    setActiveTab("details");
   };
 
   const startEditClient = (client: Client) => {
@@ -134,7 +156,8 @@ const ClientManagement = () => {
         <TabsContent value="view" className="p-6 space-y-4">
           <ClientList 
             clients={clients} 
-            onEditClient={startEditClient} 
+            onEditClient={startEditClient}
+            onViewClient={handleViewClient}
             onDeleteClient={handleDeleteClient}
             loading={loading}
           />
@@ -149,6 +172,16 @@ const ClientManagement = () => {
               setActiveTab("view");
             }}
           />
+        </TabsContent>
+
+        <TabsContent value="details" className="p-6 space-y-4">
+          {selectedClient && (
+            <ClientDetails 
+              client={selectedClient}
+              onBack={() => setActiveTab("view")}
+              onEdit={startEditClient}
+            />
+          )}
         </TabsContent>
       </Tabs>
     </div>

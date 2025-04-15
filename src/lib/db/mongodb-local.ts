@@ -1,5 +1,7 @@
 
 import { Client } from '@/types/client';
+import { Case } from '@/types/case';
+import { MedicalRecord } from '@/types/medical';
 import { mockDb } from './mock-db';
 
 // This is a frontend-compatible MongoDB client wrapper
@@ -40,16 +42,14 @@ export class MongoDBClient {
     }
   }
 
-  // Get clients - in a real app, this would call a backend API
+  // Client Methods
   public async getClients(): Promise<Client[]> {
     if (!this.isConnected) {
       await this.connect();
     }
-    // In a frontend app, we use mock data
     return mockDb.clients.getAll();
   }
 
-  // Get client by ID
   public async getClient(id: string): Promise<Client | null> {
     if (!this.isConnected) {
       await this.connect();
@@ -57,7 +57,6 @@ export class MongoDBClient {
     return mockDb.clients.getById(id);
   }
 
-  // Create client
   public async createClient(clientData: Omit<Client, 'id' | 'createdAt' | 'updatedAt'>): Promise<Client | null> {
     if (!this.isConnected) {
       await this.connect();
@@ -65,7 +64,6 @@ export class MongoDBClient {
     return mockDb.clients.create(clientData);
   }
 
-  // Update client
   public async updateClient(id: string, clientData: Partial<Client>): Promise<Client | null> {
     if (!this.isConnected) {
       await this.connect();
@@ -73,11 +71,103 @@ export class MongoDBClient {
     return mockDb.clients.update(id, clientData);
   }
 
-  // Delete client
   public async deleteClient(id: string): Promise<boolean> {
     if (!this.isConnected) {
       await this.connect();
     }
     return mockDb.clients.delete(id);
+  }
+
+  // Case Methods
+  public async getCases(): Promise<Case[]> {
+    if (!this.isConnected) {
+      await this.connect();
+    }
+    return mockDb.cases.getAll();
+  }
+
+  public async getCasesByClientId(clientId: string): Promise<Case[]> {
+    if (!this.isConnected) {
+      await this.connect();
+    }
+    return mockDb.cases.getByClientId(clientId);
+  }
+
+  public async getCase(id: string): Promise<Case | null> {
+    if (!this.isConnected) {
+      await this.connect();
+    }
+    return mockDb.cases.getById(id);
+  }
+
+  public async createCase(caseData: Omit<Case, 'id' | 'createdAt' | 'updatedAt'>): Promise<Case | null> {
+    if (!this.isConnected) {
+      await this.connect();
+    }
+    return mockDb.cases.create(caseData);
+  }
+
+  public async updateCase(id: string, caseData: Partial<Case>): Promise<Case | null> {
+    if (!this.isConnected) {
+      await this.connect();
+    }
+    return mockDb.cases.update(id, caseData);
+  }
+
+  public async deleteCase(id: string): Promise<boolean> {
+    if (!this.isConnected) {
+      await this.connect();
+    }
+    return mockDb.cases.delete(id);
+  }
+
+  // Medical Record Methods
+  public async getMedicalRecords(): Promise<MedicalRecord[]> {
+    if (!this.isConnected) {
+      await this.connect();
+    }
+    return mockDb.medicalRecords.getAll();
+  }
+
+  public async getMedicalRecordsByCaseId(caseId: string): Promise<MedicalRecord[]> {
+    if (!this.isConnected) {
+      await this.connect();
+    }
+    return mockDb.medicalRecords.getByCaseId(caseId);
+  }
+
+  public async getMedicalRecordsByClientId(clientId: string): Promise<MedicalRecord[]> {
+    if (!this.isConnected) {
+      await this.connect();
+    }
+    return mockDb.medicalRecords.getByClientId(clientId);
+  }
+
+  public async getMedicalRecord(id: string): Promise<MedicalRecord | null> {
+    if (!this.isConnected) {
+      await this.connect();
+    }
+    return mockDb.medicalRecords.getById(id);
+  }
+
+  public async createMedicalRecord(recordData: Omit<MedicalRecord, 'id' | 'createdAt' | 'updatedAt'>): Promise<MedicalRecord | null> {
+    if (!this.isConnected) {
+      await this.connect();
+    }
+    return mockDb.medicalRecords.create(recordData);
+  }
+
+  public async updateMedicalRecord(id: string, recordData: Partial<MedicalRecord>): Promise<MedicalRecord | null> {
+    if (!this.isConnected) {
+      await this.connect();
+    }
+    return mockDb.medicalRecords.update(id, recordData);
+  }
+
+  public async deleteMedicalRecord(id: string): Promise<boolean> {
+    if (!this.isConnected) {
+      await this.connect();
+    }
+    return mockDb.medicalRecords.delete(id);
   }
 }

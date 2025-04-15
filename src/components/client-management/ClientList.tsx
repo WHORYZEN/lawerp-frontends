@@ -1,5 +1,6 @@
+
 import { useState } from "react";
-import { Search, Plus, Filter, Trash2, Edit, FileText, Tags, Loader2 } from "lucide-react";
+import { Search, Filter, Trash2, Edit, FileText, Tags, Loader2, Eye } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Client, ClientFilterParams } from "@/types/client";
@@ -39,11 +40,12 @@ import { cn } from "@/lib/utils";
 interface ClientListProps {
   clients: Client[];
   onEditClient: (client: Client) => void;
+  onViewClient: (client: Client) => void;
   onDeleteClient: (clientId: string) => void;
   loading?: boolean;
 }
 
-const ClientList = ({ clients, onEditClient, onDeleteClient, loading = false }: ClientListProps) => {
+const ClientList = ({ clients, onEditClient, onViewClient, onDeleteClient, loading = false }: ClientListProps) => {
   const [filterParams, setFilterParams] = useState<ClientFilterParams>({
     search: "",
     tag: undefined,
@@ -51,7 +53,6 @@ const ClientList = ({ clients, onEditClient, onDeleteClient, loading = false }: 
   });
   const [showFilters, setShowFilters] = useState(false);
   const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
-  const [showDetails, setShowDetails] = useState<string | null>(null);
   
   const uniqueTags = [...new Set(clients.flatMap(client => client.tags || []))];
   
@@ -249,35 +250,20 @@ const ClientList = ({ clients, onEditClient, onDeleteClient, loading = false }: 
               </TableHeader>
               <TableBody>
                 {filteredClients.map((client) => (
-                  <TableRow key={client.id} className="hover:cursor-pointer">
-                    <TableCell
-                      className="font-medium"
-                      onClick={() => setShowDetails(client.id === showDetails ? null : client.id)}
-                    >
+                  <TableRow key={client.id} className="hover:bg-muted/50">
+                    <TableCell className="font-medium">
                       {client.fullName}
                     </TableCell>
-                    <TableCell 
-                      className="hidden md:table-cell"
-                      onClick={() => setShowDetails(client.id === showDetails ? null : client.id)}
-                    >
+                    <TableCell className="hidden md:table-cell">
                       {client.email}
                     </TableCell>
-                    <TableCell 
-                      className="hidden md:table-cell"
-                      onClick={() => setShowDetails(client.id === showDetails ? null : client.id)}
-                    >
+                    <TableCell className="hidden md:table-cell">
                       {client.phone}
                     </TableCell>
-                    <TableCell 
-                      className="hidden md:table-cell"
-                      onClick={() => setShowDetails(client.id === showDetails ? null : client.id)}
-                    >
+                    <TableCell className="hidden md:table-cell">
                       {client.companyName || "-"}
                     </TableCell>
-                    <TableCell 
-                      className="hidden lg:table-cell"
-                      onClick={() => setShowDetails(client.id === showDetails ? null : client.id)}
-                    >
+                    <TableCell className="hidden lg:table-cell">
                       <div className="flex flex-wrap gap-1">
                         {client.tags?.map(tag => (
                           <Badge key={tag} variant="outline">{tag}</Badge>
@@ -287,6 +273,14 @@ const ClientList = ({ clients, onEditClient, onDeleteClient, loading = false }: 
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2 justify-end">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => onViewClient(client)}
+                        >
+                          <Eye className="h-4 w-4" />
+                          <span className="sr-only">View</span>
+                        </Button>
                         <Button
                           size="icon"
                           variant="ghost"
@@ -344,89 +338,6 @@ const ClientList = ({ clients, onEditClient, onDeleteClient, loading = false }: 
               Delete
             </Button>
           </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      
-      <Dialog 
-        open={!!showDetails} 
-        onOpenChange={(isOpen) => !isOpen && setShowDetails(null)}
-      >
-        <DialogContent className="max-w-3xl">
-          {showDetails && clients.find(c => c.id === showDetails) && (
-            <>
-              <DialogHeader>
-                <DialogTitle>Client Details</DialogTitle>
-                <DialogDescription>
-                  Detailed information about the client
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
-                {(() => {
-                  const client = clients.find(c => c.id === showDetails)!;
-                  return (
-                    <>
-                      <div className="space-y-2">
-                        <h4 className="text-sm font-medium text-muted-foreground">Full Name</h4>
-                        <p>{client.fullName}</p>
-                      </div>
-                      <div className="space-y-2">
-                        <h4 className="text-sm font-medium text-muted-foreground">Email</h4>
-                        <p>{client.email}</p>
-                      </div>
-                      <div className="space-y-2">
-                        <h4 className="text-sm font-medium text-muted-foreground">Phone</h4>
-                        <p>{client.phone}</p>
-                      </div>
-                      <div className="space-y-2">
-                        <h4 className="text-sm font-medium text-muted-foreground">Company Name</h4>
-                        <p>{client.companyName || "-"}</p>
-                      </div>
-                      <div className="space-y-2 md:col-span-2">
-                        <h4 className="text-sm font-medium text-muted-foreground">Address</h4>
-                        <p>{client.address || "-"}</p>
-                      </div>
-                      <div className="space-y-2">
-                        <h4 className="text-sm font-medium text-muted-foreground">Tags</h4>
-                        <div className="flex flex-wrap gap-1">
-                          {client.tags?.map(tag => (
-                            <Badge key={tag} variant="outline">{tag}</Badge>
-                          ))}
-                          {!client.tags?.length && "-"}
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <h4 className="text-sm font-medium text-muted-foreground">Added On</h4>
-                        <p>{new Date(client.createdAt).toLocaleDateString()}</p>
-                      </div>
-                      <div className="space-y-2 md:col-span-2">
-                        <h4 className="text-sm font-medium text-muted-foreground">Notes</h4>
-                        <p className="whitespace-pre-wrap">{client.notes || "-"}</p>
-                      </div>
-                    </>
-                  );
-                })()}
-              </div>
-              <DialogFooter>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowDetails(null)}
-                >
-                  Close
-                </Button>
-                <Button
-                  onClick={() => {
-                    const client = clients.find(c => c.id === showDetails);
-                    if (client) {
-                      onEditClient(client);
-                      setShowDetails(null);
-                    }
-                  }}
-                >
-                  Edit Client
-                </Button>
-              </DialogFooter>
-            </>
-          )}
         </DialogContent>
       </Dialog>
     </>
