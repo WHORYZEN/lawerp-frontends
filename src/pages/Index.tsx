@@ -1,11 +1,25 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Sidebar from "@/components/layout/Sidebar";
 import DashboardOverview from "@/components/dashboard/DashboardOverview";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { toast } = useToast();
+  
+  // Check MongoDB connection on app load
+  useEffect(() => {
+    // Check if MongoDB URI is defined
+    if (!import.meta.env.VITE_MONGODB_URI) {
+      toast({
+        title: "Database Configuration Missing",
+        description: "Please set VITE_MONGODB_URI in your environment variables.",
+        variant: "destructive",
+      });
+    }
+  }, [toast]);
 
   return (
     <div className="min-h-screen bg-gray-50">

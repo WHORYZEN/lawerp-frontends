@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -7,9 +7,36 @@ import { ChevronDown } from "lucide-react";
 import BillingTable from "../client-billing/BillingTable";
 import LienCalculator from "../calculator/LienCalculator";
 import ClientAnalyticsChart from "./ClientAnalyticsChart";
+import { clientsApi } from "@/lib/api/mongodb-api";
+import { Client } from "@/types/client";
+import { useToast } from "@/hooks/use-toast";
 
 const DashboardOverview = () => {
   const [showCalculator, setShowCalculator] = useState(false);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        setLoading(true);
+        const fetchedClients = await clientsApi.getClients();
+        setClients(fetchedClients);
+      } catch (error) {
+        console.error("Failed to fetch clients:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load client data. Please try again later.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClients();
+  }, [toast]);
 
   return (
     <div className="space-y-6">
@@ -35,7 +62,7 @@ const DashboardOverview = () => {
       </div>
 
       {/* Client Analytics Chart */}
-      <ClientAnalyticsChart />
+      <ClientAnalyticsChart clients={clients} loading={loading} />
 
       {showCalculator && (
         <Card>
