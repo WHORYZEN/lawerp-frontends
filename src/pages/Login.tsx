@@ -81,7 +81,7 @@ const Login = () => {
               LYZ
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold text-center">Name Law EMR | LYZ Law Firm</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">Name Law EMR - LYZ Law Firm</CardTitle>
           <CardDescription className="text-center">
             Enter your credentials to access your dashboard
           </CardDescription>
