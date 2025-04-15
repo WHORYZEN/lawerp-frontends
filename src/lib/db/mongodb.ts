@@ -1,4 +1,7 @@
 
+// NOTE: This file cannot be used directly in the browser.
+// It's meant to be used in a Node.js environment (like a backend API).
+// For frontend development, we'll use mock data instead.
 import { MongoClient, Db } from 'mongodb';
 
 let cachedClient: MongoClient | null = null;
@@ -25,3 +28,5 @@ export async function connectToDatabase() {
 
   return { client, db };
 }
+
+// NOTE: In a real app, this would be part of a backend API, not directly in the frontend
