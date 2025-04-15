@@ -279,7 +279,7 @@ const DependencyViewSheet = () => {
                   <TableCell>{record.document_title}</TableCell>
                   <TableCell>{formatDate(record.date_of_service)}</TableCell>
                   <TableCell>
-                    <Badge variant={getStatusBadgeColor(record.status, record.type)}>
+                    <Badge variant={getStatusBadgeColor(record.status, record.type) as "default" | "secondary" | "destructive"}>
                       {record.status}
                     </Badge>
                   </TableCell>
@@ -327,7 +327,7 @@ const DependencyViewSheet = () => {
                 <div>
                   <h4 className="text-sm font-medium text-gray-500">Status</h4>
                   <p className="mt-1">
-                    <Badge variant={getStatusBadgeColor(selectedRecord.status, selectedRecord.type)}>
+                    <Badge variant={getStatusBadgeColor(selectedRecord.status, selectedRecord.type) as "default" | "secondary" | "destructive"}>
                       {selectedRecord.status}
                     </Badge>
                   </p>
