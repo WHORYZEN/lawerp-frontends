@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from "react";
 import { 
   Table, TableHeader, TableRow, TableHead, 
@@ -151,7 +150,6 @@ const DependencyViewSheet = () => {
   }, [records, searchTerm, typeFilter, clientFilter]);
 
   const handleDownload = (id: string) => {
-    // In a real application, this would trigger an API call
     toast({
       title: "Downloading document",
       description: "Your document will be downloaded shortly.",
@@ -175,7 +173,7 @@ const DependencyViewSheet = () => {
     }).format(amount);
   };
 
-  const getStatusBadgeColor = (status: string, type: string) => {
+  const getStatusBadgeColor = (status: string, type: string): "default" | "secondary" | "destructive" => {
     if (status.includes("Approved")) return "default";
     if (status.includes("Pending")) return "secondary";
     if (status.includes("Signed") || status.includes("Sent")) return "default";
@@ -215,7 +213,7 @@ const DependencyViewSheet = () => {
                 <SelectValue placeholder="Filter by type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="">All Types</SelectItem>
                 <SelectItem value="LOP">LOP</SelectItem>
                 <SelectItem value="LOR">LOR</SelectItem>
                 <SelectItem value="Insurance">Insurance</SelectItem>
@@ -228,7 +226,7 @@ const DependencyViewSheet = () => {
                 <SelectValue placeholder="Filter by client" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Clients</SelectItem>
+                <SelectItem value="">All Clients</SelectItem>
                 {uniqueClients.map((client) => (
                   <SelectItem key={client.id} value={client.id}>
                     {client.name}
@@ -279,7 +277,7 @@ const DependencyViewSheet = () => {
                   <TableCell>{record.document_title}</TableCell>
                   <TableCell>{formatDate(record.date_of_service)}</TableCell>
                   <TableCell>
-                    <Badge variant={getStatusBadgeColor(record.status, record.type) as "default" | "secondary" | "destructive"}>
+                    <Badge variant={getStatusBadgeColor(record.status, record.type)}>
                       {record.status}
                     </Badge>
                   </TableCell>
@@ -327,7 +325,7 @@ const DependencyViewSheet = () => {
                 <div>
                   <h4 className="text-sm font-medium text-gray-500">Status</h4>
                   <p className="mt-1">
-                    <Badge variant={getStatusBadgeColor(selectedRecord.status, selectedRecord.type) as "default" | "secondary" | "destructive"}>
+                    <Badge variant={getStatusBadgeColor(selectedRecord.status, selectedRecord.type)}>
                       {selectedRecord.status}
                     </Badge>
                   </p>
