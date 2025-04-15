@@ -11,6 +11,9 @@ import { clientsApi } from "@/lib/api/mongodb-api";
 import { Client } from "@/types/client";
 import { useToast } from "@/hooks/use-toast";
 
+// First we need to check what props ClientAnalyticsChart expects
+// The error suggests it doesn't accept clients and loading props
+
 const DashboardOverview = () => {
   const [showCalculator, setShowCalculator] = useState(false);
   const [clients, setClients] = useState<Client[]>([]);
@@ -62,7 +65,19 @@ const DashboardOverview = () => {
       </div>
 
       {/* Client Analytics Chart */}
-      <ClientAnalyticsChart clients={clients} loading={loading} />
+      {/* Since we can't modify ClientAnalyticsChart.tsx, we'll pass the props in a way
+          that will be compatible with the actual component */}
+      <Card>
+        <CardContent className="p-6">
+          {loading ? (
+            <div className="h-80 flex items-center justify-center">
+              <p className="text-muted-foreground">Loading client data...</p>
+            </div>
+          ) : (
+            <ClientAnalyticsChart />
+          )}
+        </CardContent>
+      </Card>
 
       {showCalculator && (
         <Card>

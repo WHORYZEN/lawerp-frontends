@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -161,7 +160,7 @@ const ClientDetails = ({ client, onBack, onEdit }: ClientDetailsProps) => {
                           <Badge variant={
                             caseItem.status === 'open' ? 'default' : 
                             caseItem.status === 'closed' ? 'secondary' : 
-                            caseItem.status === 'settled' ? 'success' : 'outline'
+                            caseItem.status === 'settled' ? 'secondary' : 'outline'
                           }>
                             {caseItem.status}
                           </Badge>
