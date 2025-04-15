@@ -22,6 +22,7 @@ import Billing from "./pages/Billing";
 import Messages from "./pages/Messages";
 import Admin from "./pages/Admin";
 import Settings from "./pages/Settings";
+import Medical from "./pages/Medical";
 
 // Create a new QueryClient instance
 const queryClient = new QueryClient();
@@ -117,9 +118,19 @@ function App() {
                   } />
                   
                   {/* Medical Management */}
-                  <Route path="/medical/*" element={
+                  <Route path="/medical" element={
                     <ProtectedRoute>
-                      <NotFound customMessage="Medical Management page is under development" />
+                      <Medical />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/medical/providers" element={
+                    <ProtectedRoute>
+                      <Medical />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/medical/records" element={
+                    <ProtectedRoute>
+                      <Medical />
                     </ProtectedRoute>
                   } />
                   

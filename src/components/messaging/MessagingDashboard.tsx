@@ -70,8 +70,8 @@ const MessagingDashboard = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <Card>
+    <div className="w-full px-4">
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>Law EMR Messaging</CardTitle>
           <CardDescription>Manage all your client and team communications</CardDescription>
