@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { Search, Plus, Filter, Trash2, Edit, FileText, Tags } from "lucide-react";
+import { Search, Plus, Filter, Trash2, Edit, FileText, Tags, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Client, ClientFilterParams } from "@/types/client";
@@ -41,9 +40,10 @@ interface ClientListProps {
   clients: Client[];
   onEditClient: (client: Client) => void;
   onDeleteClient: (clientId: string) => void;
+  loading?: boolean;
 }
 
-const ClientList = ({ clients, onEditClient, onDeleteClient }: ClientListProps) => {
+const ClientList = ({ clients, onEditClient, onDeleteClient, loading = false }: ClientListProps) => {
   const [filterParams, setFilterParams] = useState<ClientFilterParams>({
     search: "",
     tag: undefined,
@@ -56,19 +56,16 @@ const ClientList = ({ clients, onEditClient, onDeleteClient }: ClientListProps) 
   const uniqueTags = [...new Set(clients.flatMap(client => client.tags || []))];
   
   const filteredClients = clients.filter(client => {
-    // Search filter
     const searchMatch = !filterParams.search || 
       client.fullName.toLowerCase().includes(filterParams.search.toLowerCase()) ||
       client.email.toLowerCase().includes(filterParams.search.toLowerCase()) ||
       client.companyName?.toLowerCase().includes(filterParams.search.toLowerCase()) ||
       false;
     
-    // Tag filter
     const tagMatch = !filterParams.tag || 
       client.tags?.includes(filterParams.tag) || 
       false;
     
-    // Date range filter
     let dateMatch = true;
     if (filterParams.dateRange?.from || filterParams.dateRange?.to) {
       const createdDate = new Date(client.createdAt);
@@ -221,7 +218,15 @@ const ClientList = ({ clients, onEditClient, onDeleteClient }: ClientListProps) 
           </div>
         )}
         
-        {filteredClients.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-12 border rounded-lg bg-muted/20">
+            <Loader2 className="mx-auto h-12 w-12 text-muted-foreground opacity-50 animate-spin" />
+            <h3 className="mt-4 text-lg font-medium">Loading clients...</h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Please wait while we fetch client data
+            </p>
+          </div>
+        ) : filteredClients.length === 0 ? (
           <div className="text-center py-12 border rounded-lg bg-muted/20">
             <FileText className="mx-auto h-12 w-12 text-muted-foreground opacity-50" />
             <h3 className="mt-4 text-lg font-medium">No clients found</h3>
@@ -308,7 +313,6 @@ const ClientList = ({ clients, onEditClient, onDeleteClient }: ClientListProps) 
         )}
       </div>
       
-      {/* Confirmation dialog for client deletion */}
       <Dialog 
         open={!!clientToDelete} 
         onOpenChange={(isOpen) => !isOpen && setClientToDelete(null)}
@@ -343,7 +347,6 @@ const ClientList = ({ clients, onEditClient, onDeleteClient }: ClientListProps) 
         </DialogContent>
       </Dialog>
       
-      {/* Client details dialog */}
       <Dialog 
         open={!!showDetails} 
         onOpenChange={(isOpen) => !isOpen && setShowDetails(null)}

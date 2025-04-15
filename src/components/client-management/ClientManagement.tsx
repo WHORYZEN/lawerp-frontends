@@ -1,95 +1,115 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ClientList from "./ClientList";
 import ClientForm from "./ClientForm";
 import { Client } from "@/types/client";
-import { v4 as uuidv4 } from "uuid";
-import { toast } from "@/hooks/use-toast";
-
-// Mock data for initial development
-const mockClients: Client[] = [
-  {
-    id: "1",
-    fullName: "John Doe",
-    email: "john.doe@example.com",
-    phone: "(555) 123-4567",
-    companyName: "Acme Inc.",
-    address: "123 Main St, Anytown, USA",
-    tags: ["commercial", "insurance"],
-    notes: "Initial consultation completed",
-    createdAt: "2023-01-15T10:30:00Z",
-    updatedAt: "2023-02-20T14:45:00Z"
-  },
-  {
-    id: "2",
-    fullName: "Jane Smith",
-    email: "jane.smith@example.com",
-    phone: "(555) 987-6543",
-    companyName: "Smith & Co",
-    address: "456 Oak Ave, Sometown, USA",
-    tags: ["personal injury", "accident"],
-    notes: "Case in progress",
-    createdAt: "2023-03-10T09:15:00Z",
-    updatedAt: "2023-04-05T11:20:00Z"
-  },
-  {
-    id: "3",
-    fullName: "Robert Johnson",
-    email: "robert.johnson@example.com",
-    phone: "(555) 456-7890",
-    companyName: "Johnson Enterprises",
-    tags: ["private", "third party"],
-    createdAt: "2023-05-20T15:45:00Z",
-    updatedAt: "2023-05-20T15:45:00Z"
-  }
-];
+import { clientsApi } from "@/lib/api/mongodb-api";
+import { useToast } from "@/hooks/use-toast";
 
 const ClientManagement = () => {
-  const [clients, setClients] = useState<Client[]>(mockClients);
+  const [clients, setClients] = useState<Client[]>([]);
   const [activeTab, setActiveTab] = useState("view");
   const [clientToEdit, setClientToEdit] = useState<Client | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
-  const handleAddClient = (clientData: Omit<Client, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const timestamp = new Date().toISOString();
-    const newClient: Client = {
-      id: uuidv4(),
-      ...clientData,
-      createdAt: timestamp,
-      updatedAt: timestamp
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        setLoading(true);
+        const fetchedClients = await clientsApi.getClients();
+        setClients(fetchedClients);
+      } catch (error) {
+        console.error("Failed to fetch clients:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load client data. Please try again later.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
     };
-    
-    setClients([...clients, newClient]);
-    setActiveTab("view");
-    toast({
-      title: "Client Added",
-      description: `${newClient.fullName} has been added to your clients.`,
-    });
+
+    fetchClients();
+  }, [toast]);
+
+  const handleAddClient = async (clientData: Omit<Client, 'id' | 'createdAt' | 'updatedAt'>) => {
+    try {
+      const newClient = await clientsApi.createClient(clientData);
+      
+      if (newClient) {
+        setClients([...clients, newClient]);
+        setActiveTab("view");
+        toast({
+          title: "Client Added",
+          description: `${newClient.fullName} has been added to your clients.`,
+        });
+      } else {
+        throw new Error("Failed to create client");
+      }
+    } catch (error) {
+      console.error("Error adding client:", error);
+      toast({
+        title: "Error",
+        description: "Failed to add client. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleEditClient = (clientData: Client) => {
-    const updatedClients = clients.map(client => 
-      client.id === clientData.id 
-        ? { ...clientData, updatedAt: new Date().toISOString() } 
-        : client
-    );
-    
-    setClients(updatedClients);
-    setActiveTab("view");
-    setClientToEdit(null);
-    toast({
-      title: "Client Updated",
-      description: `${clientData.fullName}'s information has been updated.`,
-    });
+  const handleEditClient = async (clientData: Client) => {
+    try {
+      const updatedClient = await clientsApi.updateClient(clientData.id, clientData);
+      
+      if (updatedClient) {
+        const updatedClients = clients.map(client => 
+          client.id === clientData.id ? updatedClient : client
+        );
+        
+        setClients(updatedClients);
+        setActiveTab("view");
+        setClientToEdit(null);
+        toast({
+          title: "Client Updated",
+          description: `${updatedClient.fullName}'s information has been updated.`,
+        });
+      } else {
+        throw new Error("Failed to update client");
+      }
+    } catch (error) {
+      console.error("Error updating client:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update client. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleDeleteClient = (clientId: string) => {
-    const clientName = clients.find(c => c.id === clientId)?.fullName;
-    setClients(clients.filter(client => client.id !== clientId));
-    toast({
-      title: "Client Deleted",
-      description: `${clientName} has been removed from your clients.`,
-    });
+  const handleDeleteClient = async (clientId: string) => {
+    try {
+      const clientName = clients.find(c => c.id === clientId)?.fullName;
+      const success = await clientsApi.deleteClient(clientId);
+      
+      if (success) {
+        setClients(clients.filter(client => client.id !== clientId));
+        toast({
+          title: "Client Deleted",
+          description: `${clientName} has been removed from your clients.`,
+        });
+      } else {
+        throw new Error("Failed to delete client");
+      }
+    } catch (error) {
+      console.error("Error deleting client:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete client. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const startEditClient = (client: Client) => {
@@ -116,6 +136,7 @@ const ClientManagement = () => {
             clients={clients} 
             onEditClient={startEditClient} 
             onDeleteClient={handleDeleteClient}
+            loading={loading}
           />
         </TabsContent>
         
