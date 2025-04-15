@@ -21,7 +21,7 @@ import {
   Settings,
   FileCheck,
   FileHeart,
-  FileDollar,
+  DollarSign,
   ClipboardList,
   UserCog,
   Building,
@@ -348,7 +348,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
             {/* Billing & Settlements */}
             <NavItem
-              icon={<FileDollar className="h-5 w-5" />}
+              icon={<DollarSign className="h-5 w-5" />}
               label="Billing & Settlements"
               to="/billing"
               active={pathname === "/billing" || pathname.startsWith("/billing/")}
