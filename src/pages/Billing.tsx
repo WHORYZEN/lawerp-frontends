@@ -10,7 +10,9 @@ const Billing: React.FC = () => {
       <Helmet>
         <title>Billing & Settlements - Law EMR</title>
       </Helmet>
-      <BillingDashboard />
+      <div className="bg-gradient-to-r from-gray-50 to-gray-100 min-h-screen">
+        <BillingDashboard />
+      </div>
     </PageLayout>
   );
 };

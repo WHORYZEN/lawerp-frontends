@@ -8,7 +8,7 @@ import ChatInterface from './ChatInterface';
 import EmailLogs from './EmailLogs';
 import SmsLogs from './SmsLogs';
 import { useToast } from "@/hooks/use-toast";
-import { MessageSquare, Mail, MessageCircle } from 'lucide-react';
+import { MessageSquare, Mail, MessageCircle, PlusCircle } from 'lucide-react';
 
 const MessagingDashboard = () => {
   const [activeTab, setActiveTab] = useState('chat');
@@ -71,84 +71,94 @@ const MessagingDashboard = () => {
   };
 
   return (
-    <div className="w-full px-4 py-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Messaging</h1>
-            <p className="text-gray-500 mt-1">Manage all your client and team communications</p>
-          </div>
+    <div className="container mx-auto p-6">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-lawfirm-dark-purple">Messaging</h1>
+          <p className="text-lawfirm-neutral-gray mt-1">Manage all your client and team communications</p>
         </div>
-        
-        <Card className="border-none shadow-md bg-white overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-lawfirm-light-blue/30 to-lawfirm-blue/20 pb-8">
-            <CardTitle className="flex items-center gap-2 text-2xl">
-              <MessageCircle className="h-6 w-6 text-lawfirm-light-blue" />
-              Communication Center
-            </CardTitle>
-            <CardDescription>
-              Seamlessly connect with clients and team members through multiple channels
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-0">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <div className="border-b">
-                <div className="px-6">
-                  <TabsList className="h-14 w-full bg-transparent justify-start gap-8 mb-[-1px]">
-                    <TabsTrigger 
-                      value="chat" 
-                      className="data-[state=active]:border-b-2 data-[state=active]:border-lawfirm-light-blue data-[state=active]:text-lawfirm-dark-purple data-[state=active]:bg-transparent rounded-none h-14 px-4 py-2 font-medium"
-                    >
-                      <MessageSquare className="mr-2 h-5 w-5" />
-                      <span>Live Chat</span>
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="email" 
-                      className="data-[state=active]:border-b-2 data-[state=active]:border-lawfirm-light-blue data-[state=active]:text-lawfirm-dark-purple data-[state=active]:bg-transparent rounded-none h-14 px-4 py-2 font-medium"
-                    >
-                      <Mail className="mr-2 h-5 w-5" />
-                      <span>Email</span>
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="sms" 
-                      className="data-[state=active]:border-b-2 data-[state=active]:border-lawfirm-light-blue data-[state=active]:text-lawfirm-dark-purple data-[state=active]:bg-transparent rounded-none h-14 px-4 py-2 font-medium"
-                    >
-                      <MessageCircle className="mr-2 h-5 w-5" />
-                      <span>SMS</span>
-                    </TabsTrigger>
-                  </TabsList>
-                </div>
-              </div>
-              
-              <div>
-                <TabsContent value="chat" className="m-0 p-0">
-                  <ChatInterface 
-                    messages={messages.filter(m => m.type === 'chat')} 
-                    isLoading={isLoading} 
-                    onSend={(recipient, content) => handleSendMessage(recipient, content, 'chat')}
-                  />
-                </TabsContent>
-                
-                <TabsContent value="email" className="m-0 p-0">
-                  <EmailLogs 
-                    emails={messages.filter(m => m.type === 'email')} 
-                    isLoading={isLoading} 
-                    onSend={(recipient, content) => handleSendMessage(recipient, content, 'email')}
-                  />
-                </TabsContent>
-                
-                <TabsContent value="sms" className="m-0 p-0">
-                  <SmsLogs 
-                    messages={messages.filter(m => m.type === 'sms')} 
-                    isLoading={isLoading} 
-                    onSend={(recipient, content) => handleSendMessage(recipient, content, 'sms')}
-                  />
-                </TabsContent>
-              </div>
-            </Tabs>
-          </CardContent>
-        </Card>
+        <div className="mt-4 md:mt-0">
+          <button 
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-600 text-white rounded-md hover:from-blue-600 hover:to-cyan-700 transition-all shadow-md"
+            onClick={() => toast({
+              title: "Coming Soon",
+              description: "Message templates will be available in the next update.",
+            })}
+          >
+            <PlusCircle className="h-5 w-5" />
+            <span>New Template</span>
+          </button>
+        </div>
       </div>
+      
+      <Card className="border-none shadow-lg bg-white overflow-hidden rounded-xl">
+        <CardHeader className="bg-gradient-to-r from-blue-100 to-cyan-100 pb-8 border-b border-blue-200">
+          <CardTitle className="flex items-center gap-2 text-2xl text-blue-800">
+            <MessageCircle className="h-6 w-6 text-blue-600" />
+            Communication Center
+          </CardTitle>
+          <CardDescription className="text-blue-700/80">
+            Seamlessly connect with clients and team members through multiple channels
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <div className="border-b border-gray-200">
+              <div className="px-6">
+                <TabsList className="h-14 w-full bg-transparent justify-start gap-8 mb-[-1px]">
+                  <TabsTrigger 
+                    value="chat" 
+                    className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:text-blue-700 data-[state=active]:bg-transparent rounded-none h-14 px-4 py-2 font-medium transition-all"
+                  >
+                    <MessageSquare className="mr-2 h-5 w-5" />
+                    <span>Live Chat</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="email" 
+                    className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:text-blue-700 data-[state=active]:bg-transparent rounded-none h-14 px-4 py-2 font-medium transition-all"
+                  >
+                    <Mail className="mr-2 h-5 w-5" />
+                    <span>Email</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="sms" 
+                    className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:text-blue-700 data-[state=active]:bg-transparent rounded-none h-14 px-4 py-2 font-medium transition-all"
+                  >
+                    <MessageCircle className="mr-2 h-5 w-5" />
+                    <span>SMS</span>
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+            </div>
+            
+            <div>
+              <TabsContent value="chat" className="m-0 p-0">
+                <ChatInterface 
+                  messages={messages.filter(m => m.type === 'chat')} 
+                  isLoading={isLoading} 
+                  onSend={(recipient, content) => handleSendMessage(recipient, content, 'chat')}
+                />
+              </TabsContent>
+              
+              <TabsContent value="email" className="m-0 p-0">
+                <EmailLogs 
+                  emails={messages.filter(m => m.type === 'email')} 
+                  isLoading={isLoading} 
+                  onSend={(recipient, content) => handleSendMessage(recipient, content, 'email')}
+                />
+              </TabsContent>
+              
+              <TabsContent value="sms" className="m-0 p-0">
+                <SmsLogs 
+                  messages={messages.filter(m => m.type === 'sms')} 
+                  isLoading={isLoading} 
+                  onSend={(recipient, content) => handleSendMessage(recipient, content, 'sms')}
+                />
+              </TabsContent>
+            </div>
+          </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 };
