@@ -1,3 +1,4 @@
+
 import { useState, useMemo } from "react";
 import { 
   Table, TableHeader, TableRow, TableHead, 
@@ -200,13 +201,15 @@ const DependencyViewSheet = () => {
     <div className="space-y-4">
       <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
         <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
-          <Input
-            placeholder="Search records..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full md:w-60"
-            prefix={<Search className="h-4 w-4 text-gray-400" />}
-          />
+          <div className="relative w-full md:w-60">
+            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search records..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-8 w-full"
+            />
+          </div>
           <div className="flex gap-2">
             <Select value={typeFilter} onValueChange={setTypeFilter}>
               <SelectTrigger className="w-[140px]">
