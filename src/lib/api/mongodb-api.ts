@@ -1,13 +1,19 @@
-import { Client } from '@/types/client';
-import { mockDb } from '../db/mock-db';
 
-// Use mock database for frontend development
-// In a production app, this would be replaced with actual API calls to a backend
+import { Client } from '@/types/client';
+import { MongoDBClient } from '../db/mongodb-local';
+
+// Initialize MongoDB client
+const mongoClient = MongoDBClient.getInstance();
+
+// Connect to MongoDB when module is loaded
+mongoClient.connect().catch(err => console.error('Failed to connect to MongoDB:', err));
+
+// Client API methods
 export const clientsApi = {
   // Get all clients
   getClients: async (): Promise<Client[]> => {
     try {
-      return await mockDb.clients.getAll();
+      return await mongoClient.getClients();
     } catch (error) {
       console.error('Error fetching clients:', error);
       return [];
@@ -17,7 +23,7 @@ export const clientsApi = {
   // Get a single client by ID
   getClient: async (id: string): Promise<Client | null> => {
     try {
-      return await mockDb.clients.getById(id);
+      return await mongoClient.getClient(id);
     } catch (error) {
       console.error('Error fetching client:', error);
       return null;
@@ -27,7 +33,7 @@ export const clientsApi = {
   // Create a new client
   createClient: async (clientData: Omit<Client, 'id' | 'createdAt' | 'updatedAt'>): Promise<Client | null> => {
     try {
-      return await mockDb.clients.create(clientData);
+      return await mongoClient.createClient(clientData);
     } catch (error) {
       console.error('Error creating client:', error);
       return null;
@@ -37,7 +43,7 @@ export const clientsApi = {
   // Update an existing client
   updateClient: async (id: string, clientData: Partial<Client>): Promise<Client | null> => {
     try {
-      return await mockDb.clients.update(id, clientData);
+      return await mongoClient.updateClient(id, clientData);
     } catch (error) {
       console.error('Error updating client:', error);
       return null;
@@ -47,7 +53,7 @@ export const clientsApi = {
   // Delete a client
   deleteClient: async (id: string): Promise<boolean> => {
     try {
-      return await mockDb.clients.delete(id);
+      return await mongoClient.deleteClient(id);
     } catch (error) {
       console.error('Error deleting client:', error);
       return false;
