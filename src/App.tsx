@@ -29,40 +29,130 @@ function App() {
               <Toaster />
               <Sonner />
               <Routes>
-                {/* Redirect root to login or dashboard based on auth status */}
-                <Route path="/" element={<Navigate to="/login" replace />} />
+                {/* Redirect root to dashboard (formerly redirected to login) */}
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
                 <Route path="/login" element={<Login />} />
+                
+                {/* Dashboard */}
                 <Route path="/dashboard" element={
                   <ProtectedRoute>
                     <Index />
                   </ProtectedRoute>
                 } />
-                <Route path="/calculator" element={
-                  <ProtectedRoute>
-                    <Calculator />
-                  </ProtectedRoute>
-                } />
+                
+                {/* Clients Management */}
                 <Route path="/clients" element={
                   <ProtectedRoute>
                     <Clients />
                   </ProtectedRoute>
                 } />
-                <Route path="/reports" element={
+                <Route path="/clients/add" element={
                   <ProtectedRoute>
-                    <Reports />
+                    <Clients />
                   </ProtectedRoute>
                 } />
+                <Route path="/clients/:id" element={
+                  <ProtectedRoute>
+                    <Clients />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Case Management */}
+                <Route path="/cases" element={
+                  <ProtectedRoute>
+                    <NotFound customMessage="Case Management page is under development" />
+                  </ProtectedRoute>
+                } />
+                <Route path="/cases/create" element={
+                  <ProtectedRoute>
+                    <NotFound customMessage="Case Creation page is under development" />
+                  </ProtectedRoute>
+                } />
+                <Route path="/cases/:id" element={
+                  <ProtectedRoute>
+                    <NotFound customMessage="Case Details page is under development" />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Document Management */}
                 <Route path="/documents" element={
                   <ProtectedRoute>
                     <Documents />
                   </ProtectedRoute>
                 } />
+                <Route path="/documents/builder" element={
+                  <ProtectedRoute>
+                    <NotFound customMessage="Document Builder page is under development" />
+                  </ProtectedRoute>
+                } />
+                <Route path="/documents/templates" element={
+                  <ProtectedRoute>
+                    <NotFound customMessage="Document Templates page is under development" />
+                  </ProtectedRoute>
+                } />
+                <Route path="/documents/sign" element={
+                  <ProtectedRoute>
+                    <NotFound customMessage="DocuSign Integration page is under development" />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Files */}
                 <Route path="/files" element={
                   <ProtectedRoute>
                     <Files />
                   </ProtectedRoute>
                 } />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                
+                {/* Medical Management */}
+                <Route path="/medical/*" element={
+                  <ProtectedRoute>
+                    <NotFound customMessage="Medical Management page is under development" />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Billing & Settlements */}
+                <Route path="/billing/*" element={
+                  <ProtectedRoute>
+                    <NotFound customMessage="Billing & Settlements page is under development" />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Calculator */}
+                <Route path="/calculator" element={
+                  <ProtectedRoute>
+                    <Calculator />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Reports */}
+                <Route path="/reports" element={
+                  <ProtectedRoute>
+                    <Reports />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Calendar & Tasks */}
+                <Route path="/calendar/*" element={
+                  <ProtectedRoute>
+                    <NotFound customMessage="Calendar & Tasks page is under development" />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Messaging */}
+                <Route path="/messages/*" element={
+                  <ProtectedRoute>
+                    <NotFound customMessage="Messaging page is under development" />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Admin Panel */}
+                <Route path="/admin/*" element={
+                  <ProtectedRoute>
+                    <NotFound customMessage="Admin Panel is under development" />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Catch-all route */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </TooltipProvider>

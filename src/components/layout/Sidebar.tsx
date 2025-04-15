@@ -14,7 +14,20 @@ import {
   ChevronRight,
   FileBarChart,
   FileDigit,
-  FileCog
+  FileCog,
+  Calendar,
+  MessageSquare,
+  Bell,
+  Settings,
+  FileCheck,
+  FileHeart,
+  FileDollar,
+  ClipboardList,
+  UserCog,
+  Building,
+  Briefcase,
+  Scale,
+  Mail
 } from "lucide-react";
 
 interface SidebarProps {
@@ -136,6 +149,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const urlParams = new URLSearchParams(location.search);
   const documentsTab = urlParams.get('tab');
   const filesTab = urlParams.get('tab');
+  const clientsTab = urlParams.get('tab');
+  const caseTab = urlParams.get('tab');
+  const medicalTab = urlParams.get('tab');
+  const billingTab = urlParams.get('tab');
+  const calendarTab = urlParams.get('tab');
+  const messagesTab = urlParams.get('tab');
+  const adminTab = urlParams.get('tab');
 
   return (
     <>
@@ -156,32 +176,99 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <nav className="space-y-1 px-3">
             <NavItem
               icon={<Home className="h-5 w-5" />}
-              label="Home"
-              to="/"
-              active={pathname === "/"}
+              label="Dashboard"
+              to="/dashboard"
+              active={pathname === "/dashboard"}
             />
 
+            {/* Clients Management */}
             <NavItem
-              icon={<FolderOpen className="h-5 w-5" />}
-              label="Files"
-              to="/files"
-              active={pathname === "/files"}
+              icon={<Users className="h-5 w-5" />}
+              label="Clients"
+              to="/clients"
+              active={pathname === "/clients" || pathname.startsWith("/clients/")}
               hasSubmenu
             >
               <SubNavItem 
-                label="Master Dependency View" 
-                to="/files?tab=dependency" 
-                active={pathname === "/files" && (!filesTab || filesTab === "dependency")} 
+                label="All Clients" 
+                to="/clients" 
+                active={pathname === "/clients" && !clientsTab} 
+              />
+              <SubNavItem 
+                label="Add Client" 
+                to="/clients/add" 
+                active={pathname === "/clients/add"} 
+              />
+              <SubNavItem 
+                label="Commercial" 
+                to="/clients?filter=commercial" 
+                active={pathname === "/clients" && urlParams.get('filter') === "commercial"} 
+              />
+              <SubNavItem 
+                label="Private" 
+                to="/clients?filter=private" 
+                active={pathname === "/clients" && urlParams.get('filter') === "private"} 
+              />
+              <SubNavItem 
+                label="Accident" 
+                to="/clients?filter=accident" 
+                active={pathname === "/clients" && urlParams.get('filter') === "accident"} 
+              />
+              <SubNavItem 
+                label="Personal Injuries" 
+                to="/clients?filter=personal-injuries" 
+                active={pathname === "/clients" && urlParams.get('filter') === "personal-injuries"} 
               />
             </NavItem>
 
+            {/* Case Management */}
+            <NavItem
+              icon={<Briefcase className="h-5 w-5" />}
+              label="Case Management"
+              to="/cases"
+              active={pathname === "/cases" || pathname.startsWith("/cases/")}
+              hasSubmenu
+            >
+              <SubNavItem 
+                label="All Cases" 
+                to="/cases" 
+                active={pathname === "/cases" && !caseTab} 
+              />
+              <SubNavItem 
+                label="Create Case" 
+                to="/cases/create" 
+                active={pathname === "/cases/create"} 
+              />
+              <SubNavItem 
+                label="Timeline" 
+                to="/cases?tab=timeline" 
+                active={pathname === "/cases" && caseTab === "timeline"} 
+              />
+              <SubNavItem 
+                label="Assigned Staff" 
+                to="/cases?tab=staff" 
+                active={pathname === "/cases" && caseTab === "staff"} 
+              />
+            </NavItem>
+
+            {/* Documents */}
             <NavItem
               icon={<FileText className="h-5 w-5" />}
               label="Documents"
               to="/documents"
-              active={pathname === "/documents"}
+              active={pathname === "/documents" || pathname.startsWith("/documents/")}
               hasSubmenu
             >
+              <SubNavItem 
+                label="Document Builder" 
+                to="/documents/builder" 
+                active={pathname === "/documents/builder"} 
+              />
+              <SubNavItem 
+                label="Templates" 
+                to="/documents/templates" 
+                active={pathname === "/documents/templates"} 
+              />
               <SubNavItem 
                 label="LOP" 
                 to="/documents?tab=lop" 
@@ -202,21 +289,102 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 to="/documents?tab=bills" 
                 active={pathname === "/documents" && documentsTab === "bills"} 
               />
+              <SubNavItem 
+                label="DocuSign" 
+                to="/documents/sign" 
+                active={pathname === "/documents/sign"} 
+              />
             </NavItem>
 
+            {/* Files */}
             <NavItem
-              icon={<Users className="h-5 w-5" />}
-              label="Clients"
-              to="/clients"
-              active={pathname === "/clients"}
+              icon={<FolderOpen className="h-5 w-5" />}
+              label="Files"
+              to="/files"
+              active={pathname === "/files"}
+              hasSubmenu
             >
-              <SubNavItem label="Commercial" to="/clients?filter=commercial" />
-              <SubNavItem label="Private" to="/clients?filter=private" />
-              <SubNavItem label="Accident" to="/clients?filter=accident" />
-              <SubNavItem label="Personal Injuries" to="/clients?filter=personal-injuries" />
-              <SubNavItem label="Third Party Injuries" to="/clients?filter=third-party" />
+              <SubNavItem 
+                label="Master Dependency View" 
+                to="/files?tab=dependency" 
+                active={pathname === "/files" && (!filesTab || filesTab === "dependency")} 
+              />
             </NavItem>
 
+            {/* Medical Management */}
+            <NavItem
+              icon={<FileHeart className="h-5 w-5" />}
+              label="Medical Management"
+              to="/medical"
+              active={pathname === "/medical" || pathname.startsWith("/medical/")}
+              hasSubmenu
+            >
+              <SubNavItem 
+                label="Medical Records" 
+                to="/medical/records" 
+                active={pathname === "/medical/records"} 
+              />
+              <SubNavItem 
+                label="Upload Documents" 
+                to="/medical/upload" 
+                active={pathname === "/medical/upload"} 
+              />
+              <SubNavItem 
+                label="Treatment Timeline" 
+                to="/medical/timeline" 
+                active={pathname === "/medical/timeline"} 
+              />
+              <SubNavItem 
+                label="Providers" 
+                to="/medical/providers" 
+                active={pathname === "/medical/providers"} 
+              />
+              <SubNavItem 
+                label="Expenses Tracker" 
+                to="/medical/expenses" 
+                active={pathname === "/medical/expenses"} 
+              />
+            </NavItem>
+
+            {/* Billing & Settlements */}
+            <NavItem
+              icon={<FileDollar className="h-5 w-5" />}
+              label="Billing & Settlements"
+              to="/billing"
+              active={pathname === "/billing" || pathname.startsWith("/billing/")}
+              hasSubmenu
+            >
+              <SubNavItem 
+                label="All Bills" 
+                to="/billing" 
+                active={pathname === "/billing" && !billingTab} 
+              />
+              <SubNavItem 
+                label="Add Bill" 
+                to="/billing/add" 
+                active={pathname === "/billing/add"} 
+              />
+              <SubNavItem 
+                label="Settlements" 
+                to="/billing/settlements" 
+                active={pathname === "/billing/settlements"} 
+              />
+              <SubNavItem 
+                label="Letters" 
+                to="/billing/letters" 
+                active={pathname === "/billing/letters"} 
+              />
+            </NavItem>
+
+            {/* AI Lien Reduction */}
+            <NavItem
+              icon={<Calculator className="h-5 w-5" />}
+              label="AI Lien Reduction Calculator"
+              to="/calculator"
+              active={pathname === "/calculator"}
+            />
+
+            {/* Reports */}
             <NavItem
               icon={<BarChart4 className="h-5 w-5" />}
               label="Reports"
@@ -236,12 +404,85 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               />
             </NavItem>
 
+            {/* Calendar & Tasks */}
             <NavItem
-              icon={<Calculator className="h-5 w-5" />}
-              label="AI Lien Reduction Calculator"
-              to="/calculator"
-              active={pathname === "/calculator"}
-            />
+              icon={<Calendar className="h-5 w-5" />}
+              label="Calendar & Tasks"
+              to="/calendar"
+              active={pathname === "/calendar" || pathname.startsWith("/calendar/")}
+              hasSubmenu
+            >
+              <SubNavItem 
+                label="Calendar View" 
+                to="/calendar" 
+                active={pathname === "/calendar" && !calendarTab} 
+              />
+              <SubNavItem 
+                label="Create Task" 
+                to="/calendar/task/create" 
+                active={pathname === "/calendar/task/create"} 
+              />
+              <SubNavItem 
+                label="Tasks by Staff" 
+                to="/calendar/tasks" 
+                active={pathname === "/calendar/tasks"} 
+              />
+              <SubNavItem 
+                label="Google Sync" 
+                to="/calendar/sync" 
+                active={pathname === "/calendar/sync"} 
+              />
+            </NavItem>
+
+            {/* Messaging & Notifications */}
+            <NavItem
+              icon={<MessageSquare className="h-5 w-5" />}
+              label="Messaging"
+              to="/messages"
+              active={pathname === "/messages" || pathname.startsWith("/messages/")}
+              hasSubmenu
+            >
+              <SubNavItem 
+                label="Chat" 
+                to="/messages" 
+                active={pathname === "/messages" && !messagesTab} 
+              />
+              <SubNavItem 
+                label="SMS Logs" 
+                to="/messages/sms" 
+                active={pathname === "/messages/sms"} 
+              />
+              <SubNavItem 
+                label="Email Logs" 
+                to="/messages/email" 
+                active={pathname === "/messages/email"} 
+              />
+            </NavItem>
+
+            {/* Admin */}
+            <NavItem
+              icon={<UserCog className="h-5 w-5" />}
+              label="Admin Panel"
+              to="/admin"
+              active={pathname === "/admin" || pathname.startsWith("/admin/")}
+              hasSubmenu
+            >
+              <SubNavItem 
+                label="Users & Permissions" 
+                to="/admin/users" 
+                active={pathname === "/admin/users"} 
+              />
+              <SubNavItem 
+                label="Roles" 
+                to="/admin/roles" 
+                active={pathname === "/admin/roles"} 
+              />
+              <SubNavItem 
+                label="Audit Logs" 
+                to="/admin/logs" 
+                active={pathname === "/admin/logs"} 
+              />
+            </NavItem>
           </nav>
         </div>
       </aside>
