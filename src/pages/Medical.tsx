@@ -10,9 +10,7 @@ const Medical: React.FC = () => {
       <Helmet>
         <title>Medical Management - Law EMR</title>
       </Helmet>
-      <div className="container mx-auto py-6">
-        <MedicalDashboard />
-      </div>
+      <MedicalDashboard />
     </PageLayout>
   );
 };
