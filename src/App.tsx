@@ -10,6 +10,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Index from "./pages/Index";
 import Calculator from "./pages/Calculator";
 import Clients from "./pages/Clients";
+import Cases from "./pages/Cases";
 import Reports from "./pages/Reports";
 import Documents from "./pages/Documents";
 import Files from "./pages/Files";
@@ -60,17 +61,22 @@ function App() {
                 {/* Case Management */}
                 <Route path="/cases" element={
                   <ProtectedRoute>
-                    <NotFound customMessage="Case Management page is under development" />
+                    <Cases />
                   </ProtectedRoute>
                 } />
                 <Route path="/cases/create" element={
                   <ProtectedRoute>
-                    <NotFound customMessage="Case Creation page is under development" />
+                    <Cases />
                   </ProtectedRoute>
                 } />
                 <Route path="/cases/:id" element={
                   <ProtectedRoute>
-                    <NotFound customMessage="Case Details page is under development" />
+                    <Cases />
+                  </ProtectedRoute>
+                } />
+                <Route path="/cases/:id/edit" element={
+                  <ProtectedRoute>
+                    <Cases />
                   </ProtectedRoute>
                 } />
                 

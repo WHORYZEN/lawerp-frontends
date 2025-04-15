@@ -1,14 +1,16 @@
+
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Edit, FileText, MessageSquare, Briefcase, Loader2 } from "lucide-react";
+import { ArrowLeft, Edit, FileText, MessageSquare, Briefcase, Loader2, Plus } from "lucide-react";
 import { Client } from "@/types/client";
 import { Case } from "@/types/case"; 
 import { casesApi } from "@/lib/api/mongodb-api";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface ClientDetailsProps {
   client: Client;
@@ -20,6 +22,7 @@ const ClientDetails = ({ client, onBack, onEdit }: ClientDetailsProps) => {
   const [linkedCases, setLinkedCases] = useState<Case[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLinkedCases = async () => {
@@ -41,6 +44,37 @@ const ClientDetails = ({ client, onBack, onEdit }: ClientDetailsProps) => {
 
     fetchLinkedCases();
   }, [client.id, toast]);
+
+  const handleCreateCase = () => {
+    navigate(`/cases/create?clientId=${client.id}`);
+  };
+
+  const handleViewCase = (caseId: string) => {
+    navigate(`/cases/${caseId}`);
+  };
+
+  const handleUploadDocument = () => {
+    navigate(`/documents?clientId=${client.id}`);
+  };
+
+  const handleLogCommunication = () => {
+    navigate(`/messages?clientId=${client.id}`);
+  };
+
+  const getBadgeVariant = (status: string) => {
+    switch(status) {
+      case 'open':
+        return 'default';
+      case 'closed':
+        return 'secondary';
+      case 'settled':
+        return 'outline';
+      case 'pending':
+        return 'secondary';
+      default:
+        return 'outline';
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -136,7 +170,10 @@ const ClientDetails = ({ client, onBack, onEdit }: ClientDetailsProps) => {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>Linked Cases</CardTitle>
-                <Button variant="outline">Add New Case</Button>
+                <Button variant="outline" onClick={handleCreateCase} className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  Add New Case
+                </Button>
               </div>
             </CardHeader>
             <CardContent>
@@ -148,7 +185,7 @@ const ClientDetails = ({ client, onBack, onEdit }: ClientDetailsProps) => {
               ) : linkedCases.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-muted-foreground">No cases found for this client.</p>
-                  <Button variant="outline" className="mt-4">Create First Case</Button>
+                  <Button variant="outline" className="mt-4" onClick={handleCreateCase}>Create First Case</Button>
                 </div>
               ) : (
                 <div className="divide-y">
@@ -157,11 +194,7 @@ const ClientDetails = ({ client, onBack, onEdit }: ClientDetailsProps) => {
                       <div>
                         <h3 className="font-medium">{caseItem.title}</h3>
                         <div className="flex items-center mt-1 gap-3">
-                          <Badge variant={
-                            caseItem.status === 'open' ? 'default' : 
-                            caseItem.status === 'closed' ? 'secondary' : 
-                            caseItem.status === 'settled' ? 'secondary' : 'outline'
-                          }>
+                          <Badge variant={getBadgeVariant(caseItem.status)}>
                             {caseItem.status}
                           </Badge>
                           <span className="text-sm text-muted-foreground">
@@ -172,7 +205,7 @@ const ClientDetails = ({ client, onBack, onEdit }: ClientDetailsProps) => {
                           {caseItem.description?.substring(0, 100)}{caseItem.description && caseItem.description.length > 100 ? '...' : ''}
                         </p>
                       </div>
-                      <Button variant="outline">View Case</Button>
+                      <Button variant="outline" onClick={() => handleViewCase(caseItem.id)}>View Case</Button>
                     </div>
                   ))}
                 </div>
@@ -186,13 +219,16 @@ const ClientDetails = ({ client, onBack, onEdit }: ClientDetailsProps) => {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>Client Documents</CardTitle>
-                <Button variant="outline">Upload Document</Button>
+                <Button variant="outline" onClick={handleUploadDocument} className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  Upload Document
+                </Button>
               </div>
             </CardHeader>
             <CardContent>
               <div className="text-center py-8">
                 <p className="text-muted-foreground">No documents found for this client.</p>
-                <Button variant="outline" className="mt-4">Upload First Document</Button>
+                <Button variant="outline" className="mt-4" onClick={handleUploadDocument}>Upload First Document</Button>
               </div>
             </CardContent>
           </Card>
@@ -203,13 +239,16 @@ const ClientDetails = ({ client, onBack, onEdit }: ClientDetailsProps) => {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>Communication Log</CardTitle>
-                <Button variant="outline">New Message</Button>
+                <Button variant="outline" onClick={handleLogCommunication} className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  New Message
+                </Button>
               </div>
             </CardHeader>
             <CardContent>
               <div className="text-center py-8">
                 <p className="text-muted-foreground">No communication records found.</p>
-                <Button variant="outline" className="mt-4">Log Communication</Button>
+                <Button variant="outline" className="mt-4" onClick={handleLogCommunication}>Log Communication</Button>
               </div>
             </CardContent>
           </Card>
