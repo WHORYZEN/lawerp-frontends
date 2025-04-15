@@ -11,8 +11,24 @@ import { Input } from "@/components/ui/input";
 import InsuranceDocumentForm from "./InsuranceDocumentForm";
 import { useToast } from "@/hooks/use-toast";
 
+// Define the Insurance document type
+type InsuranceDocument = {
+  id: string;
+  client_id: string;
+  case_id: string;
+  client_name?: string; // For display purposes
+  insurance_company: string;
+  policy_number: string;
+  date_received: string;
+  status: "Received" | "Pending" | "Rejected" | "Approved";
+  document_url: string;
+  notes: string;
+  created_at: string;
+  updated_at: string;
+};
+
 // Mock data for initial development
-const mockInsuranceDocuments = [
+const mockInsuranceDocuments: InsuranceDocument[] = [
   {
     id: "1",
     client_id: "c1",
@@ -42,22 +58,6 @@ const mockInsuranceDocuments = [
     updated_at: "2023-03-10T10:15:00Z",
   },
 ];
-
-// Define the Insurance document type
-type InsuranceDocument = {
-  id: string;
-  client_id: string;
-  case_id: string;
-  client_name?: string; // For display purposes
-  insurance_company: string;
-  policy_number: string;
-  date_received: string;
-  status: "Received" | "Pending" | "Rejected" | "Approved";
-  document_url: string;
-  notes: string;
-  created_at: string;
-  updated_at: string;
-};
 
 const InsuranceDocumentSheet = () => {
   const [documents, setDocuments] = useState<InsuranceDocument[]>(mockInsuranceDocuments);

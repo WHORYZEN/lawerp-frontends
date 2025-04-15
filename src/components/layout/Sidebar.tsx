@@ -13,7 +13,8 @@ import {
   ChevronDown,
   ChevronRight,
   FileBarChart,
-  FileDigit
+  FileDigit,
+  FileCog
 } from "lucide-react";
 
 interface SidebarProps {
@@ -134,6 +135,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   // Get the tab parameter for documents if it exists
   const urlParams = new URLSearchParams(location.search);
   const documentsTab = urlParams.get('tab');
+  const filesTab = urlParams.get('tab');
 
   return (
     <>
@@ -162,10 +164,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <NavItem
               icon={<FolderOpen className="h-5 w-5" />}
               label="Files"
+              to="/files"
+              active={pathname === "/files"}
               hasSubmenu
             >
-              <SubNavItem label="Clients" />
-              <SubNavItem label="Sheet" />
+              <SubNavItem 
+                label="Master Dependency View" 
+                to="/files?tab=dependency" 
+                active={pathname === "/files" && (!filesTab || filesTab === "dependency")} 
+              />
             </NavItem>
 
             <NavItem

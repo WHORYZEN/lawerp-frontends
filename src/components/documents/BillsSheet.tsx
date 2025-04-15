@@ -11,8 +11,26 @@ import { Input } from "@/components/ui/input";
 import BillsForm from "./BillsForm";
 import { useToast } from "@/hooks/use-toast";
 
+// Define the Bill document type
+type Bill = {
+  id: string;
+  client_id: string;
+  case_id: string;
+  client_name?: string; // For display purposes
+  provider_name: string;
+  date_of_service: string;
+  billed_amount: number;
+  covered_amount: number;
+  balance_due: number;
+  status: "Pending" | "Paid" | "Disputed" | "Approved";
+  document_url: string;
+  notes: string;
+  created_at: string;
+  updated_at: string;
+};
+
 // Mock data for initial development
-const mockBills = [
+const mockBills: Bill[] = [
   {
     id: "1",
     client_id: "c1",
@@ -46,24 +64,6 @@ const mockBills = [
     updated_at: "2023-03-10T10:15:00Z",
   },
 ];
-
-// Define the Bill document type
-type Bill = {
-  id: string;
-  client_id: string;
-  case_id: string;
-  client_name?: string; // For display purposes
-  provider_name: string;
-  date_of_service: string;
-  billed_amount: number;
-  covered_amount: number;
-  balance_due: number;
-  status: "Pending" | "Paid" | "Disputed" | "Approved";
-  document_url: string;
-  notes: string;
-  created_at: string;
-  updated_at: string;
-};
 
 const BillsSheet = () => {
   const [bills, setBills] = useState<Bill[]>(mockBills);

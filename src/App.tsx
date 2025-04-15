@@ -12,6 +12,7 @@ import Calculator from "./pages/Calculator";
 import Clients from "./pages/Clients";
 import Reports from "./pages/Reports";
 import Documents from "./pages/Documents";
+import Files from "./pages/Files";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 
@@ -54,6 +55,11 @@ function App() {
                 <Route path="/documents" element={
                   <ProtectedRoute>
                     <Documents />
+                  </ProtectedRoute>
+                } />
+                <Route path="/files" element={
+                  <ProtectedRoute>
+                    <Files />
                   </ProtectedRoute>
                 } />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

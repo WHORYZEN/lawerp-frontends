@@ -11,8 +11,24 @@ import { Input } from "@/components/ui/input";
 import LopDocumentForm from "./LopDocumentForm";
 import { useToast } from "@/hooks/use-toast";
 
+// Define the LOP document type
+type LopDocument = {
+  id: string;
+  client_id: string;
+  case_id: string;
+  client_name?: string; // For display purposes
+  provider_name: string;
+  date_issued: string;
+  physician_name: string;
+  status: "Draft" | "Signed" | "Sent" | "Approved";
+  notes: string;
+  document_url: string;
+  created_at: string;
+  updated_at: string;
+};
+
 // Mock data for initial development
-const mockLopDocuments = [
+const mockLopDocuments: LopDocument[] = [
   {
     id: "1",
     client_id: "c1",
@@ -42,22 +58,6 @@ const mockLopDocuments = [
     updated_at: "2023-04-20T10:15:00Z",
   },
 ];
-
-// Define the LOP document type
-type LopDocument = {
-  id: string;
-  client_id: string;
-  case_id: string;
-  client_name?: string; // For display purposes
-  provider_name: string;
-  date_issued: string;
-  physician_name: string;
-  status: "Draft" | "Signed" | "Sent" | "Approved";
-  notes: string;
-  document_url: string;
-  created_at: string;
-  updated_at: string;
-};
 
 const LopDocumentSheet = () => {
   const [documents, setDocuments] = useState<LopDocument[]>(mockLopDocuments);
