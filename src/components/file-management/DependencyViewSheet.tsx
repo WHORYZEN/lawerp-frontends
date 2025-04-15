@@ -215,7 +215,7 @@ const DependencyViewSheet = () => {
                 <SelectValue placeholder="Filter by type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Types</SelectItem>
+                <SelectItem value="all">All Types</SelectItem>
                 <SelectItem value="LOP">LOP</SelectItem>
                 <SelectItem value="LOR">LOR</SelectItem>
                 <SelectItem value="Insurance">Insurance</SelectItem>
@@ -228,7 +228,7 @@ const DependencyViewSheet = () => {
                 <SelectValue placeholder="Filter by client" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Clients</SelectItem>
+                <SelectItem value="all">All Clients</SelectItem>
                 {uniqueClients.map((client) => (
                   <SelectItem key={client.id} value={client.id}>
                     {client.name}

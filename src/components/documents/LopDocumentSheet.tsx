@@ -5,7 +5,7 @@ import {
   TableBody, TableCell 
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Plus, FileText, Download, Pencil, Trash2, Search, Filter } from "lucide-react";
+import { Plus, FileText, Download, Pencil, Trash2, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import LopDocumentForm from "./LopDocumentForm";
@@ -153,7 +153,6 @@ const LopDocumentSheet = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="max-w-sm"
-                prefix={<Search className="h-4 w-4 text-gray-400" />}
               />
             </div>
             <Button onClick={() => setIsFormOpen(true)} className="w-full md:w-auto">

@@ -11,40 +11,6 @@ import { Input } from "@/components/ui/input";
 import LorDocumentForm from "./LorDocumentForm";
 import { useToast } from "@/hooks/use-toast";
 
-// Mock data for initial development
-const mockLorDocuments = [
-  {
-    id: "1",
-    client_id: "c1",
-    case_id: "case1",
-    client_name: "John Doe", // For display purposes
-    referred_to: "Orthopedic Specialists Inc.",
-    referral_reason: "Chronic back pain evaluation",
-    date_issued: "2023-03-10",
-    physician_name: "Dr. Sarah Johnson",
-    status: "Sent",
-    document_url: "/documents/lor1.pdf",
-    notes: "Urgent referral",
-    created_at: "2023-03-10T14:30:00Z",
-    updated_at: "2023-03-10T14:30:00Z",
-  },
-  {
-    id: "2",
-    client_id: "c2",
-    case_id: "case2",
-    client_name: "Jane Smith", // For display purposes
-    referred_to: "Neurological Assessment Center",
-    referral_reason: "Head trauma follow-up",
-    date_issued: "2023-04-15",
-    physician_name: "Dr. Michael Wong",
-    status: "Draft",
-    document_url: "/documents/lor2.pdf",
-    notes: "Second opinion needed",
-    created_at: "2023-04-15T10:15:00Z",
-    updated_at: "2023-04-15T10:15:00Z",
-  },
-];
-
 // Define the LOR document type
 type LorDocument = {
   id: string;
@@ -61,6 +27,40 @@ type LorDocument = {
   created_at: string;
   updated_at: string;
 };
+
+// Mock data for initial development
+const mockLorDocuments: LorDocument[] = [
+  {
+    id: "1",
+    client_id: "c1",
+    case_id: "case1",
+    client_name: "John Doe", // For display purposes
+    referred_to: "Orthopedic Specialists Inc.",
+    referral_reason: "Persistent back pain after accident",
+    date_issued: "2023-03-20",
+    physician_name: "Dr. Sarah Johnson",
+    status: "Sent",
+    document_url: "/documents/lor1.pdf",
+    notes: "Patient needs specialized evaluation",
+    created_at: "2023-03-20T14:30:00Z",
+    updated_at: "2023-03-20T14:30:00Z",
+  },
+  {
+    id: "2",
+    client_id: "c2",
+    case_id: "case2",
+    client_name: "Jane Smith", // For display purposes
+    referred_to: "Neurological Institute",
+    referral_reason: "Headaches following MVA",
+    date_issued: "2023-04-05",
+    physician_name: "Dr. Robert Chen",
+    status: "Draft",
+    document_url: "/documents/lor2.pdf",
+    notes: "Pending approval from insurance",
+    created_at: "2023-04-05T10:15:00Z",
+    updated_at: "2023-04-05T10:15:00Z",
+  },
+];
 
 const LorDocumentSheet = () => {
   const [documents, setDocuments] = useState<LorDocument[]>(mockLorDocuments);
@@ -154,7 +154,6 @@ const LorDocumentSheet = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="max-w-sm"
-                prefix={<Search className="h-4 w-4 text-gray-400" />}
               />
             </div>
             <Button onClick={() => setIsFormOpen(true)} className="w-full md:w-auto">
