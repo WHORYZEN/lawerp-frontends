@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Bell, Plus, Mail, User, Settings, Search, Menu, LogOut, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -67,7 +66,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             <div className="w-8 h-8 bg-lawfirm-light-blue rounded-md flex items-center justify-center text-white">
               LYZ
             </div>
-            <span className="hidden md:inline-block">LYZ Law Firm</span>
+            <span className="hidden md:inline-block">Name Law EMR - LYZ Law Firm</span>
           </div>
         </div>
         
@@ -85,7 +84,6 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
         </div>
         
         <div className="flex items-center gap-2 md:gap-4">
-          {/* Quick Actions Button */}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="text-lawfirm-neutral-gray relative">
@@ -114,7 +112,6 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             </SheetContent>
           </Sheet>
 
-          {/* Notifications Button */}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="text-lawfirm-neutral-gray relative">
@@ -162,7 +159,6 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             </SheetContent>
           </Sheet>
 
-          {/* Messages Button */}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="text-lawfirm-neutral-gray relative">
@@ -215,7 +211,6 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             </SheetContent>
           </Sheet>
 
-          {/* Settings Button */}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="text-lawfirm-neutral-gray">
@@ -294,7 +289,6 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
         </div>
       </div>
       
-      {/* Mobile search */}
       <div className="md:hidden px-4 pb-4">
         <div className="relative w-full">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />

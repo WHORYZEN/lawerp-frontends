@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -17,7 +16,6 @@ const Login = () => {
   const { toast } = useToast();
   const { login, isAuthenticated } = useAuth();
 
-  // If already authenticated, redirect to dashboard
   if (isAuthenticated) {
     return <Navigate to="/dashboard" />;
   }
@@ -26,7 +24,6 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simple validation
     if (!email || !password) {
       toast({
         title: "Error",
@@ -58,7 +55,6 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     setIsLoading(true);
     try {
-      // For demo purposes, we'll just log in with a predefined Google account
       await login("google@example.com", "google-auth");
       toast({
         title: "Success",
@@ -85,7 +81,7 @@ const Login = () => {
               LYZ
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold text-center">LYZ Law Firm</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">Name Law EMR - LYZ Law Firm</CardTitle>
           <CardDescription className="text-center">
             Enter your credentials to access your dashboard
           </CardDescription>
