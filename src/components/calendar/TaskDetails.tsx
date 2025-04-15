@@ -63,6 +63,8 @@ const TaskDetails = ({ task, isOpen, onClose, onDelete, onStatusChange }: TaskDe
     }
   };
 
+  if (!isOpen) return null;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">

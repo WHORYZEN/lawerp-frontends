@@ -70,7 +70,7 @@ const CalendarManagement = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-        <Tabs defaultValue="calendar" className="w-full" onValueChange={setActiveTab}>
+        <Tabs value={activeTab} className="w-full" onValueChange={setActiveTab}>
           <TabsList className="grid w-full max-w-md grid-cols-2">
             <TabsTrigger value="calendar">Calendar</TabsTrigger>
             <TabsTrigger value="tasks">Tasks</TabsTrigger>

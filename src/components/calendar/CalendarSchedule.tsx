@@ -190,8 +190,8 @@ const CalendarSchedule = ({ onDateSelect }: CalendarScheduleProps) => {
               onMonthChange={setCurrentDate}
               className="rounded-md border p-3"
               modifiers={{
-                event: dates => dates.some(date => 
-                  events.some(event => isSameDay(new Date(event.start), date))
+                event: (date) => events.some(event => 
+                  isSameDay(new Date(event.start), date)
                 )
               }}
               modifiersClassNames={{

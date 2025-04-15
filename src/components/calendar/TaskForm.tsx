@@ -68,6 +68,8 @@ const TaskForm = ({ isOpen, onClose, onSubmit, isLoading = false }: TaskFormProp
     onSubmit(task);
   };
 
+  if (!isOpen) return null;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">

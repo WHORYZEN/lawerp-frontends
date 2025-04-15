@@ -84,6 +84,8 @@ const EventForm = ({ isOpen, onClose, onSubmit, isLoading = false, initialDate }
     onSubmit(event);
   };
 
+  if (!isOpen) return null;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">

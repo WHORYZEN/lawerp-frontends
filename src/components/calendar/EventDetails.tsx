@@ -23,6 +23,17 @@ const EventDetails = ({ event, isOpen, onClose, onDelete }: EventDetailsProps) =
     return format(new Date(date), "EEEE, MMMM d, yyyy");
   };
 
+  // Helper function to check if two dates are the same day
+  function isSameDay(date1: Date, date2: Date): boolean {
+    return (
+      date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate()
+    );
+  }
+
+  if (!isOpen) return null;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
@@ -132,14 +143,5 @@ const EventDetails = ({ event, isOpen, onClose, onDelete }: EventDetailsProps) =
     </Dialog>
   );
 };
-
-// Helper function to check if two dates are the same day
-function isSameDay(date1: Date, date2: Date): boolean {
-  return (
-    date1.getFullYear() === date2.getFullYear() &&
-    date1.getMonth() === date2.getMonth() &&
-    date1.getDate() === date2.getDate()
-  );
-}
 
 export default EventDetails;
