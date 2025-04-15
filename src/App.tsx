@@ -16,6 +16,7 @@ import Documents from "./pages/Documents";
 import Files from "./pages/Files";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import Calendar from "./pages/Calendar";
 
 // Create a new QueryClient instance
 const queryClient = new QueryClient();
@@ -138,9 +139,24 @@ function App() {
                 } />
                 
                 {/* Calendar & Tasks */}
-                <Route path="/calendar/*" element={
+                <Route path="/calendar" element={
                   <ProtectedRoute>
-                    <NotFound customMessage="Calendar & Tasks page is under development" />
+                    <Calendar />
+                  </ProtectedRoute>
+                } />
+                <Route path="/calendar/task/create" element={
+                  <ProtectedRoute>
+                    <Calendar />
+                  </ProtectedRoute>
+                } />
+                <Route path="/calendar/tasks" element={
+                  <ProtectedRoute>
+                    <Calendar />
+                  </ProtectedRoute>
+                } />
+                <Route path="/calendar/sync" element={
+                  <ProtectedRoute>
+                    <NotFound customMessage="Calendar Sync page is under development" />
                   </ProtectedRoute>
                 } />
                 
