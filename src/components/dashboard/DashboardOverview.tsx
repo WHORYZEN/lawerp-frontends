@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import BillingTable from "../client-billing/BillingTable";
 import LienCalculator from "../calculator/LienCalculator";
+import ClientAnalyticsChart from "./ClientAnalyticsChart";
 
 const DashboardOverview = () => {
   const [showCalculator, setShowCalculator] = useState(false);
@@ -16,7 +17,7 @@ const DashboardOverview = () => {
         <div>
           <h1 className="text-2xl font-bold">Client Billings</h1>
           <p className="text-muted-foreground mt-1">
-            Anybody clicks on home page menu — same items appear here: Clients, Billing, Documents, Reports, and AT Lien Reduction Calculator.
+            Manage client billing, view analytics, and access important documents.
           </p>
         </div>
         <Button
@@ -32,6 +33,9 @@ const DashboardOverview = () => {
           />
         </Button>
       </div>
+
+      {/* Client Analytics Chart */}
+      <ClientAnalyticsChart />
 
       {showCalculator && (
         <Card>
