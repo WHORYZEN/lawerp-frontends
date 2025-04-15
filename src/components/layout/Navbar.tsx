@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Bell, Plus, Mail, User, Settings, Search, Menu, LogOut, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -68,7 +69,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             </div>
             <div className="flex flex-col">
               <span className="hidden md:inline-block leading-tight">LYZ Law Firm</span>
-              <span className="hidden md:inline-block text-xs text-gray-500">LAW EMR</span>
+              <span className="hidden md:inline-block text-xs text-gray-500">LAW EMR 500</span>
             </div>
           </div>
         </div>
