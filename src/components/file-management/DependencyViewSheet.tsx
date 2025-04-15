@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from "react";
 import { 
   Table, TableHeader, TableRow, TableHead, 
@@ -114,8 +113,8 @@ const mockDependencyRecords: DependencyRecord[] = [
 const DependencyViewSheet = () => {
   const [records, setRecords] = useState<DependencyRecord[]>(mockDependencyRecords);
   const [searchTerm, setSearchTerm] = useState("");
-  const [typeFilter, setTypeFilter] = useState<string>("");
-  const [clientFilter, setClientFilter] = useState<string>("");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [clientFilter, setClientFilter] = useState<string>("all");
   const [selectedRecord, setSelectedRecord] = useState<DependencyRecord | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   
@@ -142,8 +141,8 @@ const DependencyViewSheet = () => {
           record.document_title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           record.case_number.toLowerCase().includes(searchTerm.toLowerCase());
         
-        const matchesTypeFilter = !typeFilter || record.type === typeFilter;
-        const matchesClientFilter = !clientFilter || record.client_id === clientFilter;
+        const matchesTypeFilter = typeFilter === "all" || record.type === typeFilter;
+        const matchesClientFilter = clientFilter === "all" || record.client_id === clientFilter;
         
         return matchesSearch && matchesTypeFilter && matchesClientFilter;
       }
@@ -216,7 +215,7 @@ const DependencyViewSheet = () => {
                 <SelectValue placeholder="Filter by type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Types</SelectItem>
+                <SelectItem value="all">All Types</SelectItem>
                 <SelectItem value="LOP">LOP</SelectItem>
                 <SelectItem value="LOR">LOR</SelectItem>
                 <SelectItem value="Insurance">Insurance</SelectItem>
@@ -229,7 +228,7 @@ const DependencyViewSheet = () => {
                 <SelectValue placeholder="Filter by client" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Clients</SelectItem>
+                <SelectItem value="all">All Clients</SelectItem>
                 {uniqueClients.map((client) => (
                   <SelectItem key={client.id} value={client.id}>
                     {client.name}
@@ -246,7 +245,7 @@ const DependencyViewSheet = () => {
           <FileText className="h-12 w-12 mx-auto text-gray-300" />
           <h3 className="mt-2 text-sm font-medium">No Documents Found</h3>
           <p className="mt-1 text-sm text-gray-500">
-            {searchTerm || typeFilter || clientFilter ? 
+            {searchTerm || typeFilter !== "all" || clientFilter !== "all" ? 
               "No documents match your search criteria." : 
               "There are no documents in the system yet."}
           </p>
