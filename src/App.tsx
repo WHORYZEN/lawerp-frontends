@@ -32,9 +32,9 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <HelmetProvider>
-        <AuthProvider>
-          <UserProvider>
-            <Router>
+        <Router>
+          <AuthProvider>
+            <UserProvider>
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/login" element={<Login />} />
@@ -54,9 +54,9 @@ function App() {
                 <Route path="*" element={<NotFound />} />
               </Routes>
               <Toaster />
-            </Router>
-          </UserProvider>
-        </AuthProvider>
+            </UserProvider>
+          </AuthProvider>
+        </Router>
       </HelmetProvider>
     </QueryClientProvider>
   );
