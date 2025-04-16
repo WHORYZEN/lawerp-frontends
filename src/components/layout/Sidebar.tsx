@@ -496,13 +496,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               />
               
               <NavItem
-                icon={<FileText className="h-5 w-5 text-gray-600" />}
-                label="Privacy Policy"
-                to="/settings?tab=security&section=privacy"
-                active={pathname === "/settings" && urlParams.get('tab') === 'security' && urlParams.get('section') === 'privacy'}
-              />
-              
-              <NavItem
                 icon={<LogOut className="h-5 w-5 text-red-500" />}
                 label="Sign Out"
                 onClick={logout}
