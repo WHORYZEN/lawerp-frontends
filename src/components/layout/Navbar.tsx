@@ -33,14 +33,12 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   const { logout } = useAuth();
   const { toast } = useToast();
 
-  // Notification data
   const notifications = [
     { id: 1, title: "New client added", description: "James Peterson was added as a client", time: "10 min ago", unread: true },
     { id: 2, title: "Document update", description: "Insurance document for Maria Rodriguez was updated", time: "30 min ago", unread: true },
     { id: 3, title: "Billing reminder", description: "Client billing for May is due tomorrow", time: "1 hour ago", unread: false },
   ];
 
-  // Messages data
   const messages = [
     { id: 1, from: "Robert Johnson", message: "Can you send me the latest case details?", time: "15 min ago", unread: true },
     { id: 2, from: "Sarah Williams", message: "Thanks for the update on my case.", time: "1 hour ago", unread: true },
@@ -82,7 +80,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             <Input
               type="search"
               placeholder="Search cases, clients, documents..."
-              className="w-full bg-white/10 text-white placeholder-white/50 pl-8 md:w-[300px] lg:w-[400px] border-white/20 focus:border-white/40"
+              className="w-full bg-white/20 text-white placeholder-white/50 pl-8 md:w-[300px] lg:w-[400px] border-white/30 focus:border-white/40 hover:bg-white/30"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
             />
@@ -90,7 +88,6 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
         </div>
         
         <div className="flex items-center gap-2 md:gap-4">
-          {/* Quick Actions */}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="text-white hover:bg-[#9F5AE0]">
@@ -119,7 +116,6 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             </SheetContent>
           </Sheet>
 
-          {/* Notifications */}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="text-white hover:bg-[#9F5AE0] relative">
@@ -167,7 +163,6 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             </SheetContent>
           </Sheet>
 
-          {/* Messages */}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="text-white hover:bg-[#9F5AE0] relative">
@@ -220,7 +215,6 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             </SheetContent>
           </Sheet>
 
-          {/* Settings */}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="text-white hover:bg-[#9F5AE0]">
@@ -269,7 +263,6 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             </SheetContent>
           </Sheet>
           
-          {/* User Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-9 w-9 rounded-full hover:bg-[#9F5AE0]">
@@ -300,14 +293,13 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
         </div>
       </div>
       
-      {/* Mobile Search */}
       <div className="md:hidden px-4 pb-4">
         <div className="relative w-full">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-white/70" />
           <Input
             type="search"
             placeholder="Search..."
-            className="w-full pl-8 bg-white/10 text-white placeholder-white/50 border-white/20 focus:border-white/40"
+            className="w-full pl-8 bg-white/20 text-white placeholder-white/50 border-white/30 focus:border-white/40 hover:bg-white/30"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />
