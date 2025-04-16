@@ -489,13 +489,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               />
               
               <NavItem
-                icon={<Shield className="h-5 w-5 text-gray-600" />}
-                label="Security"
-                to="/settings?tab=security"
-                active={pathname === "/settings" && urlParams.get('tab') === 'security'}
-              />
-              
-              <NavItem
                 icon={<LogOut className="h-5 w-5 text-red-500" />}
                 label="Sign Out"
                 onClick={logout}
