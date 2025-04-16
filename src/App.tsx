@@ -23,6 +23,7 @@ import Calendar from './pages/Calendar';
 import Messages from './pages/Messages';
 import Admin from './pages/Admin';
 import Settings from './pages/Settings';
+import Depositions from './pages/Depositions';
 import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
@@ -51,6 +52,7 @@ function App() {
                 <Route path="/messages/*" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
                 <Route path="/admin/*" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
                 <Route path="/settings/*" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+                <Route path="/depositions/*" element={<ProtectedRoute><Depositions /></ProtectedRoute>} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
               <Toaster />

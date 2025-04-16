@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -31,7 +32,7 @@ import {
   Scale,
   Mail,
   LogOut,
-  Shield
+  File
 } from "lucide-react";
 
 interface SidebarProps {
@@ -251,6 +252,35 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 label="Assigned Staff" 
                 to="/cases?tab=staff" 
                 active={pathname === "/cases" && caseTab === "staff"} 
+              />
+            </NavItem>
+
+            <NavItem
+              icon={<File className="h-5 w-5" />}
+              label="Depositions"
+              to="/depositions"
+              active={pathname === "/depositions" || pathname.startsWith("/depositions/")}
+              hasSubmenu
+            >
+              <SubNavItem 
+                label="All Depositions" 
+                to="/depositions" 
+                active={pathname === "/depositions" && !urlParams.has('tab')} 
+              />
+              <SubNavItem 
+                label="Create Deposition" 
+                to="/depositions/create" 
+                active={pathname === "/depositions/create"} 
+              />
+              <SubNavItem 
+                label="Scheduled" 
+                to="/depositions?status=scheduled" 
+                active={pathname === "/depositions" && urlParams.get('status') === "scheduled"} 
+              />
+              <SubNavItem 
+                label="Completed" 
+                to="/depositions?status=completed" 
+                active={pathname === "/depositions" && urlParams.get('status') === "completed"} 
               />
             </NavItem>
 
