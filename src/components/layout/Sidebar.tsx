@@ -485,7 +485,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 icon={<Settings className="h-5 w-5 text-gray-600" />}
                 label="Settings"
                 to="/settings"
-                active={pathname === "/settings"}
+                active={pathname === "/settings" && !urlParams.has('tab')}
               />
               
               <NavItem
@@ -493,6 +493,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 label="Security"
                 to="/settings?tab=security"
                 active={pathname === "/settings" && urlParams.get('tab') === 'security'}
+              />
+              
+              <NavItem
+                icon={<FileText className="h-5 w-5 text-gray-600" />}
+                label="Privacy Policy"
+                to="/settings?tab=security&section=privacy"
+                active={pathname === "/settings" && urlParams.get('tab') === 'security' && urlParams.get('section') === 'privacy'}
               />
               
               <NavItem

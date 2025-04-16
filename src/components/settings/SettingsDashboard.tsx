@@ -11,15 +11,25 @@ import NotificationSettings from './NotificationSettings';
 import SecuritySettings from './SecuritySettings';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUser } from '@/contexts/UserContext';
+import { useLocation } from 'react-router-dom';
 
 const SettingsDashboard = () => {
-  const [activeTab, setActiveTab] = useState('profile');
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const tabFromUrl = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabFromUrl || 'profile');
   const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
   const [isSettingsLoading, setIsSettingsLoading] = useState(true);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const { toast } = useToast();
   const { logout } = useAuth();
   const { userProfile, isLoading: isProfileLoading, updateUserProfile } = useUser();
+
+  useEffect(() => {
+    // Update active tab when URL changes
+    const newTab = tabFromUrl || 'profile';
+    setActiveTab(newTab);
+  }, [tabFromUrl]);
 
   useEffect(() => {
     const checkScreenSize = () => {
