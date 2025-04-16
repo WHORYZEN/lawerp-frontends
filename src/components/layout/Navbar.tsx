@@ -80,7 +80,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             <Input
               type="search"
               placeholder="Search cases, clients, documents..."
-              className="w-full bg-white/20 text-white placeholder-white/50 pl-8 md:w-[300px] lg:w-[400px] border-white/30 focus:border-white/40 hover:bg-white/30"
+              className="w-full bg-white/20 text-white placeholder:text-white pl-8 md:w-[300px] lg:w-[400px] border-white/30 focus:border-white/40 hover:bg-white/30"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
             />
@@ -299,7 +299,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
           <Input
             type="search"
             placeholder="Search..."
-            className="w-full pl-8 bg-white/20 text-white placeholder-white/50 border-white/30 focus:border-white/40 hover:bg-white/30"
+            className="w-full pl-8 bg-white/20 text-white placeholder:text-white border-white/30 focus:border-white/40 hover:bg-white/30"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />
