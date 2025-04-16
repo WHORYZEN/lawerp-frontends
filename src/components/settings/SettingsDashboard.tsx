@@ -16,8 +16,24 @@ const SettingsDashboard = () => {
   const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
   const { toast } = useToast();
   const { logout } = useAuth();
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsSmallScreen(window.innerWidth < 640);
+    };
+    
+    // Set initial value
+    checkScreenSize();
+    
+    // Add event listener for window resize
+    window.addEventListener('resize', checkScreenSize);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -94,22 +110,22 @@ const SettingsDashboard = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <Card>
+    <div className="container p-4 overflow-x-auto">
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>Law EMR Settings</CardTitle>
           <CardDescription>Manage your account settings and preferences</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full max-w-md grid-cols-4">
+            <TabsList className={`${isSmallScreen ? 'flex flex-wrap' : 'grid grid-cols-4'} w-full max-w-md`}>
               <TabsTrigger value="profile">Profile</TabsTrigger>
               <TabsTrigger value="appearance">Appearance</TabsTrigger>
               <TabsTrigger value="notifications">Notifications</TabsTrigger>
               <TabsTrigger value="security">Security</TabsTrigger>
             </TabsList>
             
-            <div className="mt-4">
+            <div className="mt-4 min-w-full">
               <TabsContent value="profile" className="m-0">
                 <ProfileSettings 
                   profile={userProfile} 
