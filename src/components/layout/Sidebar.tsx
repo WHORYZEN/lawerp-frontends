@@ -1,8 +1,11 @@
+
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUser } from "@/contexts/UserContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Home,
   FolderOpen,
@@ -158,6 +161,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const messagesTab = urlParams.get('tab');
   const adminTab = urlParams.get('tab');
   const { logout } = useAuth();
+  const { userProfile, isLoading } = useUser();
 
   return (
     <>
@@ -501,12 +505,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             
             <div className="px-4 py-3 border-t border-gray-200">
               <div className="flex items-center">
-                <div className="w-8 h-8 bg-lawfirm-light-blue rounded-full flex items-center justify-center text-white text-xs font-bold">
-                  JD
-                </div>
+                <Avatar className="w-8 h-8 rounded-full">
+                  <AvatarImage src={userProfile?.avatar || `https://i.pravatar.cc/150?u=${userProfile?.userId}`} />
+                  <AvatarFallback className="bg-lawfirm-light-blue text-white text-xs font-bold">
+                    {userProfile?.name ? userProfile.name.slice(0, 2).toUpperCase() : 'US'}
+                  </AvatarFallback>
+                </Avatar>
                 <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-700">John Doe</p>
-                  <p className="text-xs text-gray-500">john.doe@example.com</p>
+                  <p className="text-sm font-medium text-gray-700">{userProfile?.name || 'User Name'}</p>
+                  <p className="text-xs text-gray-500">{userProfile?.email || `${userProfile?.userId}@example.com`}</p>
                 </div>
               </div>
             </div>

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { UserSettings, UserProfile } from '@/backend/settings-api';
+import { UserSettings } from '@/backend/settings-api';
 import { settingsApi } from '@/backend';
 import { useToast } from "@/hooks/use-toast";
 import ProfileSettings from './ProfileSettings';
@@ -10,15 +10,16 @@ import AppearanceSettings from './AppearanceSettings';
 import NotificationSettings from './NotificationSettings';
 import SecuritySettings from './SecuritySettings';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUser } from '@/contexts/UserContext';
 
 const SettingsDashboard = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isSettingsLoading, setIsSettingsLoading] = useState(true);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const { toast } = useToast();
   const { logout } = useAuth();
+  const { userProfile, isLoading: isProfileLoading, updateUserProfile } = useUser();
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -36,8 +37,8 @@ const SettingsDashboard = () => {
   }, []);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      setIsLoading(true);
+    const fetchUserSettings = async () => {
+      setIsSettingsLoading(true);
       try {
         // Using user1 as the default user ID for demo
         const userId = 'user1';
@@ -46,46 +47,20 @@ const SettingsDashboard = () => {
         const settings = await settingsApi.getUserSettings(userId);
         setUserSettings(settings);
         
-        // Fetch user profile
-        const profile = await settingsApi.getUserProfile(userId);
-        setUserProfile(profile);
-        
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error('Error fetching user settings:', error);
         toast({
           title: "Error",
           description: "Failed to load user settings. Please try again.",
           variant: "destructive",
         });
       } finally {
-        setIsLoading(false);
+        setIsSettingsLoading(false);
       }
     };
 
-    fetchUserData();
+    fetchUserSettings();
   }, [toast]);
-
-  const handleUpdateProfile = async (updatedProfile: Partial<UserProfile>) => {
-    if (!userProfile) return;
-    
-    try {
-      const updated = await settingsApi.updateUserProfile(userProfile.userId, updatedProfile);
-      if (updated) {
-        setUserProfile(updated);
-        toast({
-          title: "Success",
-          description: "Profile updated successfully.",
-        });
-      }
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update profile. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
 
   const handleUpdateSettings = async (updatedSettings: Partial<UserSettings>) => {
     if (!userSettings) return;
@@ -113,7 +88,7 @@ const SettingsDashboard = () => {
     <div className="container p-4 overflow-x-auto">
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>Law EMR Settings</CardTitle>
+          <CardTitle>LAW ERP 500 Settings</CardTitle>
           <CardDescription>Manage your account settings and preferences</CardDescription>
         </CardHeader>
         <CardContent>
@@ -129,15 +104,15 @@ const SettingsDashboard = () => {
               <TabsContent value="profile" className="m-0">
                 <ProfileSettings 
                   profile={userProfile} 
-                  isLoading={isLoading} 
-                  onUpdate={handleUpdateProfile}
+                  isLoading={isProfileLoading} 
+                  onUpdate={updateUserProfile}
                 />
               </TabsContent>
               
               <TabsContent value="appearance" className="m-0">
                 <AppearanceSettings 
                   settings={userSettings} 
-                  isLoading={isLoading} 
+                  isLoading={isSettingsLoading} 
                   onUpdate={handleUpdateSettings}
                 />
               </TabsContent>
@@ -145,7 +120,7 @@ const SettingsDashboard = () => {
               <TabsContent value="notifications" className="m-0">
                 <NotificationSettings 
                   settings={userSettings} 
-                  isLoading={isLoading} 
+                  isLoading={isSettingsLoading} 
                   onUpdate={handleUpdateSettings}
                 />
               </TabsContent>
@@ -153,7 +128,7 @@ const SettingsDashboard = () => {
               <TabsContent value="security" className="m-0">
                 <SecuritySettings 
                   onLogout={logout} 
-                  isLoading={isLoading}
+                  isLoading={isSettingsLoading}
                 />
               </TabsContent>
             </div>
