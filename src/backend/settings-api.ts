@@ -1,4 +1,3 @@
-
 import { v4 as uuidv4 } from 'uuid';
 
 // Settings types
@@ -30,6 +29,26 @@ export interface UserProfile {
   title?: string;
   barNumber?: string;
   updatedAt: string;
+}
+
+// Privacy Policy types
+export interface PrivacyPolicySection {
+  title: string;
+  content: string;
+  bulletPoints?: string[];
+}
+
+export interface PrivacyPolicyDetails {
+  id: string;
+  lastUpdated: string;
+  sections: PrivacyPolicySection[];
+  contactInfo: {
+    companyName: string;
+    address: string;
+    cityState: string;
+    email: string;
+    phone: string;
+  };
 }
 
 // Mock data for user settings
@@ -146,6 +165,60 @@ const mockUserProfiles: UserProfile[] = [
   }
 ];
 
+// Mock data for privacy policy
+const mockPrivacyPolicy: PrivacyPolicyDetails = {
+  id: 'privacy1',
+  lastUpdated: 'April 16, 2025',
+  sections: [
+    {
+      title: '1. Introduction',
+      content: 'Welcome to LAW ERP 500. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our law firm practice management software. Please read this privacy policy carefully. If you do not agree with the terms of this privacy policy, please do not access the application.'
+    },
+    {
+      title: '2. Information We Collect',
+      content: 'We collect information that you provide directly to us when you register for an account, create or modify your profile, set preferences, or make purchases through the platform. This includes:',
+      bulletPoints: [
+        'Personal information such as your name, email address, phone number, and physical address',
+        'Professional information such as your bar number, title, and practice areas',
+        'Client information that you enter into the system',
+        'Case details, documents, and related information',
+        'Billing and payment information'
+      ]
+    },
+    {
+      title: '3. How We Use Your Information',
+      content: 'We use the information we collect or receive:',
+      bulletPoints: [
+        'To facilitate account creation and the login process',
+        'To provide, maintain, and improve our services',
+        'To process transactions and send related information',
+        'To send administrative information including confirmations, technical notices, updates, security alerts, and support messages',
+        'To respond to your comments, questions, and requests',
+        'To protect our services and users from fraudulent, unauthorized, or illegal activity'
+      ]
+    },
+    {
+      title: '4. Security of Your Information',
+      content: 'We use administrative, technical, and physical security measures to help protect your personal information. While we have taken reasonable steps to secure the personal information you provide to us, please be aware that despite our efforts, no security measures are perfect or impenetrable, and no method of data transmission can be guaranteed against any interception or other type of misuse.'
+    },
+    {
+      title: '5. Your Choices',
+      content: 'You may at any time review or change the information in your account or terminate your account by:',
+      bulletPoints: [
+        'Logging into your account settings and updating your information',
+        'Contacting us using the contact information provided below'
+      ]
+    }
+  ],
+  contactInfo: {
+    companyName: 'LAW ERP 500',
+    address: '123 Legal Avenue',
+    cityState: 'Legal City, LC 12345',
+    email: 'privacy@lawerp500.com',
+    phone: '(555) 123-4567'
+  }
+};
+
 // Settings API
 export const settingsApi = {
   // User Settings Methods
@@ -196,5 +269,21 @@ export const settingsApi = {
     };
     mockUserProfiles.push(newProfile);
     return newProfile;
+  },
+
+  // Privacy Policy Methods
+  getPrivacyPolicyDetails: async (): Promise<PrivacyPolicyDetails> => {
+    return mockPrivacyPolicy;
+  },
+
+  updatePrivacyPolicyDetails: async (policyData: Partial<PrivacyPolicyDetails>): Promise<PrivacyPolicyDetails> => {
+    Object.assign(mockPrivacyPolicy, policyData, { 
+      lastUpdated: new Date().toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      })
+    });
+    return mockPrivacyPolicy;
   }
 };

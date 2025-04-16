@@ -2,13 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { UserSettings } from '@/backend/settings-api';
+import { UserSettings, PrivacyPolicyDetails } from '@/backend/settings-api';
 import { settingsApi } from '@/backend';
 import { useToast } from "@/hooks/use-toast";
 import ProfileSettings from './ProfileSettings';
 import AppearanceSettings from './AppearanceSettings';
 import NotificationSettings from './NotificationSettings';
 import SecuritySettings from './SecuritySettings';
+import PrivacySettings from './PrivacySettings';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUser } from '@/contexts/UserContext';
 import { useLocation } from 'react-router-dom';
@@ -21,6 +22,7 @@ const SettingsDashboard = () => {
   const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
   const [isSettingsLoading, setIsSettingsLoading] = useState(true);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [privacyPolicyDetails, setPrivacyPolicyDetails] = useState<PrivacyPolicyDetails | null>(null);
   const { toast } = useToast();
   const { logout } = useAuth();
   const { userProfile, isLoading: isProfileLoading, updateUserProfile } = useUser();
@@ -56,6 +58,10 @@ const SettingsDashboard = () => {
         // Fetch user settings
         const settings = await settingsApi.getUserSettings(userId);
         setUserSettings(settings);
+        
+        // Fetch privacy policy details
+        const privacyPolicy = await settingsApi.getPrivacyPolicyDetails();
+        setPrivacyPolicyDetails(privacyPolicy);
         
       } catch (error) {
         console.error('Error fetching user settings:', error);
@@ -103,11 +109,12 @@ const SettingsDashboard = () => {
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className={`${isSmallScreen ? 'flex flex-wrap' : 'grid grid-cols-4'} w-full max-w-md`}>
+            <TabsList className={`${isSmallScreen ? 'flex flex-wrap' : 'grid grid-cols-5'} w-full max-w-4xl`}>
               <TabsTrigger value="profile">Profile</TabsTrigger>
               <TabsTrigger value="appearance">Appearance</TabsTrigger>
               <TabsTrigger value="notifications">Notifications</TabsTrigger>
               <TabsTrigger value="security">Security</TabsTrigger>
+              <TabsTrigger value="privacy">Privacy</TabsTrigger>
             </TabsList>
             
             <div className="mt-4 min-w-full">
@@ -139,6 +146,13 @@ const SettingsDashboard = () => {
                 <SecuritySettings 
                   onLogout={logout} 
                   isLoading={isSettingsLoading}
+                />
+              </TabsContent>
+              
+              <TabsContent value="privacy" className="m-0">
+                <PrivacySettings 
+                  isLoading={isSettingsLoading}
+                  privacyPolicyDetails={privacyPolicyDetails}
                 />
               </TabsContent>
             </div>
