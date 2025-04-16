@@ -5,6 +5,7 @@ import { adminApi } from './admin-api';
 import { billingApi } from './billing-api';
 import { settingsApi } from './settings-api';
 import { medicalApi } from './medical-api';
+import { depositionsApi } from '../lib/api/depositions-api';
 
 // Export all backend APIs
 export {
@@ -12,5 +13,6 @@ export {
   adminApi,
   billingApi,
   settingsApi,
-  medicalApi
+  medicalApi,
+  depositionsApi
 };
