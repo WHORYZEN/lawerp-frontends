@@ -22,6 +22,7 @@ export interface UserProfile {
   id: string;
   userId: string;
   name: string;
+  email?: string;
   avatar?: string;
   phone?: string;
   address?: string;
@@ -97,6 +98,7 @@ const mockUserProfiles: UserProfile[] = [
     id: 'profile1',
     userId: 'user1',
     name: 'John Doe',
+    email: 'john.doe@example.com',
     avatar: 'https://i.pravatar.cc/150?u=user1',
     phone: '(555) 123-4567',
     address: '123 Main St, City, ST 12345',
@@ -109,6 +111,7 @@ const mockUserProfiles: UserProfile[] = [
     id: 'profile2',
     userId: 'user2',
     name: 'Jane Smith',
+    email: 'jane.smith@example.com',
     avatar: 'https://i.pravatar.cc/150?u=user2',
     phone: '(555) 234-5678',
     address: '456 Oak St, City, ST 12345',
@@ -121,6 +124,7 @@ const mockUserProfiles: UserProfile[] = [
     id: 'profile3',
     userId: 'user3',
     name: 'Michael Johnson',
+    email: 'michael.johnson@example.com',
     avatar: 'https://i.pravatar.cc/150?u=user3',
     phone: '(555) 345-6789',
     address: '789 Pine St, City, ST 12345',
@@ -132,6 +136,7 @@ const mockUserProfiles: UserProfile[] = [
     id: 'profile4',
     userId: 'user4',
     name: 'Sarah Williams',
+    email: 'sarah.williams@example.com',
     avatar: 'https://i.pravatar.cc/150?u=user4',
     phone: '(555) 456-7890',
     address: '101 Elm St, City, ST 12345',

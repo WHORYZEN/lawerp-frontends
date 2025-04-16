@@ -136,7 +136,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ profile, isLoading, o
               <div className="space-y-1">
                 <h3 className="text-xl font-semibold">{profile?.name || 'User Name'}</h3>
                 <p className="text-muted-foreground">{profile?.title || 'No title set'}</p>
-                <p className="text-sm text-muted-foreground">{profile?.email || profile?.userId}@example.com</p>
+                <p className="text-sm text-muted-foreground">{profile?.email || `${profile?.userId}@example.com`}</p>
               </div>
             </div>
             <Button onClick={() => setIsEditing(true)} variant="outline" size="sm">
