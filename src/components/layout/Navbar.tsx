@@ -1,6 +1,5 @@
-
 import React, { useState } from "react";
-import { Bell, Plus, Mail, User, Settings, Search, Menu, LogOut, X } from "lucide-react";
+import { Bell, Plus, Mail, User, Settings, Search, Menu, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -56,31 +55,34 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      <div className="flex h-16 items-center justify-between px-4 md:px-6">
+    <header 
+      className="sticky top-0 z-50 w-full border-b border-border/40 bg-[#8A2BE2] backdrop-blur supports-[backdrop-filter]:bg-[#8A2BE2]/60"
+      style={{ backgroundColor: '#8A2BE2' }}
+    >
+      <div className="flex h-16 items-center justify-between px-4 md:px-6 text-white">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={toggleSidebar} className="md:hidden">
-            <Menu className="h-5 w-5" />
+          <Button variant="ghost" size="icon" onClick={toggleSidebar} className="md:hidden text-white hover:bg-[#9F5AE0]">
+            <Menu className="h-5 w-5 text-white" />
             <span className="sr-only">Toggle menu</span>
           </Button>
           <div className="font-semibold text-xl flex items-center gap-2">
-            <div className="w-8 h-8 bg-lawfirm-light-blue rounded-md flex items-center justify-center text-white">
+            <div className="w-8 h-8 bg-white/20 rounded-md flex items-center justify-center text-white">
               LYZ
             </div>
             <div className="flex flex-col">
-              <span className="hidden md:inline-block leading-tight">LYZ LAW FIRM</span>
-              <span className="hidden md:inline-block text-xs text-gray-500">LAW EMR 500</span>
+              <span className="hidden md:inline-block leading-tight text-white">LYZ LAW FIRM</span>
+              <span className="hidden md:inline-block text-xs text-white/70">LAW EMR 500</span>
             </div>
           </div>
         </div>
         
         <div className="hidden md:flex flex-1 mx-8">
           <div className="relative w-full max-w-md">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-white/70" />
             <Input
               type="search"
               placeholder="Search cases, clients, documents..."
-              className="w-full bg-background pl-8 md:w-[300px] lg:w-[400px]"
+              className="w-full bg-white/10 text-white placeholder-white/50 pl-8 md:w-[300px] lg:w-[400px] border-white/20 focus:border-white/40"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
             />
@@ -88,10 +90,11 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
         </div>
         
         <div className="flex items-center gap-2 md:gap-4">
+          {/* Quick Actions */}
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-lawfirm-neutral-gray relative">
-                <Plus className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="text-white hover:bg-[#9F5AE0]">
+                <Plus className="h-5 w-5 text-white" />
                 <span className="sr-only">Quick Actions</span>
               </Button>
             </SheetTrigger>
@@ -116,10 +119,11 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             </SheetContent>
           </Sheet>
 
+          {/* Notifications */}
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-lawfirm-neutral-gray relative">
-                <Bell className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="text-white hover:bg-[#9F5AE0] relative">
+                <Bell className="h-5 w-5 text-white" />
                 {notifications.filter(n => n.unread).length > 0 && (
                   <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px]">
                     {notifications.filter(n => n.unread).length}
@@ -163,10 +167,11 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             </SheetContent>
           </Sheet>
 
+          {/* Messages */}
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-lawfirm-neutral-gray relative">
-                <Mail className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="text-white hover:bg-[#9F5AE0] relative">
+                <Mail className="h-5 w-5 text-white" />
                 {messages.filter(m => m.unread).length > 0 && (
                   <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px]">
                     {messages.filter(m => m.unread).length}
@@ -215,10 +220,11 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             </SheetContent>
           </Sheet>
 
+          {/* Settings */}
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-lawfirm-neutral-gray">
-                <Settings className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="text-white hover:bg-[#9F5AE0]">
+                <Settings className="h-5 w-5 text-white" />
                 <span className="sr-only">Settings</span>
               </Button>
             </SheetTrigger>
@@ -263,12 +269,13 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             </SheetContent>
           </Sheet>
           
+          {/* User Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+              <Button variant="ghost" className="relative h-9 w-9 rounded-full hover:bg-[#9F5AE0]">
                 <Avatar className="h-9 w-9">
                   <AvatarImage src="" />
-                  <AvatarFallback className="bg-lawfirm-light-blue text-white">AT</AvatarFallback>
+                  <AvatarFallback className="bg-white/20 text-white">AT</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
@@ -293,13 +300,14 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
         </div>
       </div>
       
+      {/* Mobile Search */}
       <div className="md:hidden px-4 pb-4">
         <div className="relative w-full">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-white/70" />
           <Input
             type="search"
             placeholder="Search..."
-            className="w-full pl-8"
+            className="w-full pl-8 bg-white/10 text-white placeholder-white/50 border-white/20 focus:border-white/40"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />
