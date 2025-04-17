@@ -21,6 +21,7 @@ import {
   ShieldCheck
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAdmin } from '@/hooks/use-admin';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -30,6 +31,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation();
   const { currentUser } = useAuth();
+  const { isAdmin, isAdminOrPending } = useAdmin();
 
   const isActive = (path: string) => {
     return location.pathname === path || location.pathname.startsWith(`${path}/`);
@@ -183,8 +185,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 <div className="font-medium text-sm text-gray-500">Logged in as:</div>
                 <div className="font-semibold">{currentUser.email}</div>
                 <div className="text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full inline-block mt-1">
-                  {currentUser.role === 'pending_admin' 
-                    ? 'Pending Admin Approval' 
+                  {isAdminOrPending && !isAdmin 
+                    ? 'Admin Approval Pending' 
                     : currentUser.role && typeof currentUser.role === 'string' 
                       ? currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)
                       : 'User'}
