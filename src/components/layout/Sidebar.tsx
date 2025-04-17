@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -184,7 +185,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 <div className="text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full inline-block mt-1">
                   {currentUser.role === 'pending_admin' 
                     ? 'Pending Admin Approval' 
-                    : currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)}
+                    : currentUser.role && typeof currentUser.role === 'string' 
+                      ? currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)
+                      : 'User'}
                 </div>
               </div>
             )}
