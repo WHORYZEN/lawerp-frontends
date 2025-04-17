@@ -15,7 +15,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar toggleSidebar={toggleSidebar} />
-      <div className="flex flex-1 h-[calc(100vh-4rem)]">
+      <div className="flex flex-1 mt-16 h-[calc(100vh-4rem)]">
         <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
         <MainContent isSidebarOpen={isSidebarOpen} isMobile={isMobile}>
           {children}
