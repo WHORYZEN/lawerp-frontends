@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -19,7 +20,7 @@ export default {
     },
     extend: {
       colors: {
-        border: 'hsl(var(--border))',
+        'border-color': 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
@@ -70,6 +71,9 @@ export default {
           'cool-gray': '#aaadb0',
           'light-gray': '#C8C8C9',
           'dark-purple': '#1A1F2C',
+          'purple': '#8A2BE2',
+          'purple-light': '#9F5AE0',
+          'purple-dark': '#6B24B2',
         }
       },
       spacing: {
@@ -79,13 +83,6 @@ export default {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
       },
-      colors: {
-        'lawfirm': {
-          'purple': '#8A2BE2',
-          'purple-light': '#9F5AE0',
-          'purple-dark': '#6B24B2',
-        }
-      }
     },
   },
   plugins: [require("tailwindcss-animate")],
