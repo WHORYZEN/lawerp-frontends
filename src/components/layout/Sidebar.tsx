@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -32,7 +31,8 @@ import {
   Scale,
   Mail,
   LogOut,
-  File
+  File,
+  User
 } from "lucide-react";
 
 interface SidebarProps {
@@ -223,6 +223,40 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 label="Personal Injuries" 
                 to="/clients?filter=personal-injuries" 
                 active={pathname === "/clients" && urlParams.get('filter') === "personal-injuries"} 
+              />
+            </NavItem>
+
+            <NavItem
+              icon={<User className="h-5 w-5" />}
+              label="Attorneys"
+              to="/attorneys"
+              active={pathname === "/attorneys" || pathname.startsWith("/attorneys/")}
+              hasSubmenu
+            >
+              <SubNavItem 
+                label="All Attorneys" 
+                to="/attorneys" 
+                active={pathname === "/attorneys" && !urlParams.has('tab')} 
+              />
+              <SubNavItem 
+                label="Partners" 
+                to="/attorneys?tab=partners" 
+                active={pathname === "/attorneys" && urlParams.get('tab') === "partners"} 
+              />
+              <SubNavItem 
+                label="Associates" 
+                to="/attorneys?tab=associates" 
+                active={pathname === "/attorneys" && urlParams.get('tab') === "associates"} 
+              />
+              <SubNavItem 
+                label="Paralegals" 
+                to="/attorneys?tab=paralegals" 
+                active={pathname === "/attorneys" && urlParams.get('tab') === "paralegals"} 
+              />
+              <SubNavItem 
+                label="Interns" 
+                to="/attorneys?tab=interns" 
+                active={pathname === "/attorneys" && urlParams.get('tab') === "interns"} 
               />
             </NavItem>
 
