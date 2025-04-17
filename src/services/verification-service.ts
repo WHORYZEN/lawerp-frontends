@@ -1,4 +1,5 @@
 import { UserRole } from '@/contexts/AuthContext';
+import { sendEmail } from '@/lib/supabase/email-service';
 
 export interface VerificationRequest {
   email: string;
@@ -9,10 +10,8 @@ export interface VerificationRequest {
 // Admin configuration
 export const ADMIN_EMAIL = 'kanishk.shukla@mynxsoftwares.com';
 
-// In a real app, this would be stored in a database
-const verificationStore = new Map<string, VerificationRequest>();
-
-export const generateVerificationToken = (length: number = 32): string => {
+// Store verification requests in Supabase
+const generateVerificationToken = (length: number = 32): string => {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let token = '';
   for (let i = 0; i < length; i++) {
@@ -21,46 +20,54 @@ export const generateVerificationToken = (length: number = 32): string => {
   return token;
 };
 
-export const sendVerificationEmail = (email: string, role: UserRole): string => {
+export const sendVerificationEmail = async (email: string, role: UserRole): Promise<string> => {
   const verificationToken = generateVerificationToken();
   
-  // Store verification request
-  verificationStore.set(verificationToken, {
-    email,
-    role,
-    timestamp: new Date().toISOString()
+  // Store verification request in Supabase
+  const { data, error } = await supabase
+    .from('verification_requests')
+    .insert([{
+      token: verificationToken,
+      email,
+      role,
+      timestamp: new Date().toISOString()
+    }]);
+
+  if (error) throw error;
+  
+  // Send verification email
+  await sendEmail({
+    type: 'verification',
+    to: email,
+    data: {
+      verificationUrl: `/verify-email?token=${verificationToken}`,
+      role
+    }
   });
   
-  // Simulate sending email
-  console.log('=====================================');
-  console.log('Email Verification Link Sent');
-  console.log('To:', email);
-  console.log('Token:', verificationToken);
-  console.log('Role:', role);
-  console.log('Verify at: /verify-email?token=' + verificationToken);
-  console.log('=====================================');
-
-  // If this is a pending admin request, simulate sending notification to admin
+  // If this is a pending admin request, send notification to admin
   if (role === 'pending_admin') {
-    console.log('=====================================');
-    console.log('Admin Approval Request Notification');
-    console.log('From:', email);
-    console.log('To:', ADMIN_EMAIL);
-    console.log('Subject: New Admin Access Request');
-    console.log('Message: A new user has requested admin access.');
-    console.log('Approve at: /admin/user-approval');
-    console.log('=====================================');
+    await sendEmail({
+      type: 'admin_request',
+      to: ADMIN_EMAIL,
+      data: {
+        role: 'pending_admin'
+      }
+    });
   }
   
   return verificationToken;
 };
 
-export const verifyEmail = (token: string): VerificationRequest | null => {
-  const verification = verificationStore.get(token);
+export const verifyEmail = async (token: string): Promise<VerificationRequest | null> => {
+  // Get verification request from Supabase
+  const { data: verification, error } = await supabase
+    .from('verification_requests')
+    .select('*')
+    .eq('token', token)
+    .single();
   
-  if (!verification) {
-    return null;
-  }
+  if (error || !verification) return null;
   
   // Check if token is expired (24 hours)
   const tokenDate = new Date(verification.timestamp);
@@ -68,22 +75,29 @@ export const verifyEmail = (token: string): VerificationRequest | null => {
   const hoursSinceGenerated = (now.getTime() - tokenDate.getTime()) / (1000 * 60 * 60);
   
   if (hoursSinceGenerated > 24) {
-    verificationStore.delete(token);
+    // Delete expired token
+    await supabase
+      .from('verification_requests')
+      .delete()
+      .eq('token', token);
     return null;
   }
   
-  // Clear the used token
-  verificationStore.delete(token);
+  // Delete used token
+  await supabase
+    .from('verification_requests')
+    .delete()
+    .eq('token', token);
   
   return verification;
 };
 
-export const sendAdminApprovalNotification = (approvedEmail: string, approved: boolean): void => {
-  console.log('=====================================');
-  console.log('Admin Decision Notification');
-  console.log('From:', ADMIN_EMAIL);
-  console.log('To:', approvedEmail);
-  console.log('Subject:', approved ? 'Admin Access Approved' : 'Admin Access Denied');
-  console.log('Status:', approved ? 'Your admin access request has been approved.' : 'Your admin access request has been denied.');
-  console.log('=====================================');
+export const sendAdminApprovalNotification = async (approvedEmail: string, approved: boolean): Promise<void> => {
+  await sendEmail({
+    type: 'admin_approval',
+    to: approvedEmail,
+    data: {
+      approved
+    }
+  });
 };
