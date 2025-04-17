@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,9 +9,6 @@ import ClientAnalyticsChart from "./ClientAnalyticsChart";
 import { clientsApi } from "@/lib/api/mongodb-api";
 import { Client } from "@/types/client";
 import { useToast } from "@/hooks/use-toast";
-
-// First we need to check what props ClientAnalyticsChart expects
-// The error suggests it doesn't accept clients and loading props
 
 const DashboardOverview = () => {
   const [showCalculator, setShowCalculator] = useState(false);
@@ -42,31 +38,14 @@ const DashboardOverview = () => {
   }, [toast]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">Client Billings</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage client billing, view analytics, and access important documents.
-          </p>
-        </div>
-        <Button
-          variant="outline"
-          className="w-full md:w-auto gap-2"
-          onClick={() => setShowCalculator(!showCalculator)}
-        >
-          {showCalculator ? "Hide" : "Show"} AT Lien Reduction Calculator
-          <ChevronDown
-            className={`h-4 w-4 transition-transform ${
-              showCalculator ? "rotate-180" : ""
-            }`}
-          />
-        </Button>
+    <div className="space-y-8">
+      <div className="space-y-3">
+        <h1 className="text-2xl font-bold tracking-tight">Client Billings</h1>
+        <p className="text-muted-foreground">
+          Manage client billing, view analytics, and access important documents.
+        </p>
       </div>
 
-      {/* Client Analytics Chart */}
-      {/* Since we can't modify ClientAnalyticsChart.tsx, we'll pass the props in a way
-          that will be compatible with the actual component */}
       <Card>
         <CardContent className="p-6">
           {loading ? (

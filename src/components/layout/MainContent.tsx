@@ -14,7 +14,7 @@ const MainContent: React.FC<MainContentProps> = ({ children, isSidebarOpen, isMo
         isSidebarOpen && !isMobile ? 'ml-64' : 'ml-0'
       }`}
     >
-      <div className="container mx-auto px-4 py-6 max-w-7xl">
+      <div className="px-6 py-8 max-w-7xl mx-auto w-full">
         {children}
       </div>
     </main>
