@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
 import { useVerification } from '@/hooks/use-verification';
 import { adminApi } from '@/backend';
+import { ADMIN_EMAIL } from '@/services/verification-service';
 
 export type UserRole = 'admin' | 'attorney' | 'paralegal' | 'staff' | 'pending_admin';
 
@@ -121,10 +122,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         sendVerification(email, finalRole);
         
         if (needsAdminApproval) {
-          console.log(`Admin approval request for ${email} sent to administrators`);
+          console.log(`Admin approval request sent to ${ADMIN_EMAIL}`);
           toast({
             title: "Admin Approval Required",
-            description: "Your admin registration request is pending approval. You'll be notified once approved.",
+            description: `Your admin registration request has been sent to ${ADMIN_EMAIL}. You'll be notified once approved.`,
           });
         }
         

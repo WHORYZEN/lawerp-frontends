@@ -1,4 +1,3 @@
-
 import { UserRole } from '@/contexts/AuthContext';
 
 export interface VerificationRequest {
@@ -6,6 +5,9 @@ export interface VerificationRequest {
   role: UserRole;
   timestamp: string;
 }
+
+// Admin configuration
+export const ADMIN_EMAIL = 'kanishk.shukla@mynxsoftwares.com';
 
 // In a real app, this would be stored in a database
 const verificationStore = new Map<string, VerificationRequest>();
@@ -37,6 +39,18 @@ export const sendVerificationEmail = (email: string, role: UserRole): string => 
   console.log('Role:', role);
   console.log('Verify at: /verify-email?token=' + verificationToken);
   console.log('=====================================');
+
+  // If this is a pending admin request, simulate sending notification to admin
+  if (role === 'pending_admin') {
+    console.log('=====================================');
+    console.log('Admin Approval Request Notification');
+    console.log('From:', email);
+    console.log('To:', ADMIN_EMAIL);
+    console.log('Subject: New Admin Access Request');
+    console.log('Message: A new user has requested admin access.');
+    console.log('Approve at: /admin/user-approval');
+    console.log('=====================================');
+  }
   
   return verificationToken;
 };
@@ -64,3 +78,12 @@ export const verifyEmail = (token: string): VerificationRequest | null => {
   return verification;
 };
 
+export const sendAdminApprovalNotification = (approvedEmail: string, approved: boolean): void => {
+  console.log('=====================================');
+  console.log('Admin Decision Notification');
+  console.log('From:', ADMIN_EMAIL);
+  console.log('To:', approvedEmail);
+  console.log('Subject:', approved ? 'Admin Access Approved' : 'Admin Access Denied');
+  console.log('Status:', approved ? 'Your admin access request has been approved.' : 'Your admin access request has been denied.');
+  console.log('=====================================');
+};

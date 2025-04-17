@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { AlertTriangle, CheckCircle, XCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ADMIN_EMAIL, sendAdminApprovalNotification } from '@/services/verification-service';
 
 interface PendingUser {
   email: string;
@@ -25,10 +25,8 @@ const UserRoleApproval: React.FC = () => {
   const loadPendingUsers = () => {
     setLoading(true);
     
-    // Fetch users from local storage
     const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
     
-    // Filter for pending admin users
     const pending = registeredUsers.filter((user: any) => 
       user.role === 'pending_admin' && user.isVerified
     );
@@ -49,16 +47,14 @@ const UserRoleApproval: React.FC = () => {
     
     localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
     
-    // Refresh the list
     loadPendingUsers();
+    
+    sendAdminApprovalNotification(email, true);
     
     toast({
       title: "User Approved",
-      description: `${email} has been approved as an administrator.`,
+      description: `Admin approval confirmation sent to ${email}`,
     });
-    
-    // In a real app, we would send an email notification here
-    console.log(`Admin approval email sent to ${email}`);
   };
 
   const handleRejectUser = (email: string) => {
@@ -73,16 +69,14 @@ const UserRoleApproval: React.FC = () => {
     
     localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
     
-    // Refresh the list
     loadPendingUsers();
+    
+    sendAdminApprovalNotification(email, false);
     
     toast({
       title: "Request Rejected",
-      description: `${email}'s admin request has been rejected. They have been assigned the staff role.`,
+      description: `Rejection notification sent to ${email}`,
     });
-    
-    // In a real app, we would send an email notification here
-    console.log(`Admin rejection email sent to ${email}`);
   };
 
   return (
