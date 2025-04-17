@@ -1,7 +1,7 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { useVerification } from '@/hooks/use-verification';
 import { adminApi } from '@/backend';
 
 export type UserRole = 'admin' | 'attorney' | 'paralegal' | 'staff' | 'pending_admin';
@@ -30,14 +30,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<UserData | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { sendVerification } = useVerification();
 
-  // Check if user is already authenticated on mount
   useEffect(() => {
     const authStatus = localStorage.getItem('isAuthenticated');
     if (authStatus === 'true') {
       setIsAuthenticated(true);
       
-      // Get stored user data
       const userData = localStorage.getItem('userData');
       if (userData) {
         setCurrentUser(JSON.parse(userData));
@@ -48,11 +47,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (email: string, password: string): Promise<void> => {
     return new Promise<void>(async (resolve, reject) => {
       try {
-        // First check if this is a pre-registered user in the admin system
         const users = await adminApi.getUsers();
         const adminRegisteredUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
         
-        // Check if user exists in localStorage
         const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
         const localUser = registeredUsers.find((u: any) => u.email.toLowerCase() === email.toLowerCase());
         
@@ -86,7 +83,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const register = async (email: string, password: string, requestedRole: UserRole): Promise<void> => {
     return new Promise<void>(async (resolve, reject) => {
       try {
-        // Check if email already exists in the system
         const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
         const existingUser = registeredUsers.find((u: any) => u.email.toLowerCase() === email.toLowerCase());
         
@@ -95,41 +91,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           return;
         }
         
-        // Check if this email is pre-registered by an admin (for attorney/paralegal)
         const users = await adminApi.getUsers();
         const adminRegisteredUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
         
         let finalRole = requestedRole;
         let needsAdminApproval = false;
         
-        // If requesting admin role, mark as pending
         if (requestedRole === 'admin') {
           finalRole = 'pending_admin';
           needsAdminApproval = true;
         } 
-        // If not pre-registered by admin and trying to be attorney/paralegal, reject
         else if ((requestedRole === 'attorney' || requestedRole === 'paralegal') && !adminRegisteredUser) {
           reject(new Error(`To register as a ${requestedRole}, your email must be pre-registered by an administrator.`));
           return;
         }
         
-        // Create new user with verification status and role
         const newUser = {
           email,
           password,
           isVerified: false,
           role: finalRole,
           registeredAt: new Date().toISOString(),
-          name: email.split('@')[0] // Default name from email
+          name: email.split('@')[0]
         };
         
         registeredUsers.push(newUser);
         localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
         
-        // Simulate sending verification email
-        console.log(`Verification email sent to ${email}`);
+        sendVerification(email, finalRole);
         
-        // If needs admin approval, simulate sending admin approval email
         if (needsAdminApproval) {
           console.log(`Admin approval request for ${email} sent to administrators`);
           toast({
@@ -137,24 +127,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             description: "Your admin registration request is pending approval. You'll be notified once approved.",
           });
         }
-        
-        // For demo purposes, we'll automatically verify the user after 5 seconds
-        setTimeout(() => {
-          const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-          const updatedUsers = users.map((u: any) => {
-            if (u.email === email) {
-              return { ...u, isVerified: true };
-            }
-            return u;
-          });
-          localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
-          
-          // If user is currently in the verification waiting state, notify them
-          toast({
-            title: "Email Verified",
-            description: "Your email has been verified. You can now log in.",
-          });
-        }, 5000);
         
         resolve();
       } catch (error) {
@@ -175,15 +147,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const checkUserPermission = (requiredRole: UserRole | UserRole[]): boolean => {
     if (!currentUser) return false;
     
-    // Admin has access to everything
     if (currentUser.role === 'admin') return true;
     
-    // Check against a single role
     if (typeof requiredRole === 'string') {
       return currentUser.role === requiredRole;
     }
     
-    // Check against an array of roles
     return requiredRole.includes(currentUser.role);
   };
 
