@@ -10,9 +10,7 @@ const Admin: React.FC = () => {
       <Helmet>
         <title>Admin Panel - Law EMR</title>
       </Helmet>
-      <div className="bg-gradient-to-r from-gray-50 to-gray-100 min-h-screen">
-        <AdminDashboard />
-      </div>
+      <AdminDashboard />
     </PageLayout>
   );
 };

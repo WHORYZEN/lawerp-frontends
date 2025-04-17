@@ -10,9 +10,7 @@ const Dashboard: React.FC = () => {
       <Helmet>
         <title>Dashboard - LAW ERP 500</title>
       </Helmet>
-      <div className="container p-4">
-        <DashboardOverview />
-      </div>
+      <DashboardOverview />
     </PageLayout>
   );
 };
