@@ -1,27 +1,19 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from "@/hooks/use-toast";
-import { useVerification } from '@/hooks/use-verification';
-import { adminApi } from '@/backend';
-import { ADMIN_EMAIL } from '@/services/verification-service';
-
-export type UserRole = 'admin' | 'attorney' | 'paralegal' | 'staff' | 'pending_admin';
+import { useToast } from "@/components/ui/use-toast";
 
 interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, role: UserRole) => Promise<void>;
+  register: (email: string, password: string) => Promise<void>;
   logout: () => void;
   currentUser: UserData | null;
-  checkUserPermission: (requiredRole: UserRole | UserRole[]) => boolean;
 }
 
 interface UserData {
   email: string;
   isVerified: boolean;
-  role: UserRole;
-  id?: string;
-  name?: string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,13 +23,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<UserData | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { sendVerification } = useVerification();
 
+  // Check if user is already authenticated on mount
   useEffect(() => {
     const authStatus = localStorage.getItem('isAuthenticated');
     if (authStatus === 'true') {
       setIsAuthenticated(true);
       
+      // Get stored user data
       const userData = localStorage.getItem('userData');
       if (userData) {
         setCurrentUser(JSON.parse(userData));
@@ -46,25 +39,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = async (email: string, password: string): Promise<void> => {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        const users = await adminApi.getUsers();
-        const adminRegisteredUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-        
+    // For demo purposes, we'll just set isAuthenticated to true
+    // In a real app, you would validate credentials with a backend service
+    return new Promise<void>((resolve, reject) => {
+      // Simulate API call
+      setTimeout(() => {
+        // Check if user exists in localStorage
         const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-        const localUser = registeredUsers.find((u: any) => u.email.toLowerCase() === email.toLowerCase());
-        
-        if (localUser && localUser.password === password) {
-          if (!localUser.isVerified) {
+        const user = registeredUsers.find((u: any) => u.email === email);
+
+        if (user && user.password === password) {
+          if (!user.isVerified) {
             reject(new Error('Email not verified. Please check your inbox.'));
             return;
           }
-          
+
           const userData: UserData = {
-            email: localUser.email,
-            isVerified: localUser.isVerified,
-            role: localUser.role || 'staff',
-            name: localUser.name
+            email: user.email,
+            isVerified: user.isVerified
           };
 
           localStorage.setItem('isAuthenticated', 'true');
@@ -75,65 +67,61 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } else {
           reject(new Error('Invalid credentials'));
         }
-      } catch (error) {
-        reject(new Error('Login failed. Please try again.'));
-      }
+      }, 1000);
     });
   };
 
-  const register = async (email: string, password: string, requestedRole: UserRole): Promise<void> => {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-        const existingUser = registeredUsers.find((u: any) => u.email.toLowerCase() === email.toLowerCase());
-        
-        if (existingUser) {
-          reject(new Error('User with this email already exists'));
-          return;
+  const register = async (email: string, password: string): Promise<void> => {
+    return new Promise<void>((resolve, reject) => {
+      // Simulate API call
+      setTimeout(() => {
+        try {
+          // Check if user already exists
+          const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+          const existingUser = registeredUsers.find((u: any) => u.email === email);
+          
+          if (existingUser) {
+            reject(new Error('User with this email already exists'));
+            return;
+          }
+          
+          // Create new user with verification status
+          const newUser = {
+            email,
+            password,
+            isVerified: false,
+            registeredAt: new Date().toISOString()
+          };
+          
+          registeredUsers.push(newUser);
+          localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+          
+          // Simulate sending verification email
+          console.log(`Verification email sent to ${email}`);
+          
+          // For demo purposes, we'll automatically verify the user after 5 seconds
+          setTimeout(() => {
+            const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+            const updatedUsers = users.map((u: any) => {
+              if (u.email === email) {
+                return { ...u, isVerified: true };
+              }
+              return u;
+            });
+            localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
+            
+            // If user is currently in the verification waiting state, notify them
+            toast({
+              title: "Email Verified",
+              description: "Your email has been verified. You can now log in.",
+            });
+          }, 5000);
+          
+          resolve();
+        } catch (error) {
+          reject(error);
         }
-        
-        const users = await adminApi.getUsers();
-        const adminRegisteredUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-        
-        let finalRole = requestedRole;
-        let needsAdminApproval = false;
-        
-        if (requestedRole === 'admin') {
-          finalRole = 'pending_admin';
-          needsAdminApproval = true;
-        } 
-        else if ((requestedRole === 'attorney' || requestedRole === 'paralegal') && !adminRegisteredUser) {
-          reject(new Error(`To register as a ${requestedRole}, your email must be pre-registered by an administrator.`));
-          return;
-        }
-        
-        const newUser = {
-          email,
-          password,
-          isVerified: false,
-          role: finalRole,
-          registeredAt: new Date().toISOString(),
-          name: email.split('@')[0]
-        };
-        
-        registeredUsers.push(newUser);
-        localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
-        
-        sendVerification(email, finalRole);
-        
-        if (needsAdminApproval) {
-          console.log(`Admin approval request sent to ${ADMIN_EMAIL}`);
-          toast({
-            title: "Admin Approval Required",
-            description: `Your admin registration request has been sent to ${ADMIN_EMAIL}. You'll be notified once approved.`,
-          });
-        }
-        
-        resolve();
-      } catch (error) {
-        console.error("Registration error:", error);
-        reject(error);
-      }
+      }, 1000);
     });
   };
 
@@ -145,27 +133,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     navigate('/login');
   };
 
-  const checkUserPermission = (requiredRole: UserRole | UserRole[]): boolean => {
-    if (!currentUser) return false;
-    
-    if (currentUser.role === 'admin') return true;
-    
-    if (typeof requiredRole === 'string') {
-      return currentUser.role === requiredRole;
-    }
-    
-    return requiredRole.includes(currentUser.role);
-  };
-
   return (
-    <AuthContext.Provider value={{ 
-      isAuthenticated, 
-      login, 
-      register, 
-      logout, 
-      currentUser,
-      checkUserPermission
-    }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, register, logout, currentUser }}>
       {children}
     </AuthContext.Provider>
   );
