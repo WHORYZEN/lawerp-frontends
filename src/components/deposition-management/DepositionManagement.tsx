@@ -179,14 +179,14 @@ const DepositionManagement = () => {
                 <div className="space-y-2">
                   <Label htmlFor="client">Client</Label>
                   <Select
-                    value={filters.clientId || ""}
-                    onValueChange={(value) => handleFilterChange('clientId', value || undefined)}
+                    value={filters.clientId}
+                    onValueChange={(value) => handleFilterChange('clientId', value)}
                   >
                     <SelectTrigger id="client">
                       <SelectValue placeholder="All Clients" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all_clients">All Clients</SelectItem>
+                      <SelectItem value="">All Clients</SelectItem>
                       {mockClients.map(client => (
                         <SelectItem key={client.id} value={client.id}>
                           {client.name}
@@ -199,14 +199,14 @@ const DepositionManagement = () => {
                 <div className="space-y-2">
                   <Label htmlFor="case">Case</Label>
                   <Select
-                    value={filters.caseId || ""}
-                    onValueChange={(value) => handleFilterChange('caseId', value || undefined)}
+                    value={filters.caseId}
+                    onValueChange={(value) => handleFilterChange('caseId', value)}
                   >
                     <SelectTrigger id="case">
                       <SelectValue placeholder="All Cases" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all_cases">All Cases</SelectItem>
+                      <SelectItem value="">All Cases</SelectItem>
                       {mockCases.map(case_ => (
                         <SelectItem key={case_.id} value={case_.id}>
                           {case_.name}
@@ -219,14 +219,14 @@ const DepositionManagement = () => {
                 <div className="space-y-2">
                   <Label htmlFor="attorney">Attorney</Label>
                   <Select
-                    value={filters.attorneyId || ""}
-                    onValueChange={(value) => handleFilterChange('attorneyId', value || undefined)}
+                    value={filters.attorneyId}
+                    onValueChange={(value) => handleFilterChange('attorneyId', value)}
                   >
                     <SelectTrigger id="attorney">
                       <SelectValue placeholder="All Attorneys" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all_attorneys">All Attorneys</SelectItem>
+                      <SelectItem value="">All Attorneys</SelectItem>
                       {mockAttorneys.map(attorney => (
                         <SelectItem key={attorney.id} value={attorney.id}>
                           {attorney.name}

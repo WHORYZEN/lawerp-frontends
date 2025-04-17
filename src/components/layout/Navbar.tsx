@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Bell, Plus, Mail, User, Settings, Search, Menu, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -55,7 +54,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
 
   return (
     <header 
-      className="fixed top-0 left-0 right-0 z-50 w-full border-b border-border/40 bg-[#8A2BE2] backdrop-blur supports-[backdrop-filter]:bg-[#8A2BE2]/60"
+      className="sticky top-0 z-50 w-full border-b border-border/40 bg-[#8A2BE2] backdrop-blur supports-[backdrop-filter]:bg-[#8A2BE2]/60"
       style={{ backgroundColor: '#8A2BE2' }}
     >
       <div className="flex h-16 items-center justify-between px-4 md:px-6 text-white">
