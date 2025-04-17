@@ -3,10 +3,16 @@ import { createClient } from '@supabase/supabase-js';
 import { UserRole } from '@/contexts/AuthContext';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/env';
 
-const supabase = createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+// Create Supabase client with validation
+const supabaseUrl = SUPABASE_URL;
+const supabaseAnonKey = SUPABASE_ANON_KEY;
+
+// Validate URL before creating client
+if (!supabaseUrl || !supabaseUrl.startsWith('http')) {
+  console.error('Invalid Supabase URL. Please set a valid VITE_SUPABASE_URL in your environment variables.');
+}
+
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export interface EmailTemplate {
   type: 'verification' | 'admin_request' | 'admin_approval';
