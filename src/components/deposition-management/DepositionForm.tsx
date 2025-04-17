@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -62,7 +62,7 @@ const DepositionForm = () => {
   });
 
   // Load existing deposition data if editing
-  useState(() => {
+  useEffect(() => {
     if (id) {
       setIsLoading(true);
       depositionsApi.getDeposition(id)
@@ -97,7 +97,7 @@ const DepositionForm = () => {
           setIsLoading(false);
         });
     }
-  }, [id]);
+  }, [id, toast, form]);
 
   const onSubmit = async (values: FormValues) => {
     setIsLoading(true);
