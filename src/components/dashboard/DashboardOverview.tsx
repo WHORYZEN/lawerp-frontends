@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -39,7 +40,7 @@ const DashboardOverview = () => {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-3">
+      <div className="space-y-3 pt-2">
         <h1 className="text-2xl font-bold tracking-tight">Client Billings</h1>
         <p className="text-muted-foreground">
           Manage client billing, view analytics, and access important documents.

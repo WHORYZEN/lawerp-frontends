@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
@@ -13,9 +14,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="sticky top-0 z-50 w-full">
-        <Navbar toggleSidebar={toggleSidebar} />
-      </div>
+      <Navbar toggleSidebar={toggleSidebar} />
       <div className="flex flex-1 h-[calc(100vh-4rem)]">
         <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
         <MainContent isSidebarOpen={isSidebarOpen} isMobile={isMobile}>
