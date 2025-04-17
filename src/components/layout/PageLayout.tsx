@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
@@ -33,12 +34,12 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col fixed inset-0">
       <Navbar toggleSidebar={toggleSidebar} />
-      <div className="flex flex-1">
+      <div className="flex flex-1 overflow-hidden">
         <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
         <main 
-          className={`flex-1 pt-16 bg-gray-50 transition-all duration-300 ${
+          className={`flex-1 overflow-auto transition-all duration-300 ${
             isSidebarOpen && !isMobile ? 'ml-64' : 'ml-0'
           }`}
         >
