@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Attorney } from './AttorneyList';
+import { Attorney } from '@/lib/api/attorneys-api';
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters."),
@@ -72,7 +72,16 @@ const AttorneyForm = ({ attorney, onSubmit, onCancel }: AttorneyFormProps) => {
     // Simulate API call
     setTimeout(() => {
       onSubmit({
-        ...values,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        phone: values.phone,
+        role: values.role,
+        barNumber: values.barNumber || undefined,
+        specialization: values.specialization || undefined,
+        bio: values.bio || undefined,
+        officeLocation: values.officeLocation || undefined,
+        isActive: values.isActive,
         profileImage: attorney?.profileImage || '',
       });
       setIsSubmitting(false);
