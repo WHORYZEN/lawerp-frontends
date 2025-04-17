@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
@@ -38,7 +39,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
       <div className="flex flex-1">
         <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
         <main 
-          className={`flex-1 pt-16 bg-gray-50 transition-all duration-300 ${
+          className={`flex-1 bg-gray-50 transition-all duration-300 ${
             isSidebarOpen && !isMobile ? 'ml-64' : 'ml-0'
           }`}
         >
