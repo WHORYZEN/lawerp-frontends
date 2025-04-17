@@ -92,129 +92,129 @@ const Login: React.FC = () => {
         
         <Card className="border-purple-100 shadow-lg">
           <CardHeader>
-            <Tabs defaultValue="login" value={activeTab} onValueChange={(value) => setActiveTab(value as 'login' | 'register')} className="w-full">
+            <Tabs defaultValue={activeTab} value={activeTab} onValueChange={(value) => setActiveTab(value as 'login' | 'register')} className="w-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="login">Login</TabsTrigger>
                 <TabsTrigger value="register">Register</TabsTrigger>
               </TabsList>
+            
+              <CardContent className="px-0 pt-6 pb-0">
+                {error && (
+                  <Alert variant="destructive" className="mb-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+                
+                <TabsContent value="login" className="mt-0">
+                  <form onSubmit={handleLogin}>
+                    <div className="grid gap-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="email@example.com"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                        />
+                      </div>
+                      
+                      <div className="grid gap-2">
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="password">Password</Label>
+                          <Link to="/forgot-password" className="text-sm text-purple-600 hover:text-purple-800">
+                            Forgot password?
+                          </Link>
+                        </div>
+                        <Input
+                          id="password"
+                          type="password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                        />
+                      </div>
+                      
+                      <Button type="submit" className="w-full bg-purple-700 hover:bg-purple-800" disabled={loading}>
+                        {loading ? 'Please wait...' : 'Sign In'}
+                      </Button>
+                    </div>
+                  </form>
+                </TabsContent>
+                
+                <TabsContent value="register" className="mt-0">
+                  <form onSubmit={handleRegister}>
+                    <div className="grid gap-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="register-email">Email</Label>
+                        <Input
+                          id="register-email"
+                          type="email"
+                          placeholder="email@example.com"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                        />
+                      </div>
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="register-password">Password</Label>
+                        <Input
+                          id="register-password"
+                          type="password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                        />
+                      </div>
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="confirm-password">Confirm Password</Label>
+                        <Input
+                          id="confirm-password"
+                          type="password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          required
+                        />
+                      </div>
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="role">Register As</Label>
+                        <Select onValueChange={(value) => setRole(value as UserRole)} defaultValue="staff">
+                          <SelectTrigger id="role">
+                            <SelectValue placeholder="Select your role" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="staff">Staff</SelectItem>
+                            <SelectItem value="paralegal">Paralegal</SelectItem>
+                            <SelectItem value="attorney">Attorney</SelectItem>
+                            <SelectItem value="admin">Administrator</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {(role === 'paralegal' || role === 'attorney') && (
+                          <p className="text-xs text-amber-600 mt-1">
+                            Note: Your email must be pre-registered by an administrator to create an account with this role.
+                          </p>
+                        )}
+                        {role === 'admin' && (
+                          <p className="text-xs text-amber-600 mt-1">
+                            Note: Admin registration requires approval. Your request will be reviewed.
+                          </p>
+                        )}
+                      </div>
+                      
+                      <Button type="submit" className="w-full bg-purple-700 hover:bg-purple-800" disabled={loading}>
+                        {loading ? 'Please wait...' : 'Create Account'}
+                      </Button>
+                    </div>
+                  </form>
+                </TabsContent>
+              </CardContent>
             </Tabs>
           </CardHeader>
-          
-          <CardContent>
-            {error && (
-              <Alert variant="destructive" className="mb-4">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-            
-            <TabsContent value="login" className="mt-0">
-              <form onSubmit={handleLogin}>
-                <div className="grid gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="email@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                  
-                  <div className="grid gap-2">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="password">Password</Label>
-                      <Link to="/forgot-password" className="text-sm text-purple-600 hover:text-purple-800">
-                        Forgot password?
-                      </Link>
-                    </div>
-                    <Input
-                      id="password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                  </div>
-                  
-                  <Button type="submit" className="w-full bg-purple-700 hover:bg-purple-800" disabled={loading}>
-                    {loading ? 'Please wait...' : 'Sign In'}
-                  </Button>
-                </div>
-              </form>
-            </TabsContent>
-            
-            <TabsContent value="register" className="mt-0">
-              <form onSubmit={handleRegister}>
-                <div className="grid gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="register-email">Email</Label>
-                    <Input
-                      id="register-email"
-                      type="email"
-                      placeholder="email@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                  
-                  <div className="grid gap-2">
-                    <Label htmlFor="register-password">Password</Label>
-                    <Input
-                      id="register-password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                  </div>
-                  
-                  <div className="grid gap-2">
-                    <Label htmlFor="confirm-password">Confirm Password</Label>
-                    <Input
-                      id="confirm-password"
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      required
-                    />
-                  </div>
-                  
-                  <div className="grid gap-2">
-                    <Label htmlFor="role">Register As</Label>
-                    <Select onValueChange={(value) => setRole(value as UserRole)} defaultValue="staff">
-                      <SelectTrigger id="role">
-                        <SelectValue placeholder="Select your role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="staff">Staff</SelectItem>
-                        <SelectItem value="paralegal">Paralegal</SelectItem>
-                        <SelectItem value="attorney">Attorney</SelectItem>
-                        <SelectItem value="admin">Administrator</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {(role === 'paralegal' || role === 'attorney') && (
-                      <p className="text-xs text-amber-600 mt-1">
-                        Note: Your email must be pre-registered by an administrator to create an account with this role.
-                      </p>
-                    )}
-                    {role === 'admin' && (
-                      <p className="text-xs text-amber-600 mt-1">
-                        Note: Admin registration requires approval. Your request will be reviewed.
-                      </p>
-                    )}
-                  </div>
-                  
-                  <Button type="submit" className="w-full bg-purple-700 hover:bg-purple-800" disabled={loading}>
-                    {loading ? 'Please wait...' : 'Create Account'}
-                  </Button>
-                </div>
-              </form>
-            </TabsContent>
-          </CardContent>
           
           <CardFooter className="flex justify-center border-t border-purple-100 pt-4">
             <p className="text-sm text-gray-600">
