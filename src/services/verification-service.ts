@@ -1,3 +1,5 @@
+
+import { createClient } from '@supabase/supabase-js';
 import { UserRole } from '@/contexts/AuthContext';
 import { sendEmail } from '@/lib/supabase/email-service';
 
@@ -9,6 +11,11 @@ export interface VerificationRequest {
 
 // Admin configuration
 export const ADMIN_EMAIL = 'kanishk.shukla@mynxsoftwares.com';
+
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_ANON_KEY!
+);
 
 // Store verification requests in Supabase
 const generateVerificationToken = (length: number = 32): string => {
@@ -24,7 +31,7 @@ export const sendVerificationEmail = async (email: string, role: UserRole): Prom
   const verificationToken = generateVerificationToken();
   
   // Store verification request in Supabase
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from('verification_requests')
     .insert([{
       token: verificationToken,
