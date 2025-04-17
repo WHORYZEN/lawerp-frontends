@@ -5,12 +5,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import UsersManagement from './UsersManagement';
 import RolesManagement from './RolesManagement';
 import AuditLogs from './AuditLogs';
-import { UserCog, Shield, ClipboardList, PlusCircle } from 'lucide-react';
+import UserRoleApproval from './UserRoleApproval';
+import { UserCog, Shield, ClipboardList, PlusCircle, AlertTriangle } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from '@/contexts/AuthContext';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('users');
   const { toast } = useToast();
+  const { currentUser } = useAuth();
 
   return (
     <div className="container mx-auto p-6">
@@ -32,6 +35,12 @@ const AdminDashboard = () => {
           </button>
         </div>
       </div>
+      
+      {currentUser?.role === 'admin' && (
+        <div className="mb-6">
+          <UserRoleApproval />
+        </div>
+      )}
       
       <Card className="border-none shadow-lg bg-white overflow-hidden rounded-xl">
         <CardHeader className="bg-gradient-to-r from-purple-100 to-indigo-100 pb-8 border-b border-purple-200">
@@ -69,6 +78,13 @@ const AdminDashboard = () => {
                     <ClipboardList className="mr-2 h-5 w-5" />
                     <span>Audit Logs</span>
                   </TabsTrigger>
+                  <TabsTrigger 
+                    value="approvals" 
+                    className="data-[state=active]:border-b-2 data-[state=active]:border-purple-500 data-[state=active]:text-purple-700 data-[state=active]:bg-transparent rounded-none h-14 px-4 py-2 font-medium transition-all"
+                  >
+                    <AlertTriangle className="mr-2 h-5 w-5" />
+                    <span>Approvals</span>
+                  </TabsTrigger>
                 </TabsList>
               </div>
             </div>
@@ -84,6 +100,10 @@ const AdminDashboard = () => {
               
               <TabsContent value="logs" className="m-0 p-6">
                 <AuditLogs />
+              </TabsContent>
+
+              <TabsContent value="approvals" className="m-0 p-6">
+                <UserRoleApproval />
               </TabsContent>
             </div>
           </Tabs>
