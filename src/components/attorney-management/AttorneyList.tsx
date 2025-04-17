@@ -39,7 +39,7 @@ export type Attorney = {
 
 interface AttorneyListProps {
   onViewAttorney: (id: string) => void;
-  filter: string;
+  filter: 'all' | 'Partner' | 'Associate' | 'Paralegal' | 'Intern';
 }
 
 const AttorneyList = ({ onViewAttorney, filter }: AttorneyListProps) => {
