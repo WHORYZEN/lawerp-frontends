@@ -2,6 +2,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { UserRole } from '@/contexts/AuthContext';
 import { sendEmail } from '@/lib/supabase/email-service';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/env';
 
 export interface VerificationRequest {
   email: string;
@@ -13,8 +14,8 @@ export interface VerificationRequest {
 export const ADMIN_EMAIL = 'kanishk.shukla@mynxsoftwares.com';
 
 const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_ANON_KEY!
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
 );
 
 // Store verification requests in Supabase
