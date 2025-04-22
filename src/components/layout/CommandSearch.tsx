@@ -83,7 +83,7 @@ interface CommandSearchProps {
 }
 
 const CommandSearch: React.FC<CommandSearchProps> = ({ open, onOpenChange }) => {
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>(mockSearchData);
   const [query, setQuery] = useState('');
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -91,7 +91,8 @@ const CommandSearch: React.FC<CommandSearchProps> = ({ open, onOpenChange }) => 
   // Filter results based on search query
   useEffect(() => {
     if (query.trim() === '') {
-      setSearchResults([]);
+      // Show all results when search is empty
+      setSearchResults(mockSearchData);
       return;
     }
 
