@@ -1,5 +1,6 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Bell, Plus, Mail, User, Settings, Search, Menu, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,10 +30,65 @@ interface NavbarProps {
   toggleSidebar: () => void;
 }
 
+// Define searchable content types
+type SearchableItem = {
+  id: string;
+  type: 'client' | 'case' | 'attorney' | 'document';
+  title: string;
+  subtitle?: string;
+  route: string;
+};
+
 const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   const [searchValue, setSearchValue] = useState("");
+  const [searchResults, setSearchResults] = useState<SearchableItem[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showSearchResults, setShowSearchResults] = useState(false);
   const { logout } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
+
+  // Mock search data - in a real app, this would come from your API
+  const mockSearchData: SearchableItem[] = [
+    { id: '1', type: 'client', title: 'James Peterson', subtitle: 'Personal Injury', route: '/clients/1' },
+    { id: '2', type: 'client', title: 'Maria Rodriguez', subtitle: 'Corporate Law', route: '/clients/2' },
+    { id: '3', type: 'case', title: 'Peterson vs. Insurance Co', subtitle: 'Active', route: '/cases/1' },
+    { id: '4', type: 'attorney', title: 'Rachel Green', subtitle: 'Partner', route: '/attorneys?tab=all' },
+    { id: '5', type: 'attorney', title: 'Mark Johnson', subtitle: 'Associate', route: '/attorneys?tab=all' },
+    { id: '6', type: 'document', title: 'Insurance Policy #123', subtitle: 'Peterson case', route: '/documents?tab=insurance' },
+  ];
+
+  // Search functionality
+  useEffect(() => {
+    if (searchValue.trim().length > 0) {
+      setIsSearching(true);
+      // Simulate API delay
+      const timer = setTimeout(() => {
+        const results = mockSearchData.filter(item => 
+          item.title.toLowerCase().includes(searchValue.toLowerCase()) || 
+          item.subtitle?.toLowerCase().includes(searchValue.toLowerCase())
+        );
+        setSearchResults(results);
+        setIsSearching(false);
+        setShowSearchResults(true);
+      }, 300);
+      
+      return () => clearTimeout(timer);
+    } else {
+      setShowSearchResults(false);
+      setSearchResults([]);
+    }
+  }, [searchValue]);
+
+  const handleSearchSelect = (item: SearchableItem) => {
+    setSearchValue("");
+    setShowSearchResults(false);
+    navigate(item.route);
+    toast({
+      title: `Navigating to ${item.title}`,
+      description: `Opening ${item.type}: ${item.title}`,
+    });
+  };
 
   const notifications = [
     { id: 1, title: "New client added", description: "James Peterson was added as a client", time: "10 min ago", unread: true },
@@ -46,11 +102,58 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
     { id: 3, from: "David Miller", message: "When will the medical report be ready?", time: "3 hours ago", unread: false },
   ];
 
+  const handleReadAllNotifications = () => {
+    toast({
+      title: "Marked all as read",
+      description: "All notifications have been marked as read"
+    });
+  };
+
+  const handleReadAllMessages = () => {
+    toast({
+      title: "Marked all as read",
+      description: "All messages have been marked as read"
+    });
+  };
+  
   const handleQuickAction = (action: string) => {
     toast({
       title: action,
       description: `${action} feature has been triggered`,
     });
+    
+    // Navigate based on the action
+    switch(action) {
+      case "Add new client":
+        navigate("/clients/new");
+        break;
+      case "Create new billing":
+        navigate("/billing/new");
+        break;
+      case "Upload document":
+        navigate("/documents?tab=upload");
+        break;
+      case "Generate report":
+        navigate("/reports");
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleReplyToMessage = (from: string) => {
+    toast({ 
+      title: `Replied to ${from}`,
+      description: `Your reply has been sent to ${from}`
+    });
+  };
+
+  const handleSettingsAction = (setting: string) => {
+    toast({ 
+      title: `${setting} opened`,
+      description: `Opening ${setting.toLowerCase()} preferences`
+    });
+    navigate("/settings");
   };
 
   return (
@@ -75,7 +178,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
           </div>
         </div>
         
-        <div className="hidden md:flex flex-1 mx-8">
+        <div className="hidden md:flex flex-1 mx-8 relative">
           <div className="relative w-full max-w-md">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-white/70" />
             <Input
@@ -84,7 +187,49 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
               className="w-full bg-white/20 text-white placeholder:text-white pl-8 md:w-[300px] lg:w-[400px] border-white/30 focus:border-white/40 hover:bg-white/30"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
+              onFocus={() => { if (searchResults.length > 0) setShowSearchResults(true) }}
+              onBlur={() => {
+                // Delay hiding results to allow for clicks
+                setTimeout(() => setShowSearchResults(false), 200)
+              }}
             />
+            
+            {showSearchResults && (
+              <div className="absolute top-full left-0 right-0 mt-1 p-2 bg-white rounded-md shadow-lg z-50 max-h-[300px] overflow-y-auto">
+                {isSearching ? (
+                  <div className="flex justify-center items-center py-4">
+                    <p className="text-sm text-gray-500">Searching...</p>
+                  </div>
+                ) : searchResults.length > 0 ? (
+                  <div className="space-y-1">
+                    {searchResults.map((result) => (
+                      <div
+                        key={`${result.type}-${result.id}`}
+                        className="flex items-center p-2 hover:bg-gray-100 rounded cursor-pointer"
+                        onClick={() => handleSearchSelect(result)}
+                      >
+                        <div className="w-8 flex-shrink-0">
+                          {result.type === 'client' && <User className="h-4 w-4 text-blue-500" />}
+                          {result.type === 'case' && <Settings className="h-4 w-4 text-green-500" />}
+                          {result.type === 'attorney' && <Mail className="h-4 w-4 text-purple-500" />}
+                          {result.type === 'document' && <Bell className="h-4 w-4 text-orange-500" />}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{result.title}</p>
+                          {result.subtitle && (
+                            <p className="text-xs text-gray-500">{result.subtitle}</p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex justify-center items-center py-4">
+                    <p className="text-sm text-gray-500">No results found</p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
         
@@ -133,7 +278,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
               <SheetHeader>
                 <div className="flex items-center justify-between">
                   <SheetTitle>Notifications</SheetTitle>
-                  <Button variant="ghost" size="sm" onClick={() => toast({ title: "Marked all as read" })}>
+                  <Button variant="ghost" size="sm" onClick={handleReadAllNotifications}>
                     Mark all as read
                   </Button>
                 </div>
@@ -180,7 +325,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
               <SheetHeader>
                 <div className="flex items-center justify-between">
                   <SheetTitle>Messages</SheetTitle>
-                  <Button variant="ghost" size="sm" onClick={() => toast({ title: "Marked all as read" })}>
+                  <Button variant="ghost" size="sm" onClick={handleReadAllMessages}>
                     Mark all as read
                   </Button>
                 </div>
@@ -203,7 +348,11 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
                       </div>
                       <p className="text-sm mt-1 text-muted-foreground">{message.message}</p>
                       <div className="mt-2 flex justify-end gap-2">
-                        <Button variant="outline" size="sm" onClick={() => toast({ title: `Replied to ${message.from}` })}>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => handleReplyToMessage(message.from)}
+                        >
                           Reply
                         </Button>
                       </div>
@@ -231,20 +380,36 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <h4 className="text-sm font-medium">Account Settings</h4>
-                    <Button variant="outline" className="w-full justify-start" onClick={() => toast({ title: "Profile settings opened" })}>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start" 
+                      onClick={() => handleSettingsAction("Profile settings")}
+                    >
                       Profile Settings
                     </Button>
-                    <Button variant="outline" className="w-full justify-start" onClick={() => toast({ title: "Notification preferences opened" })}>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start" 
+                      onClick={() => handleSettingsAction("Notification preferences")}
+                    >
                       Notification Preferences
                     </Button>
                   </div>
                   
                   <div className="space-y-2">
                     <h4 className="text-sm font-medium">System Settings</h4>
-                    <Button variant="outline" className="w-full justify-start" onClick={() => toast({ title: "Display settings opened" })}>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start" 
+                      onClick={() => handleSettingsAction("Display settings")}
+                    >
                       Display & Accessibility
                     </Button>
-                    <Button variant="outline" className="w-full justify-start" onClick={() => toast({ title: "Security settings opened" })}>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start" 
+                      onClick={() => handleSettingsAction("Security settings")}
+                    >
                       Security & Privacy
                     </Button>
                   </div>
@@ -276,11 +441,11 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             <DropdownMenuContent className="w-56" align="end">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleSettingsAction("Profile")}>
                 <User className="mr-2 h-4 w-4" />
                 <span>Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleSettingsAction("Settings")}>
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Settings</span>
               </DropdownMenuItem>
@@ -304,6 +469,43 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />
+          
+          {showSearchResults && searchValue.trim() !== "" && (
+            <div className="absolute top-full left-0 right-0 mt-1 p-2 bg-white rounded-md shadow-lg z-50 max-h-[300px] overflow-y-auto">
+              {isSearching ? (
+                <div className="flex justify-center items-center py-4">
+                  <p className="text-sm text-gray-500">Searching...</p>
+                </div>
+              ) : searchResults.length > 0 ? (
+                <div className="space-y-1">
+                  {searchResults.map((result) => (
+                    <div
+                      key={`${result.type}-${result.id}`}
+                      className="flex items-center p-2 hover:bg-gray-100 rounded cursor-pointer"
+                      onClick={() => handleSearchSelect(result)}
+                    >
+                      <div className="w-8 flex-shrink-0">
+                        {result.type === 'client' && <User className="h-4 w-4 text-blue-500" />}
+                        {result.type === 'case' && <Settings className="h-4 w-4 text-green-500" />}
+                        {result.type === 'attorney' && <Mail className="h-4 w-4 text-purple-500" />}
+                        {result.type === 'document' && <Bell className="h-4 w-4 text-orange-500" />}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{result.title}</p>
+                        {result.subtitle && (
+                          <p className="text-xs text-gray-500">{result.subtitle}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex justify-center items-center py-4">
+                  <p className="text-sm text-gray-500">No results found</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </header>

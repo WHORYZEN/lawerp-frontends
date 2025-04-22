@@ -19,23 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Edit, Eye, Search, Trash2, UserPlus } from 'lucide-react';
 import AttorneyForm from './AttorneyForm';
 import { useToast } from "@/hooks/use-toast";
-
-export type Attorney = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  role: 'Partner' | 'Associate' | 'Paralegal' | 'Intern';
-  barNumber?: string;
-  specialization?: string;
-  bio?: string;
-  profileImage?: string;
-  officeLocation?: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-};
+import { Attorney, attorneysApi } from '@/lib/api/attorneys-api';
 
 interface AttorneyListProps {
   onViewAttorney: (id: string) => void;
@@ -50,83 +34,25 @@ const AttorneyList = ({ onViewAttorney, filter }: AttorneyListProps) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Mock data loading (replace with actual API call)
-    const loadAttorneys = () => {
+    const loadAttorneys = async () => {
       setIsLoading(true);
-      
-      // Simulated API response
-      setTimeout(() => {
-        const mockAttorneys: Attorney[] = [
-          {
-            id: '1',
-            firstName: 'Rachel',
-            lastName: 'Green',
-            email: 'rgreen@lyzlaw.com',
-            phone: '555-123-4567',
-            role: 'Partner',
-            barNumber: 'BAR123456',
-            specialization: 'Corporate Law',
-            bio: 'Senior partner with 15 years of corporate law experience',
-            profileImage: '',
-            officeLocation: 'Main Office, Floor 12',
-            isActive: true,
-            createdAt: '2022-01-15T00:00:00Z',
-            updatedAt: '2023-03-20T00:00:00Z'
-          },
-          {
-            id: '2',
-            firstName: 'Mark',
-            lastName: 'Johnson',
-            email: 'mjohnson@lyzlaw.com',
-            phone: '555-987-6543',
-            role: 'Associate',
-            barNumber: 'BAR789012',
-            specialization: 'Litigation',
-            bio: 'Associate specializing in commercial litigation',
-            profileImage: '',
-            officeLocation: 'Main Office, Floor 10',
-            isActive: true,
-            createdAt: '2022-03-10T00:00:00Z',
-            updatedAt: '2023-02-15T00:00:00Z'
-          },
-          {
-            id: '3',
-            firstName: 'Lisa',
-            lastName: 'Wong',
-            email: 'lwong@lyzlaw.com',
-            phone: '555-456-7890',
-            role: 'Paralegal',
-            specialization: 'Real Estate Law',
-            bio: 'Paralegal with 8 years of experience in real estate transactions',
-            profileImage: '',
-            officeLocation: 'Downtown Office',
-            isActive: true,
-            createdAt: '2021-06-22T00:00:00Z',
-            updatedAt: '2023-01-05T00:00:00Z'
-          },
-          {
-            id: '4',
-            firstName: 'James',
-            lastName: 'Rodriguez',
-            email: 'jrodriguez@lyzlaw.com',
-            phone: '555-222-3333',
-            role: 'Intern',
-            bio: 'Law student focusing on criminal defense',
-            profileImage: '',
-            officeLocation: 'Main Office, Floor 8',
-            isActive: true,
-            createdAt: '2023-05-15T00:00:00Z',
-            updatedAt: '2023-05-15T00:00:00Z'
-          }
-        ];
-        
-        setAttorneys(mockAttorneys);
+      try {
+        const data = await attorneysApi.getAttorneys();
+        setAttorneys(data);
+      } catch (error) {
+        console.error("Failed to load attorneys:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load attorneys. Please try again later.",
+          variant: "destructive"
+        });
+      } finally {
         setIsLoading(false);
-      }, 1000);
+      }
     };
     
     loadAttorneys();
-  }, []);
+  }, [toast]);
 
   const filteredAttorneys = attorneys.filter(attorney => {
     const matchesFilter = filter === 'all' || attorney.role === filter;
@@ -140,33 +66,54 @@ const AttorneyList = ({ onViewAttorney, filter }: AttorneyListProps) => {
     return matchesFilter && matchesSearch;
   });
 
-  const handleAddAttorney = (newAttorney: Omit<Attorney, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const attorney: Attorney = {
-      ...newAttorney,
-      id: Math.random().toString(36).substring(2, 9),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    
-    setAttorneys([attorney, ...attorneys]);
-    setShowAddForm(false);
-    
-    toast({
-      title: "Attorney Added",
-      description: `${attorney.firstName} ${attorney.lastName} has been added successfully.`
-    });
-  };
-
-  const handleDeleteAttorney = (id: string) => {
-    if (confirm('Are you sure you want to delete this attorney?')) {
-      const attorney = attorneys.find(a => a.id === id);
-      setAttorneys(attorneys.filter(a => a.id !== id));
+  const handleAddAttorney = async (newAttorney: Omit<Attorney, 'id' | 'createdAt' | 'updatedAt'>) => {
+    try {
+      setIsLoading(true);
+      const attorney = await attorneysApi.createAttorney(newAttorney);
+      
+      setAttorneys([attorney, ...attorneys]);
+      setShowAddForm(false);
       
       toast({
-        title: "Attorney Removed",
-        description: `${attorney?.firstName} ${attorney?.lastName} has been removed.`,
+        title: "Attorney Added",
+        description: `${attorney.firstName} ${attorney.lastName} has been added successfully.`
+      });
+    } catch (error) {
+      console.error("Failed to add attorney:", error);
+      toast({
+        title: "Error",
+        description: "Failed to add attorney. Please try again.",
         variant: "destructive"
       });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteAttorney = async (id: string) => {
+    if (confirm('Are you sure you want to delete this attorney?')) {
+      try {
+        setIsLoading(true);
+        const attorney = attorneys.find(a => a.id === id);
+        await attorneysApi.deleteAttorney(id);
+        
+        setAttorneys(attorneys.filter(a => a.id !== id));
+        
+        toast({
+          title: "Attorney Removed",
+          description: `${attorney?.firstName} ${attorney?.lastName} has been removed.`,
+          variant: "destructive"
+        });
+      } catch (error) {
+        console.error("Failed to delete attorney:", error);
+        toast({
+          title: "Error",
+          description: "Failed to delete attorney. Please try again.",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -276,7 +223,7 @@ const AttorneyList = ({ onViewAttorney, filter }: AttorneyListProps) => {
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => {/* Add edit functionality */}}
+                              onClick={() => onViewAttorney(attorney.id)}
                             >
                               <Edit className="h-4 w-4" />
                               <span className="sr-only">Edit</span>
