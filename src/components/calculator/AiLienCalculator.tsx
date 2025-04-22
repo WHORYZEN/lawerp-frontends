@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,18 @@ const mockExtractedBills = [
   { id: 5, provider: "Pharmacy", description: "Medication", originalAmount: 890, reducedAmount: 712 },
 ];
 
-const AiLienCalculator = () => {
+// Mock data for bills received via email
+const mockEmailBills = [
+  { id: 1, provider: "City Hospital", description: "Emergency Room Visit", originalAmount: 8500 },
+  { id: 2, provider: "MRI Center", description: "MRI Scan", originalAmount: 3200 },
+  { id: 3, provider: "Dr. Smith", description: "Consultation", originalAmount: 1500 },
+];
+
+interface AiLienCalculatorProps {
+  autoProcess?: boolean;
+}
+
+const AiLienCalculator = ({ autoProcess = false }: AiLienCalculatorProps) => {
   const { toast } = useToast();
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -31,6 +42,7 @@ const AiLienCalculator = () => {
   const [extractedBills, setExtractedBills] = useState(mockExtractedBills);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isEmailBill, setIsEmailBill] = useState(false);
   
   const form = useForm({
     defaultValues: {
@@ -39,6 +51,33 @@ const AiLienCalculator = () => {
       caseExpenses: ""
     }
   });
+
+  // Handle automatic processing from email
+  useEffect(() => {
+    if (autoProcess) {
+      // Simulate processing email-sourced bill
+      setIsEmailBill(true);
+      setIsProcessing(true);
+      
+      // Convert email bills to the format we need
+      const processedBills = mockEmailBills.map(bill => ({
+        ...bill,
+        id: bill.id,
+        reducedAmount: Math.round(bill.originalAmount * 0.6) // 40% reduction
+      }));
+      
+      setTimeout(() => {
+        setExtractedBills(processedBills);
+        setIsProcessing(false);
+        setShowResults(true);
+        
+        toast({
+          title: "Email Bill Processed",
+          description: "The bill from your email has been automatically processed.",
+        });
+      }, 2000);
+    }
+  }, [autoProcess, toast]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -149,12 +188,12 @@ const AiLienCalculator = () => {
     setIsMobile(window.innerWidth < 768);
   };
 
-  useState(() => {
+  useEffect(() => {
     window.addEventListener('resize', handleResize);
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  });
+  }, []);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -171,13 +210,23 @@ const AiLienCalculator = () => {
           <CardTitle className="text-lg font-medium">AI Lien Reduction Calculator</CardTitle>
         </div>
         <CardDescription>
-          Upload a PDF medical bill to calculate potential lien reductions
+          {isEmailBill 
+            ? "Processing medical bill received from email" 
+            : "Upload a PDF medical bill to calculate potential lien reductions"}
         </CardDescription>
       </CardHeader>
       
       <CardContent className="pt-6">
         <div className="space-y-6">
-          {!showResults ? (
+          {isProcessing && (
+            <div className="flex flex-col items-center justify-center p-6 text-center">
+              <div className="w-16 h-16 border-4 border-lawfirm-light-blue border-t-transparent rounded-full animate-spin"></div>
+              <p className="mt-4">Processing medical bill...</p>
+              <p className="text-sm text-gray-500">This might take a moment</p>
+            </div>
+          )}
+          
+          {!isProcessing && !showResults && !isEmailBill && (
             <>
               <div className="space-y-4">
                 <Label htmlFor="pdf-upload">Upload Medical Bill PDF</Label>
@@ -284,7 +333,9 @@ const AiLienCalculator = () => {
                 {isUploading ? 'Uploading...' : isProcessing ? 'Processing...' : 'Process Bill with AI'}
               </Button>
             </>
-          ) : (
+          )}
+
+          {!isProcessing && showResults && (
             <>
               <div className="space-y-6">
                 <div className="rounded-md bg-green-50 p-4">
@@ -363,6 +414,7 @@ const AiLienCalculator = () => {
                     onClick={() => {
                       setFile(null);
                       setShowResults(false);
+                      setIsEmailBill(false);
                     }}
                     className="flex-1 bg-lawfirm-light-blue hover:bg-lawfirm-light-blue/90 text-white"
                   >
