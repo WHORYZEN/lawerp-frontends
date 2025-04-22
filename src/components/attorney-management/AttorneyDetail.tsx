@@ -18,7 +18,7 @@ import {
   FileText,
   Edit
 } from 'lucide-react';
-import { Attorney } from './AttorneyList';
+import { Attorney } from '@/lib/api/attorneys-api';
 import AttorneyForm from './AttorneyForm';
 import { useToast } from "@/hooks/use-toast";
 
