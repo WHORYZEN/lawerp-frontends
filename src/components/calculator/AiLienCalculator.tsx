@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Calculator, Upload, Download, File, FileText, DollarSign, Briefcase, FileSearch } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -29,6 +29,36 @@ const mockEmailBills = [
 interface AiLienCalculatorProps {
   autoProcess?: boolean;
 }
+
+const PreviewDialog = () => {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm" className="mt-2">
+          <FileSearch className="h-4 w-4 mr-2" />
+          Preview PDF
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[700px]">
+        <DialogHeader>
+          <DialogTitle>PDF Preview</DialogTitle>
+          <DialogDescription>
+            Preview of the uploaded medical bill PDF.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="border rounded-lg p-4 h-[500px] overflow-auto bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <FileText className="h-12 w-12 mx-auto text-gray-400" />
+            <p className="mt-2">PDF preview would appear here.</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              This is a placeholder. In a real implementation, PDF.js could be used to render the actual PDF content.
+            </p>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 const AiLienCalculator = ({ autoProcess = false }: AiLienCalculatorProps) => {
   const { toast } = useToast();
