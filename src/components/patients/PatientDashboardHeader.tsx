@@ -90,7 +90,7 @@ const PatientDashboardHeader: React.FC<PatientDashboardHeaderProps> = ({
                 {client?.accountNumber && (
                   <div className="flex items-center text-sm text-muted-foreground">
                     <User className="h-3.5 w-3.5 mr-1" />
-                    <span>Account Number: {client.accountNumber}</span>
+                    <span>Patient ID: {client.id} | Account: {client.accountNumber}</span>
                   </div>
                 )}
               </div>

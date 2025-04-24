@@ -4,11 +4,12 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User, Calendar, Bell, AlertCircle, FileText, Clock } from 'lucide-react';
 import PatientDashboardHeader from './PatientDashboardHeader';
+import PatientAttorneyChat from './PatientAttorneyChat';
 
 const PatientsDashboard: React.FC = () => {
   // Mock client data
   const mockClient = {
-    id: "123",
+    id: "P123",
     accountNumber: "A042",
     fullName: "John Doe",
     email: "john@example.com",
@@ -74,6 +75,8 @@ const PatientsDashboard: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      <PatientAttorneyChat client={mockClient} />
 
       <Card>
         <CardHeader>
