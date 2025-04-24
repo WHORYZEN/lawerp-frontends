@@ -1,13 +1,14 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ExternalLink, User } from 'lucide-react';
+import { ExternalLink, User, MessageCircle } from 'lucide-react';
 import { Client } from '@/types/client';
 import { useToast } from '@/hooks/use-toast';
+import { messagingApi } from '@/backend';
 
 interface PatientDashboardHeaderProps {
   client?: Client;
@@ -21,12 +22,48 @@ const PatientDashboardHeader: React.FC<PatientDashboardHeaderProps> = ({
   lastUpdated
 }) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const showToastNotification = () => {
     toast({
       title: "Client Portal Access",
       description: "This would connect to the full client profile in a real implementation.",
     });
+  };
+
+  const handleContactAttorney = async () => {
+    if (client) {
+      try {
+        // Create a new chat message to the attorney
+        await messagingApi.sendMessage({
+          senderId: client.id,
+          recipientId: 'attorney1', // Default attorney ID
+          content: `Client ${client.fullName} (Account: ${client.accountNumber}) has requested to chat.`,
+          isRead: false,
+          type: 'chat'
+        });
+
+        // Navigate to the messages page
+        navigate('/messages');
+
+        toast({
+          title: "Attorney Chat Initiated",
+          description: "You've been connected to the attorney chat. Please wait for a response.",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to connect to attorney chat. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } else {
+      toast({
+        title: "Error",
+        description: "Please log in to contact your attorney.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -66,7 +103,12 @@ const PatientDashboardHeader: React.FC<PatientDashboardHeaderProps> = ({
             </div>
           </div>
           <div className="w-full sm:w-auto">
-            <Button variant="default" className="w-full sm:w-auto">
+            <Button 
+              variant="default" 
+              className="w-full sm:w-auto"
+              onClick={handleContactAttorney}
+            >
+              <MessageCircle className="h-4 w-4 mr-2" />
               Contact Your Attorney
             </Button>
           </div>
