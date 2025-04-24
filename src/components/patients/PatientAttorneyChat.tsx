@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,8 @@ const PatientAttorneyChat: React.FC<PatientAttorneyChatProps> = ({ client, isVis
   const { toast } = useToast();
   const recipientId = 'attorney1'; // Default attorney ID
   const attorneyName = 'Jane Doelawyer'; // Default attorney name
+  // Define messagesEndRef outside of any conditional
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isVisible) {
@@ -49,10 +52,13 @@ const PatientAttorneyChat: React.FC<PatientAttorneyChatProps> = ({ client, isVis
       setIsLoading(false);
     }
   };
-
-  if (!isVisible) {
-    return null;
-  }
+  
+  // Always scroll to bottom when messages change
+  useEffect(() => {
+    if (messagesEndRef.current && isVisible) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isVisible]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,13 +90,10 @@ const PatientAttorneyChat: React.FC<PatientAttorneyChatProps> = ({ client, isVis
     }
   };
 
-  const messagesEndRef = React.useRef<HTMLDivElement>(null);
-  
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages]);
+  // If not visible, return null early but after all hooks are defined
+  if (!isVisible) {
+    return null;
+  }
 
   return (
     <Card className="mt-6" id="patient-attorney-chat">
