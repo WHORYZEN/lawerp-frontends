@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Search, Download, FileText, FilePdf, FileImage } from 'lucide-react';
+import { Search, Download, FileText, File, FileImage } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 
@@ -81,7 +80,7 @@ const PatientsDocuments: React.FC = () => {
                     <div key={doc.id} className="flex items-center justify-between p-2 border rounded-md hover:bg-gray-50">
                       <div className="flex items-center">
                         {doc.type === "pdf" ? (
-                          <FilePdf className="h-8 w-8 text-red-500 mr-3" />
+                          <File className="h-8 w-8 text-red-500 mr-3" />
                         ) : (
                           <FileImage className="h-8 w-8 text-blue-500 mr-3" />
                         )}

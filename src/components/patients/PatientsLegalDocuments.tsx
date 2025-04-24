@@ -1,9 +1,7 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Download, FilePdf, Eye } from 'lucide-react';
+import { Download, Eye, File } from 'lucide-react';
 
 const PatientsLegalDocuments: React.FC = () => {
   const legalDocuments = [
@@ -63,7 +61,7 @@ const PatientsLegalDocuments: React.FC = () => {
               <div key={doc.id} className="border rounded-md p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start">
-                    <FilePdf className="h-10 w-10 text-red-500 mr-4 mt-0.5" />
+                    <File className="h-10 w-10 text-red-500 mr-4 mt-0.5" />
                     <div>
                       <h3 className="font-medium">{doc.title}</h3>
                       <p className="text-sm text-muted-foreground mt-1">{doc.description}</p>
