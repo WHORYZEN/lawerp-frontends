@@ -1,6 +1,7 @@
 
 export interface Client {
   id: string;
+  accountNumber?: string;  // Added this field
   fullName: string;
   email: string;
   phone: string;

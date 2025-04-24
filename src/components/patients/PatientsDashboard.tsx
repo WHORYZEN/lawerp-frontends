@@ -1,13 +1,30 @@
-
 import React from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User, Calendar, Bell, AlertCircle, FileText, Clock } from 'lucide-react';
+import PatientDashboardHeader from './PatientDashboardHeader';
 
 const PatientsDashboard: React.FC = () => {
+  // Mock client data
+  const mockClient = {
+    id: "123",
+    accountNumber: "A042",
+    fullName: "John Doe",
+    email: "john@example.com",
+    phone: "555-0123",
+    createdAt: "2025-04-01",
+    updatedAt: "2025-04-20"
+  };
+
   return (
     <div className="space-y-6">
+      <PatientDashboardHeader 
+        client={mockClient}
+        caseStatus="Active Treatment"
+        lastUpdated="April 20, 2025"
+      />
+      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="pb-2">

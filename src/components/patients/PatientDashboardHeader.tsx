@@ -5,12 +5,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, User } from 'lucide-react';
 import { Client } from '@/types/client';
 import { useToast } from '@/hooks/use-toast';
 
 interface PatientDashboardHeaderProps {
-  client?: Client;  // Optional client data
+  client?: Client;
   caseStatus: string;
   lastUpdated: string;
 }
@@ -39,15 +39,23 @@ const PatientDashboardHeader: React.FC<PatientDashboardHeaderProps> = ({
               <AvatarFallback>{client?.fullName?.substring(0, 2) || 'CL'}</AvatarFallback>
             </Avatar>
             <div>
-              <div className="flex items-center">
-                <h2 className="text-lg font-semibold">{client?.fullName || "Patient Portal"}</h2>
-                {client && (
-                  <Link to={`/clients/${client.id}`} onClick={showToastNotification}>
-                    <Button variant="ghost" size="sm" className="ml-2 h-7">
-                      <ExternalLink className="h-3.5 w-3.5 mr-1" />
-                      Client Profile
-                    </Button>
-                  </Link>
+              <div className="flex flex-col">
+                <div className="flex items-center">
+                  <h2 className="text-lg font-semibold">{client?.fullName || "Patient Portal"}</h2>
+                  {client && (
+                    <Link to={`/clients/${client.id}`} onClick={showToastNotification}>
+                      <Button variant="ghost" size="sm" className="ml-2 h-7">
+                        <ExternalLink className="h-3.5 w-3.5 mr-1" />
+                        Client Profile
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+                {client?.accountNumber && (
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <User className="h-3.5 w-3.5 mr-1" />
+                    <span>Account Number: {client.accountNumber}</span>
+                  </div>
                 )}
               </div>
               <div className="flex items-center text-sm text-muted-foreground mt-1">
