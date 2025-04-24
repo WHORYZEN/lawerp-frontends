@@ -7,16 +7,17 @@ import { UserProvider } from '@/contexts/UserContext';
 
 const Admin: React.FC = () => {
   return (
-    <UserProvider>
-      <PageLayout>
-        <Helmet>
-          <title>Admin Panel - Law EMR</title>
-        </Helmet>
-        <AdminDashboard />
-      </PageLayout>
-    </UserProvider>
+    <PageLayout>
+      <Helmet>
+        <title>Admin Panel - Law EMR</title>
+      </Helmet>
+      <div className="bg-gradient-to-r from-gray-50 to-gray-100 min-h-screen pt-4">
+        <UserProvider>
+          <AdminDashboard />
+        </UserProvider>
+      </div>
+    </PageLayout>
   );
 };
 
 export default Admin;
-
