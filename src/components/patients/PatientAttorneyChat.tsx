@@ -21,6 +21,7 @@ const PatientAttorneyChat: React.FC<PatientAttorneyChatProps> = ({ client }) => 
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const recipientId = 'attorney1'; // Default attorney ID
+  const attorneyName = 'Jane Doelawyer'; // Default attorney name
 
   useEffect(() => {
     fetchMessages();
@@ -63,9 +64,10 @@ const PatientAttorneyChat: React.FC<PatientAttorneyChatProps> = ({ client }) => 
       setMessages(prev => [...prev, message]);
       setNewMessage('');
       
+      // Show notification that message was sent to attorney
       toast({
-        title: "Message Sent",
-        description: "Your message has been sent to your attorney.",
+        title: `Message Sent to ${attorneyName}`,
+        description: "Your attorney will be notified of your message.",
       });
     } catch (error) {
       toast({
@@ -86,11 +88,11 @@ const PatientAttorneyChat: React.FC<PatientAttorneyChatProps> = ({ client }) => 
   }, [messages]);
 
   return (
-    <Card className="mt-6">
+    <Card className="mt-6" id="patient-attorney-chat">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <MessageCircle className="h-5 w-5" />
-          Attorney Chat
+          Chat with Attorney - {attorneyName}
         </CardTitle>
       </CardHeader>
       <CardContent>

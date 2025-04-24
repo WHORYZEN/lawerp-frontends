@@ -36,18 +36,21 @@ const PatientDashboardHeader: React.FC<PatientDashboardHeaderProps> = ({
         // Create a new chat message to the attorney
         await messagingApi.sendMessage({
           senderId: client.id,
-          recipientId: 'attorney1', // Default attorney ID
-          content: `Client ${client.fullName} (Account: ${client.accountNumber}) has requested to chat.`,
+          recipientId: 'attorney1',
+          content: `Client ${client.fullName} (ID: ${client.id}, Account: ${client.accountNumber}) has requested to chat.`,
           isRead: false,
           type: 'chat'
         });
 
-        // Navigate to the messages page with query params
-        navigate(`/messages?fromPatient=true&clientId=${client.id}`);
+        // Navigate to the patient attorney chat section
+        const patientSection = document.getElementById('patient-attorney-chat');
+        if (patientSection) {
+          patientSection.scrollIntoView({ behavior: 'smooth' });
+        }
 
         toast({
           title: "Attorney Chat Initiated",
-          description: "You've been connected to the attorney chat. Please wait for a response.",
+          description: "You've been connected to your attorney's chat. Please start your conversation below.",
         });
       } catch (error) {
         toast({
