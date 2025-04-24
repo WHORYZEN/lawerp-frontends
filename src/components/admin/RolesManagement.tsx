@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import RolePermissions from './RolePermissions';
 
 const RolesManagement: React.FC = () => {
   const [roles, setRoles] = useState<Role[]>([]);
@@ -177,6 +177,31 @@ const RolesManagement: React.FC = () => {
     });
   };
 
+  const handleUpdatePermissions = async (roleId: string, newPermissions: string[]) => {
+    try {
+      const updatedRole = await adminApi.updateRole(roleId, {
+        permissions: newPermissions
+      });
+      
+      if (updatedRole) {
+        setRoles(prev => prev.map(role => 
+          role.id === updatedRole.id ? updatedRole : role
+        ));
+        toast({
+          title: "Success",
+          description: "Role permissions updated successfully.",
+        });
+      }
+    } catch (error) {
+      console.error('Error updating role permissions:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update role permissions. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -280,35 +305,48 @@ const RolesManagement: React.FC = () => {
                 </TableRow>
               ) : (
                 roles.map(role => (
-                  <TableRow key={role.id}>
-                    <TableCell className="font-medium">{role.name}</TableCell>
-                    <TableCell>{role.description}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {role.permissions.includes('all') ? (
-                          <span className="px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-800">
-                            All Permissions
-                          </span>
-                        ) : (
-                          role.permissions.map((permission, index) => (
-                            <span key={index} className="px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
-                              {permission.split(':')[1]}
+                  <React.Fragment key={role.id}>
+                    <TableRow>
+                      <TableCell className="font-medium">{role.name}</TableCell>
+                      <TableCell>{role.description}</TableCell>
+                      <TableCell>
+                        <div className="flex flex-wrap gap-1">
+                          {role.permissions.includes('all') ? (
+                            <span className="px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-800">
+                              All Permissions
                             </span>
-                          ))
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
-                        <Button variant="ghost" size="icon" onClick={() => openEditDialog(role)}>
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDeleteRole(role.id)}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                          ) : (
+                            role.permissions.map((permission, index) => (
+                              <span key={index} className="px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                                {permission.split(':')[1]}
+                              </span>
+                            ))
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex space-x-2">
+                          <Button variant="ghost" size="icon" onClick={() => openEditDialog(role)}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => handleDeleteRole(role.id)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell colSpan={4} className="p-0">
+                        <RolePermissions
+                          role={role.name}
+                          permissions={role.permissions}
+                          onUpdatePermissions={(newPermissions) => 
+                            handleUpdatePermissions(role.id, newPermissions)
+                          }
+                        />
+                      </TableCell>
+                    </TableRow>
+                  </React.Fragment>
                 ))
               )}
             </TableBody>
