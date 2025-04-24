@@ -4,8 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Download } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const PatientsCaseReport: React.FC = () => {
+  const { toast } = useToast();
+  
   const caseTimeline = [
     {
       date: "April 1, 2025",
@@ -45,11 +48,26 @@ const PatientsCaseReport: React.FC = () => {
     }
   ];
 
+  const handleDownloadPDF = () => {
+    toast({
+      title: "Generating PDF",
+      description: "Your case report PDF is being generated...",
+    });
+    
+    // Simulate PDF generation with a delay
+    setTimeout(() => {
+      toast({
+        title: "Download complete",
+        description: "Case summary report has been downloaded successfully.",
+      });
+    }, 2000);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Case Report</h2>
-        <Button size="sm">
+        <Button size="sm" onClick={handleDownloadPDF}>
           <Download className="h-4 w-4 mr-2" />
           Download PDF
         </Button>

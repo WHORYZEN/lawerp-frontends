@@ -1,12 +1,17 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Search, Download, FileText, File, FileImage } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 
 const PatientsDocuments: React.FC = () => {
+  const { toast } = useToast();
+  const [searchQuery, setSearchQuery] = useState('');
+  
   const documentCategories = [
     {
       id: "medical",
@@ -42,6 +47,43 @@ const PatientsDocuments: React.FC = () => {
     }
   ];
 
+  // Filter documents based on search query
+  const filteredCategories = documentCategories.map(category => ({
+    ...category,
+    documents: category.documents.filter(doc => 
+      doc.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      doc.uploadedBy.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  }));
+
+  // Count total documents that match search criteria
+  const totalMatchingDocs = filteredCategories.reduce(
+    (total, category) => total + category.documents.length, 0
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleDownloadDocument = (docName: string, docType: string) => {
+    // In a real implementation, this would trigger an API call to get the document
+    // For this demo, we'll just show a toast notification
+    toast({
+      title: "Download started",
+      description: `${docName} will be downloaded shortly.`,
+    });
+    
+    console.log(`Downloading: ${docName}.${docType}`);
+    
+    // Simulate generating a PDF for demo purposes
+    setTimeout(() => {
+      toast({
+        title: "Download complete",
+        description: `${docName} has been downloaded successfully.`,
+      });
+    }, 1500);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -53,10 +95,18 @@ const PatientsDocuments: React.FC = () => {
               type="search"
               placeholder="Search documents..."
               className="pl-8 h-9"
+              value={searchQuery}
+              onChange={handleSearchChange}
             />
           </div>
         </div>
       </div>
+
+      {searchQuery && (
+        <div className="text-sm text-muted-foreground">
+          Found {totalMatchingDocs} document{totalMatchingDocs !== 1 ? 's' : ''} matching "{searchQuery}"
+        </div>
+      )}
 
       <Tabs defaultValue={documentCategories[0].id}>
         <TabsList>
@@ -67,7 +117,7 @@ const PatientsDocuments: React.FC = () => {
           ))}
         </TabsList>
 
-        {documentCategories.map(category => (
+        {filteredCategories.map(category => (
           <TabsContent key={category.id} value={category.id}>
             <Card>
               <CardHeader>
@@ -76,29 +126,41 @@ const PatientsDocuments: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {category.documents.map(doc => (
-                    <div key={doc.id} className="flex items-center justify-between p-2 border rounded-md hover:bg-gray-50">
-                      <div className="flex items-center">
-                        {doc.type === "pdf" ? (
-                          <File className="h-8 w-8 text-red-500 mr-3" />
-                        ) : (
-                          <FileImage className="h-8 w-8 text-blue-500 mr-3" />
-                        )}
-                        <div>
-                          <p className="font-medium text-sm">{doc.name}</p>
-                          <div className="flex items-center text-xs text-muted-foreground">
-                            <span>Uploaded {doc.date}</span>
-                            <span className="mx-1.5">•</span>
-                            <span>By {doc.uploadedBy}</span>
+                  {category.documents.length === 0 ? (
+                    <p className="text-center py-8 text-muted-foreground">
+                      {searchQuery 
+                        ? `No ${category.label.toLowerCase()} matching your search.` 
+                        : `No ${category.label.toLowerCase()} available.`}
+                    </p>
+                  ) : (
+                    category.documents.map(doc => (
+                      <div key={doc.id} className="flex items-center justify-between p-2 border rounded-md hover:bg-gray-50">
+                        <div className="flex items-center">
+                          {doc.type === "pdf" ? (
+                            <File className="h-8 w-8 text-red-500 mr-3" />
+                          ) : (
+                            <FileImage className="h-8 w-8 text-blue-500 mr-3" />
+                          )}
+                          <div>
+                            <p className="font-medium text-sm">{doc.name}</p>
+                            <div className="flex items-center text-xs text-muted-foreground">
+                              <span>Uploaded {doc.date}</span>
+                              <span className="mx-1.5">•</span>
+                              <span>By {doc.uploadedBy}</span>
+                            </div>
                           </div>
                         </div>
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          onClick={() => handleDownloadDocument(doc.name, doc.type)}
+                        >
+                          <Download className="h-4 w-4 mr-1" />
+                          Download
+                        </Button>
                       </div>
-                      <Button size="sm" variant="ghost">
-                        <Download className="h-4 w-4 mr-1" />
-                        Download
-                      </Button>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>

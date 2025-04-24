@@ -1,9 +1,14 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Download, Eye, File } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const PatientsLegalDocuments: React.FC = () => {
+  const { toast } = useToast();
+  const [viewingDocument, setViewingDocument] = useState<string | null>(null);
+
   const legalDocuments = [
     {
       id: "lor",
@@ -48,6 +53,31 @@ const PatientsLegalDocuments: React.FC = () => {
     }
   ];
 
+  const handleViewDocument = (id: string) => {
+    setViewingDocument(id);
+    toast({
+      title: "Document Viewer",
+      description: "Opening document preview...",
+    });
+  };
+
+  const handleDownloadDocument = (title: string) => {
+    toast({
+      title: "Download started",
+      description: `${title} will be downloaded shortly.`,
+    });
+    
+    console.log(`Downloading: ${title}.pdf`);
+    
+    // Simulate download completion with a delay
+    setTimeout(() => {
+      toast({
+        title: "Download complete",
+        description: `${title} has been downloaded successfully.`,
+      });
+    }, 1500);
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -79,11 +109,21 @@ const PatientsLegalDocuments: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => handleViewDocument(doc.id)}
+                      disabled={!doc.signed}
+                    >
                       <Eye className="h-4 w-4 mr-1" />
                       View
                     </Button>
-                    <Button size="sm" variant="outline">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => handleDownloadDocument(doc.title)}
+                      disabled={!doc.signed}
+                    >
                       <Download className="h-4 w-4 mr-1" />
                       Download
                     </Button>
