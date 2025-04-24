@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -7,6 +7,8 @@ import PatientDashboardHeader from './PatientDashboardHeader';
 import PatientAttorneyChat from './PatientAttorneyChat';
 
 const PatientsDashboard: React.FC = () => {
+  const [isChatVisible, setIsChatVisible] = useState(false);
+  
   // Mock client data
   const mockClient = {
     id: "P123",
@@ -18,12 +20,17 @@ const PatientsDashboard: React.FC = () => {
     updatedAt: "2025-04-20"
   };
 
+  const handleChatInitiated = () => {
+    setIsChatVisible(true);
+  };
+
   return (
     <div className="space-y-6">
       <PatientDashboardHeader 
         client={mockClient}
         caseStatus="Active Treatment"
         lastUpdated="April 20, 2025"
+        onChatInitiated={handleChatInitiated}
       />
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -76,7 +83,10 @@ const PatientsDashboard: React.FC = () => {
         </Card>
       </div>
 
-      <PatientAttorneyChat client={mockClient} />
+      <PatientAttorneyChat 
+        client={mockClient} 
+        isVisible={isChatVisible}
+      />
 
       <Card>
         <CardHeader>

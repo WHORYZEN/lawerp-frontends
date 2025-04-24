@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
@@ -13,12 +14,14 @@ interface PatientDashboardHeaderProps {
   client?: Client;
   caseStatus: string;
   lastUpdated: string;
+  onChatInitiated: () => void;
 }
 
 const PatientDashboardHeader: React.FC<PatientDashboardHeaderProps> = ({
   client,
   caseStatus,
-  lastUpdated
+  lastUpdated,
+  onChatInitiated
 }) => {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -41,6 +44,9 @@ const PatientDashboardHeader: React.FC<PatientDashboardHeaderProps> = ({
           isRead: false,
           type: 'chat'
         });
+
+        // Call the callback to show the chat
+        onChatInitiated();
 
         // Navigate to the patient attorney chat section
         const patientSection = document.getElementById('patient-attorney-chat');

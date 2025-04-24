@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from "@/components/ui/input";
@@ -13,9 +12,10 @@ import { Client } from '@/types/client';
 
 interface PatientAttorneyChatProps {
   client?: Client;
+  isVisible: boolean;
 }
 
-const PatientAttorneyChat: React.FC<PatientAttorneyChatProps> = ({ client }) => {
+const PatientAttorneyChat: React.FC<PatientAttorneyChatProps> = ({ client, isVisible }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -24,8 +24,10 @@ const PatientAttorneyChat: React.FC<PatientAttorneyChatProps> = ({ client }) => 
   const attorneyName = 'Jane Doelawyer'; // Default attorney name
 
   useEffect(() => {
-    fetchMessages();
-  }, []);
+    if (isVisible) {
+      fetchMessages();
+    }
+  }, [isVisible]);
 
   const fetchMessages = async () => {
     setIsLoading(true);
@@ -47,6 +49,10 @@ const PatientAttorneyChat: React.FC<PatientAttorneyChatProps> = ({ client }) => 
       setIsLoading(false);
     }
   };
+
+  if (!isVisible) {
+    return null;
+  }
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,7 +84,6 @@ const PatientAttorneyChat: React.FC<PatientAttorneyChatProps> = ({ client }) => 
     }
   };
 
-  // Auto scroll to bottom of chat when new messages arrive
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -128,6 +133,7 @@ const PatientAttorneyChat: React.FC<PatientAttorneyChatProps> = ({ client }) => 
                       <p>{message.content}</p>
                       <p className="text-xs opacity-70 mt-1">
                         {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {message.senderId !== client?.id && ' - Attorney'}
                       </p>
                     </div>
                     {message.senderId === client?.id && (
