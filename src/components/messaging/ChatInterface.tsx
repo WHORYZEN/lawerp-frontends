@@ -1,15 +1,16 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Message } from '@/backend/messaging-api';
+import { Message, messagingApi } from '@/backend/messaging-api';
 import { Skeleton } from "@/components/ui/skeleton";
 import { Send } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useLocation } from 'react-router-dom';
 
 interface ChatInterfaceProps {
   messages: Message[];
@@ -19,8 +20,20 @@ interface ChatInterfaceProps {
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ messages, isLoading, onSend }) => {
   const [newMessage, setNewMessage] = useState('');
-  const [selectedRecipient, setSelectedRecipient] = useState('client1');
+  const [selectedRecipient, setSelectedRecipient] = useState('attorney1'); // Default to attorney1
   const [sending, setSending] = useState(false);
+  const location = useLocation();
+  
+  // Check if we came from patient portal to contact attorney
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const fromPatient = params.get('fromPatient');
+    const clientId = params.get('clientId');
+    
+    if (fromPatient && clientId) {
+      setSelectedRecipient('attorney1'); // Set to attorney by default when coming from patient portal
+    }
+  }, [location]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,18 +49,28 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ messages, isLoading, onSe
 
   // Mock recipients for demo purposes
   const recipients = [
+    { id: 'attorney1', name: 'Jane Doelawyer (Your Attorney)' },
     { id: 'client1', name: 'John Client' },
     { id: 'client2', name: 'Sarah Patient' },
     { id: 'client3', name: 'Michael Case' },
   ];
+
+  // Auto scroll to bottom of chat when new messages arrive
+  const messagesEndRef = React.useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
 
   return (
     <div className="h-[600px] flex flex-col">
       <div className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center gap-2">
           <Select value={selectedRecipient} onValueChange={setSelectedRecipient}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Select a client" />
+            <SelectTrigger className="w-[250px]">
+              <SelectValue placeholder="Select a recipient" />
             </SelectTrigger>
             <SelectContent>
               {recipients.map(recipient => (
@@ -99,6 +122,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ messages, isLoading, onSe
                 )}
               </div>
             ))}
+            <div ref={messagesEndRef} />
           </div>
         )}
       </ScrollArea>

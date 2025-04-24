@@ -9,12 +9,24 @@ import EmailLogs from './EmailLogs';
 import SmsLogs from './SmsLogs';
 import { useToast } from "@/hooks/use-toast";
 import { MessageSquare, Mail, MessageCircle, PlusCircle } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 
 const MessagingDashboard = () => {
   const [activeTab, setActiveTab] = useState('chat');
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Check if coming from patient portal
+    const params = new URLSearchParams(location.search);
+    const fromPatient = params.get('fromPatient');
+    
+    if (fromPatient) {
+      setActiveTab('chat');
+    }
+  }, [location]);
 
   useEffect(() => {
     const fetchMessages = async () => {

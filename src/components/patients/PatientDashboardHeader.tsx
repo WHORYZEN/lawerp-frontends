@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
@@ -43,8 +42,8 @@ const PatientDashboardHeader: React.FC<PatientDashboardHeaderProps> = ({
           type: 'chat'
         });
 
-        // Navigate to the messages page
-        navigate('/messages');
+        // Navigate to the messages page with query params
+        navigate(`/messages?fromPatient=true&clientId=${client.id}`);
 
         toast({
           title: "Attorney Chat Initiated",
