@@ -37,7 +37,6 @@ const Patients: React.FC = () => {
       description: "Your comprehensive case summary is being prepared...",
     });
     
-    // Simulate PDF generation with a delay
     setTimeout(() => {
       toast({
         title: "Download complete",
@@ -47,24 +46,28 @@ const Patients: React.FC = () => {
   };
 
   const defaultContent = (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <div className="space-y-6">
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-1 bg-purple-500 rounded-full"></div>
-          <h2 className="text-xl font-semibold">Patient Dashboard</h2>
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="space-y-6">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-1 bg-purple-500 rounded-full"></div>
+            <h2 className="text-xl font-semibold">Patient Dashboard</h2>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow-sm border">
+            <PatientsDashboard />
+          </div>
         </div>
-        <PatientsDashboard />
-      </div>
-      <div className="space-y-6">
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-1 bg-purple-500 rounded-full"></div>
-          <h2 className="text-xl font-semibold">Patients Overview</h2>
+        <div className="space-y-6">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-1 bg-purple-500 rounded-full"></div>
+            <h2 className="text-xl font-semibold">Patients Overview</h2>
+          </div>
+          <PatientsList 
+            onPatientSelect={(patientId) => {
+              navigate(`/patients/detail/${patientId}`);
+            }} 
+          />
         </div>
-        <PatientsList 
-          onPatientSelect={(patientId) => {
-            navigate(`/patients/detail/${patientId}`);
-          }} 
-        />
       </div>
     </div>
   );
@@ -75,45 +78,47 @@ const Patients: React.FC = () => {
         <title>Patients - LAW ERP 500</title>
       </Helmet>
       <div className="space-y-6">
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight mb-1">Patients</h1>
-            <p className="text-muted-foreground">
-              View and manage all patient information and cases
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleSearchClick}
-              className="flex items-center gap-2 hover:bg-gray-100/80"
-            >
-              <Search className="h-4 w-4" />
-              <span>Search</span>
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleDownloadCaseSummary}
-              className="flex items-center gap-2 hover:bg-gray-100/80"
-            >
-              <Download className="h-4 w-4" />
-              <span>Download Case Summary</span>
-            </Button>
-            <Button 
-              variant="default" 
-              size="sm"
-              className="bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-2"
-              onClick={() => navigate('/patients/case-report')}
-            >
-              <FileText className="h-4 w-4" />
-              <span>View Reports</span>
-            </Button>
+        <div className="bg-white p-6 rounded-lg shadow-sm border">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight mb-1">Patients</h1>
+              <p className="text-muted-foreground">
+                View and manage all patient information and cases
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleSearchClick}
+                className="flex items-center gap-2 hover:bg-gray-100/80"
+              >
+                <Search className="h-4 w-4" />
+                <span>Search</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleDownloadCaseSummary}
+                className="flex items-center gap-2 hover:bg-gray-100/80"
+              >
+                <Download className="h-4 w-4" />
+                <span>Download Case Summary</span>
+              </Button>
+              <Button 
+                variant="default" 
+                size="sm"
+                className="bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-2"
+                onClick={() => navigate('/patients/case-report')}
+              >
+                <FileText className="h-4 w-4" />
+                <span>View Reports</span>
+              </Button>
+            </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="bg-gray-50 p-6 rounded-lg">
           <Routes>
             <Route index element={defaultContent} />
             <Route path="detail/:patientId" element={<PatientDetail />} />
