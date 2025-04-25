@@ -1,3 +1,4 @@
+
 import { v4 as uuidv4 } from 'uuid';
 
 // User types
@@ -5,7 +6,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: 'admin' | 'attorney' | 'paralegal' | 'staff';
+  role: 'admin' | 'attorney' | 'paralegal' | 'staff' | 'billing_admin' | 'case_manager' | 'medical_staff';
   permissions?: string[];
   status: 'active' | 'inactive';
   createdAt: string;
@@ -47,7 +48,7 @@ const mockUsers: User[] = [
     name: 'Jane Smith',
     email: 'jane.smith@example.com',
     role: 'attorney',
-    permissions: ['access:attorney-portal', 'view:clients', 'manage:clients', 'view:attorneys', 'access:patient-portal', 'view:patients', 'manage:patients'],
+    permissions: ['view:clients', 'edit:clients', 'view:cases', 'edit:cases', 'view:documents', 'upload:documents', 'view:patients'],
     status: 'active',
     createdAt: new Date(Date.now() - 25 * 24 * 3600000).toISOString(),
     lastActive: new Date(Date.now() - 2 * 3600000).toISOString()
@@ -57,7 +58,7 @@ const mockUsers: User[] = [
     name: 'Michael Johnson',
     email: 'michael.johnson@example.com',
     role: 'paralegal',
-    permissions: ['access:client-portal', 'view:clients', 'access:documents', 'upload:documents', 'access:patient-portal', 'view:patients'],
+    permissions: ['view:clients', 'view:cases', 'view:documents', 'upload:documents', 'view:patients'],
     status: 'active',
     createdAt: new Date(Date.now() - 20 * 24 * 3600000).toISOString(),
     lastActive: new Date(Date.now() - 8 * 3600000).toISOString()
@@ -67,10 +68,49 @@ const mockUsers: User[] = [
     name: 'Sarah Williams',
     email: 'sarah.williams@example.com',
     role: 'staff',
-    permissions: ['access:client-portal', 'view:clients', 'access:patient-portal', 'view:patients'],
+    permissions: ['view:clients', 'view:cases', 'view:patients'],
     status: 'inactive',
     createdAt: new Date(Date.now() - 15 * 24 * 3600000).toISOString(),
     lastActive: new Date(Date.now() - 5 * 24 * 3600000).toISOString()
+  },
+  {
+    id: 'user5',
+    name: 'Robert Chen',
+    email: 'robert.chen@example.com',
+    role: 'case_manager',
+    permissions: [
+      'view:cases', 'create:cases', 'edit:cases', 'delete:cases', 'assign:attorney',
+      'view:clients', 'edit:clients', 'view:documents', 'upload:documents'
+    ],
+    status: 'active',
+    createdAt: new Date(Date.now() - 10 * 24 * 3600000).toISOString(),
+    lastActive: new Date(Date.now() - 1 * 24 * 3600000).toISOString()
+  },
+  {
+    id: 'user6',
+    name: 'Lisa Rodriguez',
+    email: 'lisa.rodriguez@example.com',
+    role: 'medical_staff',
+    permissions: [
+      'view:medical', 'create:medical', 'edit:medical', 'upload:medical', 
+      'view:patients', 'edit:patients', 'upload:patient-records'
+    ],
+    status: 'active',
+    createdAt: new Date(Date.now() - 18 * 24 * 3600000).toISOString(),
+    lastActive: new Date(Date.now() - 6 * 3600000).toISOString()
+  },
+  {
+    id: 'user7',
+    name: 'David Thompson',
+    email: 'david.thompson@example.com',
+    role: 'billing_admin',
+    permissions: [
+      'view:billing', 'edit:billing', 'calculate:settlements', 'process:payments',
+      'manage:settlements', 'view:documents', 'upload:invoices'
+    ],
+    status: 'active',
+    createdAt: new Date(Date.now() - 22 * 24 * 3600000).toISOString(),
+    lastActive: new Date(Date.now() - 12 * 3600000).toISOString()
   }
 ];
 
@@ -86,58 +126,72 @@ const mockRoles: Role[] = [
     id: 'role2',
     name: 'Attorney',
     permissions: [
-      'access:attorney-portal',
-      'access:client-portal',
-      'view:clients',
-      'manage:clients',
+      'view:clients', 'edit:clients',
+      'view:cases', 'edit:cases', 'assign:attorney',
       'view:attorneys',
-      'access:documents',
-      'upload:documents',
-      'manage:documents',
-      'access:patient-portal',
-      'view:patient-appointments',
-      'manage:patient-records'
+      'view:documents', 'upload:documents', 'download:documents',
+      'view:patients', 'view:medical',
+      'view:chat', 'add:notes',
+      'view:notifications'
     ],
-    description: 'Access to client and case information with document management'
+    description: 'Legal representation and case management'
   },
   {
     id: 'role3',
     name: 'Paralegal',
     permissions: [
-      'access:client-portal',
-      'view:clients',
-      'access:documents',
-      'upload:documents',
-      'access:patient-portal',
-      'view:patient-appointments',
-      'schedule:appointments'
+      'view:clients', 'view:cases',
+      'view:documents', 'upload:documents', 'download:documents',
+      'view:patients',
+      'view:chat', 'add:notes',
+      'view:notifications'
     ],
-    description: 'Limited access to manage client information and documents'
+    description: 'Legal assistant with document management access'
   },
   {
     id: 'role4',
     name: 'Staff',
     permissions: [
-      'view:clients',
+      'view:clients', 
       'view:attorneys',
-      'access:documents',
-      'view:patient-appointments'
+      'view:cases',
+      'view:documents',
+      'view:notifications'
     ],
-    description: 'Basic access to view information'
+    description: 'Basic viewer access to system information'
   },
   {
     id: 'role5',
     name: 'Billing Administrator',
     permissions: [
-      'access:billing',
-      'manage:invoices',
-      'process:payments',
-      'manage:settlements',
-      'access:calculator',
-      'run:calculations',
-      'export:reports'
+      'view:billing', 'edit:billing',
+      'calculate:settlements', 'process:payments', 'manage:settlements',
+      'view:documents', 'upload:invoices', 'download:documents',
+      'view:reports', 'generate:reports', 'download:reports'
     ],
     description: 'Full access to billing and settlement functions'
+  },
+  {
+    id: 'role6',
+    name: 'Case Manager',
+    permissions: [
+      'view:cases', 'create:cases', 'edit:cases', 'delete:cases', 'assign:attorney',
+      'view:clients', 'edit:clients', 
+      'view:attorneys',
+      'view:documents', 'upload:documents', 'download:documents',
+      'view:notifications', 'view:chat', 'add:notes'
+    ],
+    description: 'Manages case workflow and assignments'
+  },
+  {
+    id: 'role7',
+    name: 'Medical Staff',
+    permissions: [
+      'view:medical', 'create:medical', 'edit:medical', 'upload:medical', 'download:medical',
+      'view:patients', 'edit:patients', 'upload:patient-records', 'download:patient-records',
+      'view:reports', 'generate:reports'
+    ],
+    description: 'Handles patient medical information and records'
   }
 ];
 
@@ -363,7 +417,33 @@ export const adminApi = {
     const role = mockRoles.find(role => role.id === roleId);
     
     if (user && role) {
-      user.role = role.name.toLowerCase() as 'admin' | 'attorney' | 'paralegal' | 'staff';
+      // Map role name to user.role type
+      let roleType: 'admin' | 'attorney' | 'paralegal' | 'staff' | 'billing_admin' | 'case_manager' | 'medical_staff';
+      
+      switch (role.name.toLowerCase()) {
+        case 'administrator':
+          roleType = 'admin';
+          break;
+        case 'attorney':
+          roleType = 'attorney';
+          break;
+        case 'paralegal':
+          roleType = 'paralegal';
+          break;
+        case 'billing administrator':
+          roleType = 'billing_admin';
+          break;
+        case 'case manager':
+          roleType = 'case_manager';
+          break;
+        case 'medical staff':
+          roleType = 'medical_staff';
+          break;
+        default:
+          roleType = 'staff';
+      }
+      
+      user.role = roleType;
       user.permissions = [...role.permissions];
       
       // Log the action
@@ -380,5 +460,42 @@ export const adminApi = {
     }
     
     return null;
+  },
+  
+  // Check if a user has a specific permission
+  userHasPermission: async (userId: string, permission: string): Promise<boolean> => {
+    const user = mockUsers.find(user => user.id === userId);
+    
+    if (!user || !user.permissions) return false;
+    
+    // If user has 'all' permission or the specific permission
+    if (user.permissions.includes('all') || user.permissions.includes(permission)) {
+      return true;
+    }
+    
+    return false;
+  },
+  
+  // Get permissions module structure (for UI)
+  getPermissionsStructure: async (): Promise<any> => {
+    // This would return the permission modules structure that the UI uses
+    // For now, return a simple structure
+    return {
+      modules: [
+        { id: 'clients', name: 'Clients' },
+        { id: 'attorneys', name: 'Attorneys' },
+        { id: 'cases', name: 'Case Management' },
+        { id: 'medical', name: 'Medical Management' },
+        { id: 'billing', name: 'Billing & Settlements' },
+        { id: 'documents', name: 'Documents' },
+        { id: 'chatbot', name: 'Chatbot & Notes' },
+        { id: 'reports', name: 'Reports' },
+        { id: 'notifications', name: 'Notifications' },
+        { id: 'patients', name: 'Patients' },
+        { id: 'admin', name: 'Admin Controls' },
+      ],
+      types: ['view', 'create', 'edit', 'delete', 'upload', 'download']
+    };
   }
 };
+

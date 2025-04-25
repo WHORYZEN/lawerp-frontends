@@ -1,9 +1,12 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Shield, Lock } from 'lucide-react';
+import { Shield, Lock, ChevronDown, ChevronUp } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface PermissionProps {
   role: string;
@@ -11,64 +14,180 @@ interface PermissionProps {
   onUpdatePermissions: (permissions: string[]) => void;
 }
 
-const availablePermissions = [
-  // Patient Portal
-  { id: 'access:patient-portal', label: 'Access Patient Portal', category: 'Patient Portal' },
-  { id: 'manage:patient-records', label: 'Manage Patient Records', category: 'Patient Portal' },
-  { id: 'view:patient-appointments', label: 'View Appointments', category: 'Patient Portal' },
-  { id: 'schedule:appointments', label: 'Schedule Appointments', category: 'Patient Portal' },
-  
-  // Client Management
-  { id: 'access:client-portal', label: 'Access Client Portal', category: 'Clients' },
-  { id: 'view:clients', label: 'View Clients', category: 'Clients' },
-  { id: 'manage:clients', label: 'Manage Clients', category: 'Clients' },
-  { id: 'delete:clients', label: 'Delete Clients', category: 'Clients' },
-  
-  // Attorney Management
-  { id: 'access:attorney-portal', label: 'Access Attorney Portal', category: 'Attorneys' },
-  { id: 'view:attorneys', label: 'View Attorneys', category: 'Attorneys' },
-  { id: 'manage:attorneys', label: 'Manage Attorneys', category: 'Attorneys' },
-  { id: 'assign:cases', label: 'Assign Cases', category: 'Attorneys' },
-  
-  // Depositions
-  { id: 'access:depositions', label: 'Access Depositions', category: 'Depositions' },
-  { id: 'schedule:depositions', label: 'Schedule Depositions', category: 'Depositions' },
-  { id: 'manage:transcripts', label: 'Manage Transcripts', category: 'Depositions' },
-  { id: 'view:deposition-calendar', label: 'View Calendar', category: 'Depositions' },
-  
-  // Billing & Settlements
-  { id: 'access:billing', label: 'Access Billing', category: 'Billing' },
-  { id: 'manage:invoices', label: 'Manage Invoices', category: 'Billing' },
-  { id: 'process:payments', label: 'Process Payments', category: 'Billing' },
-  { id: 'manage:settlements', label: 'Manage Settlements', category: 'Billing' },
-  
-  // AI Lien Calculator
-  { id: 'access:calculator', label: 'Access AI Calculator', category: 'Calculator' },
-  { id: 'run:calculations', label: 'Run Calculations', category: 'Calculator' },
-  { id: 'view:reduction-history', label: 'View History', category: 'Calculator' },
-  { id: 'export:reports', label: 'Export Reports', category: 'Calculator' },
-  
-  // Documents
-  { id: 'access:documents', label: 'Access Documents', category: 'Documents' },
-  { id: 'upload:documents', label: 'Upload Documents', category: 'Documents' },
-  { id: 'manage:documents', label: 'Manage Documents', category: 'Documents' },
-  { id: 'delete:documents', label: 'Delete Documents', category: 'Documents' },
-  
-  // System Access
-  { id: 'access:admin-panel', label: 'Access Admin Panel', category: 'Administration' },
-  { id: 'manage:users', label: 'Manage Users', category: 'Administration' },
-  { id: 'manage:roles', label: 'Manage Roles', category: 'Administration' },
-  { id: 'view:audit-logs', label: 'View Audit Logs', category: 'Administration' },
-  
-  // All Permissions
-  { id: 'all', label: 'All Permissions (Admin)', category: 'Special' },
+// Define a more structured permissions system
+const permissionModules = [
+  {
+    id: 'clients',
+    name: 'Clients',
+    description: 'Client information management',
+    permissions: [
+      { id: 'view:clients', label: 'View Clients', type: 'basic' },
+      { id: 'create:clients', label: 'Create Clients', type: 'write' },
+      { id: 'edit:clients', label: 'Edit Clients', type: 'write' },
+      { id: 'delete:clients', label: 'Delete Clients', type: 'danger' },
+    ]
+  },
+  {
+    id: 'attorneys',
+    name: 'Attorneys',
+    description: 'Attorney management',
+    permissions: [
+      { id: 'view:attorneys', label: 'View Attorneys', type: 'basic' },
+      { id: 'create:attorneys', label: 'Create Attorneys', type: 'write' },
+      { id: 'edit:attorneys', label: 'Edit Attorneys', type: 'write' },
+      { id: 'delete:attorneys', label: 'Delete Attorneys', type: 'danger' },
+      { id: 'assign:cases', label: 'Assign Cases', type: 'write' },
+    ]
+  },
+  {
+    id: 'cases',
+    name: 'Case Management',
+    description: 'Legal case management',
+    permissions: [
+      { id: 'view:cases', label: 'View Cases', type: 'basic' },
+      { id: 'create:cases', label: 'Create Cases', type: 'write' },
+      { id: 'edit:cases', label: 'Edit Cases', type: 'write' },
+      { id: 'delete:cases', label: 'Delete Cases', type: 'danger' },
+      { id: 'assign:attorney', label: 'Assign Attorney', type: 'write' },
+    ]
+  },
+  {
+    id: 'medical',
+    name: 'Medical Management',
+    description: 'Medical records and information',
+    permissions: [
+      { id: 'view:medical', label: 'View Medical Records', type: 'basic' },
+      { id: 'create:medical', label: 'Create Medical Records', type: 'write' },
+      { id: 'edit:medical', label: 'Edit Medical Records', type: 'write' },
+      { id: 'delete:medical', label: 'Delete Medical Records', type: 'danger' },
+      { id: 'upload:medical', label: 'Upload Medical Records', type: 'write' },
+      { id: 'download:medical', label: 'Download Medical Records', type: 'basic' },
+    ]
+  },
+  {
+    id: 'billing',
+    name: 'Billing & Settlements',
+    description: 'Financial management',
+    permissions: [
+      { id: 'view:billing', label: 'View Billing', type: 'basic' },
+      { id: 'edit:billing', label: 'Edit Billing', type: 'write' },
+      { id: 'calculate:settlements', label: 'Calculate Settlements', type: 'write' },
+      { id: 'upload:invoices', label: 'Upload Invoices', type: 'write' },
+      { id: 'process:payments', label: 'Process Payments', type: 'write' },
+      { id: 'manage:settlements', label: 'Manage Settlements', type: 'write' },
+    ]
+  },
+  {
+    id: 'documents',
+    name: 'Documents',
+    description: 'Document management',
+    permissions: [
+      { id: 'view:documents', label: 'View Documents', type: 'basic' },
+      { id: 'upload:documents', label: 'Upload Documents', type: 'write' },
+      { id: 'download:documents', label: 'Download Documents', type: 'basic' },
+      { id: 'edit:documents', label: 'Edit Documents', type: 'write' },
+      { id: 'delete:documents', label: 'Delete Documents', type: 'danger' },
+    ]
+  },
+  {
+    id: 'chatbot',
+    name: 'Chatbot & Notes',
+    description: 'Communication tools',
+    permissions: [
+      { id: 'view:chat', label: 'View Chat History', type: 'basic' },
+      { id: 'add:notes', label: 'Add Notes', type: 'write' },
+      { id: 'edit:notes', label: 'Edit Notes', type: 'write' },
+      { id: 'delete:notes', label: 'Delete Notes', type: 'danger' },
+    ]
+  },
+  {
+    id: 'reports',
+    name: 'Reports',
+    description: 'Analytics and reporting',
+    permissions: [
+      { id: 'view:reports', label: 'View Reports', type: 'basic' },
+      { id: 'generate:reports', label: 'Generate Reports', type: 'write' },
+      { id: 'download:reports', label: 'Download Reports', type: 'basic' },
+      { id: 'share:reports', label: 'Share Reports', type: 'write' },
+    ]
+  },
+  {
+    id: 'notifications',
+    name: 'Notifications',
+    description: 'System alerts and messages',
+    permissions: [
+      { id: 'view:notifications', label: 'View Notifications', type: 'basic' },
+      { id: 'manage:notifications', label: 'Manage Notifications', type: 'write' },
+      { id: 'send:notifications', label: 'Send Notifications', type: 'write' },
+    ]
+  },
+  {
+    id: 'patients',
+    name: 'Patients',
+    description: 'Patient information',
+    permissions: [
+      { id: 'view:patients', label: 'View Patients', type: 'basic' },
+      { id: 'edit:patients', label: 'Edit Patients', type: 'write' },
+      { id: 'upload:patient-records', label: 'Upload Records', type: 'write' },
+      { id: 'download:patient-records', label: 'Download Records', type: 'basic' },
+      { id: 'delete:patients', label: 'Delete Patients', type: 'danger' },
+    ]
+  },
+  {
+    id: 'admin',
+    name: 'Admin Controls',
+    description: 'System administration',
+    permissions: [
+      { id: 'view:admin-panel', label: 'View Admin Panel', type: 'basic' },
+      { id: 'manage:users', label: 'Manage Users', type: 'admin' },
+      { id: 'manage:roles', label: 'Manage Roles', type: 'admin' },
+      { id: 'view:audit-logs', label: 'View Audit Logs', type: 'admin' },
+      { id: 'manage:settings', label: 'Manage System Settings', type: 'admin' },
+    ]
+  },
 ];
+
+// Create a flat array of all permissions for lookup purposes
+const allAvailablePermissions = permissionModules.flatMap(module => 
+  module.permissions.map(permission => ({
+    id: permission.id,
+    label: permission.label,
+    module: module.name,
+    type: permission.type
+  }))
+);
+
+// Add special permission for "all"
+allAvailablePermissions.push({
+  id: 'all',
+  label: 'All Permissions (Admin)',
+  module: 'Special',
+  type: 'admin'
+});
+
+const getPermissionTypeColor = (type: string) => {
+  switch (type) {
+    case 'basic':
+      return 'bg-blue-100 text-blue-800';
+    case 'write':
+      return 'bg-green-100 text-green-800';
+    case 'danger':
+      return 'bg-red-100 text-red-800';
+    case 'admin':
+      return 'bg-purple-100 text-purple-800';
+    default:
+      return 'bg-gray-100 text-gray-800';
+  }
+};
 
 const RolePermissions: React.FC<PermissionProps> = ({
   role,
   permissions,
   onUpdatePermissions,
 }) => {
+  const [activeTab, setActiveTab] = useState('modules');
+  const [expandedModules, setExpandedModules] = useState<string[]>([]);
+
   const handleTogglePermission = (permissionId: string) => {
     if (permissionId === 'all') {
       if (permissions.includes('all')) {
@@ -80,7 +199,7 @@ const RolePermissions: React.FC<PermissionProps> = ({
     }
     
     if (permissions.includes('all')) {
-      const allPermissionsExcept = availablePermissions
+      const allPermissionsExcept = allAvailablePermissions
         .filter(p => p.id !== 'all' && p.id !== permissionId)
         .map(p => p.id);
       onUpdatePermissions(allPermissionsExcept);
@@ -94,16 +213,49 @@ const RolePermissions: React.FC<PermissionProps> = ({
     onUpdatePermissions(updatedPermissions);
   };
 
-  // Group permissions by category
-  const permissionsByCategory = availablePermissions.reduce((acc, permission) => {
-    if (!acc[permission.category]) {
-      acc[permission.category] = [];
+  const toggleModule = (moduleId: string) => {
+    setExpandedModules(prev => 
+      prev.includes(moduleId) 
+        ? prev.filter(id => id !== moduleId) 
+        : [...prev, moduleId]
+    );
+  };
+
+  const handleModuleSelectAll = (moduleId: string) => {
+    const modulePermissions = permissionModules
+      .find(m => m.id === moduleId)
+      ?.permissions.map(p => p.id) || [];
+      
+    const currentlyHasAll = modulePermissions.every(p => permissions.includes(p));
+    
+    let updatedPermissions: string[];
+    
+    if (currentlyHasAll) {
+      updatedPermissions = permissions.filter(p => !modulePermissions.includes(p));
+    } else {
+      const uniquePermissions = new Set([...permissions, ...modulePermissions]);
+      updatedPermissions = Array.from(uniquePermissions);
     }
-    acc[permission.category].push(permission);
-    return acc;
-  }, {} as Record<string, typeof availablePermissions>);
+    
+    onUpdatePermissions(updatedPermissions);
+  };
 
   const hasAllPermission = permissions.includes('all');
+
+  // Calculate if a module has all permissions granted
+  const getModulePermissionStatus = (moduleId: string) => {
+    if (hasAllPermission) return 'full';
+    
+    const modulePermissions = permissionModules
+      .find(m => m.id === moduleId)
+      ?.permissions.map(p => p.id) || [];
+      
+    const grantedCount = modulePermissions.filter(p => permissions.includes(p)).length;
+    
+    if (grantedCount === 0) return 'none';
+    if (grantedCount === modulePermissions.length) return 'full';
+    return 'partial';
+  };
 
   return (
     <Card className="mt-4">
@@ -122,9 +274,9 @@ const RolePermissions: React.FC<PermissionProps> = ({
               <Label htmlFor="permission-all" className="font-medium text-purple-800">
                 All Permissions
               </Label>
-              <span className="text-xs bg-purple-200 text-purple-800 px-2 py-0.5 rounded">
-                Full Access
-              </span>
+              <Badge variant="outline" className="bg-purple-200 text-purple-800 border-purple-300">
+                Full Administrator Access
+              </Badge>
             </div>
             <Switch
               id="permission-all"
@@ -134,42 +286,244 @@ const RolePermissions: React.FC<PermissionProps> = ({
           </div>
         </div>
 
-        {/* Render permissions by category */}
-        <div className="space-y-6">
-          {Object.entries(permissionsByCategory).map(([category, categoryPermissions]) => (
-            category !== 'Special' && (
-              <div key={category} className="space-y-3">
-                <h3 className="text-sm font-medium text-muted-foreground border-b pb-1">
-                  {category}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {categoryPermissions.map((permission) => (
-                    <div 
-                      key={permission.id} 
-                      className="flex items-center justify-between p-2 rounded-lg border"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Lock className="h-4 w-4 text-muted-foreground" />
-                        <Label 
-                          htmlFor={`permission-${permission.id}`} 
-                          className="text-sm cursor-pointer"
-                        >
-                          {permission.label}
-                        </Label>
-                      </div>
-                      <Switch
-                        id={`permission-${permission.id}`}
-                        checked={permissions.includes(permission.id) || hasAllPermission}
-                        disabled={hasAllPermission}
-                        onCheckedChange={() => handleTogglePermission(permission.id)}
-                      />
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+          <TabsList className="mb-4">
+            <TabsTrigger value="modules">By Module</TabsTrigger>
+            <TabsTrigger value="types">By Permission Type</TabsTrigger>
+          </TabsList>
+          
+          {/* Module-based view */}
+          <TabsContent value="modules" className="space-y-6">
+            {permissionModules.map((module) => (
+              <div key={module.id} className="border rounded-lg overflow-hidden">
+                <div 
+                  className={`p-3 flex items-center justify-between cursor-pointer
+                    ${expandedModules.includes(module.id) ? 'bg-gray-50' : 'bg-white'}`}
+                  onClick={() => toggleModule(module.id)}
+                >
+                  <div className="flex items-center gap-3">
+                    <Lock className="h-4 w-4 text-gray-500" />
+                    <div>
+                      <h3 className="font-medium">{module.name}</h3>
+                      <p className="text-xs text-muted-foreground">{module.description}</p>
                     </div>
-                  ))}
+                    {getModulePermissionStatus(module.id) === 'full' && (
+                      <Badge className="bg-green-100 border-green-200 text-green-800 ml-2">
+                        Full Access
+                      </Badge>
+                    )}
+                    {getModulePermissionStatus(module.id) === 'partial' && (
+                      <Badge className="bg-yellow-100 border-yellow-200 text-yellow-800 ml-2">
+                        Partial Access
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="flex items-center">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleModuleSelectAll(module.id);
+                      }}
+                      disabled={hasAllPermission}
+                      className="mr-2 text-xs"
+                    >
+                      {getModulePermissionStatus(module.id) === 'full' ? 'Deselect All' : 'Select All'}
+                    </Button>
+                    {expandedModules.includes(module.id) 
+                      ? <ChevronUp className="h-4 w-4" /> 
+                      : <ChevronDown className="h-4 w-4" />
+                    }
+                  </div>
+                </div>
+                
+                {/* Expanded module permissions */}
+                {expandedModules.includes(module.id) && (
+                  <div className="p-3 bg-gray-50 border-t">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                      {module.permissions.map((permission) => (
+                        <div 
+                          key={permission.id} 
+                          className="flex items-center justify-between p-2 rounded-lg bg-white border"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Badge 
+                              variant="outline" 
+                              className={`${getPermissionTypeColor(permission.type)} h-6 w-6 p-0 flex items-center justify-center rounded-full`}
+                            >
+                              {permission.type === 'basic' && 'V'}
+                              {permission.type === 'write' && 'W'}
+                              {permission.type === 'danger' && 'D'}
+                              {permission.type === 'admin' && 'A'}
+                            </Badge>
+                            <Label 
+                              htmlFor={`permission-${permission.id}`} 
+                              className="text-sm cursor-pointer"
+                            >
+                              {permission.label}
+                            </Label>
+                          </div>
+                          <Switch
+                            id={`permission-${permission.id}`}
+                            checked={permissions.includes(permission.id) || hasAllPermission}
+                            disabled={hasAllPermission}
+                            onCheckedChange={() => handleTogglePermission(permission.id)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </TabsContent>
+          
+          {/* Type-based view */}
+          <TabsContent value="types">
+            <div className="space-y-6">
+              {/* View Permissions */}
+              <div>
+                <h3 className="font-medium mb-2 flex items-center">
+                  <Badge className={getPermissionTypeColor('basic')}>View</Badge>
+                  <span className="ml-2">View Permissions</span>
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                  {allAvailablePermissions
+                    .filter(p => p.type === 'basic' && p.id !== 'all')
+                    .map(permission => (
+                      <div 
+                        key={permission.id} 
+                        className="flex items-center justify-between p-2 rounded-lg bg-white border"
+                      >
+                        <div className="flex flex-col">
+                          <Label 
+                            htmlFor={`perm-${permission.id}`} 
+                            className="text-sm cursor-pointer"
+                          >
+                            {permission.label}
+                          </Label>
+                          <span className="text-xs text-muted-foreground">{permission.module}</span>
+                        </div>
+                        <Switch
+                          id={`perm-${permission.id}`}
+                          checked={permissions.includes(permission.id) || hasAllPermission}
+                          disabled={hasAllPermission}
+                          onCheckedChange={() => handleTogglePermission(permission.id)}
+                        />
+                      </div>
+                    ))
+                  }
                 </div>
               </div>
-            )
-          ))}
-        </div>
+              
+              {/* Write Permissions */}
+              <div>
+                <h3 className="font-medium mb-2 flex items-center">
+                  <Badge className={getPermissionTypeColor('write')}>Write</Badge>
+                  <span className="ml-2">Create/Edit Permissions</span>
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                  {allAvailablePermissions
+                    .filter(p => p.type === 'write')
+                    .map(permission => (
+                      <div 
+                        key={permission.id} 
+                        className="flex items-center justify-between p-2 rounded-lg bg-white border"
+                      >
+                        <div className="flex flex-col">
+                          <Label 
+                            htmlFor={`perm-${permission.id}`} 
+                            className="text-sm cursor-pointer"
+                          >
+                            {permission.label}
+                          </Label>
+                          <span className="text-xs text-muted-foreground">{permission.module}</span>
+                        </div>
+                        <Switch
+                          id={`perm-${permission.id}`}
+                          checked={permissions.includes(permission.id) || hasAllPermission}
+                          disabled={hasAllPermission}
+                          onCheckedChange={() => handleTogglePermission(permission.id)}
+                        />
+                      </div>
+                    ))
+                  }
+                </div>
+              </div>
+              
+              {/* Danger Permissions */}
+              <div>
+                <h3 className="font-medium mb-2 flex items-center">
+                  <Badge className={getPermissionTypeColor('danger')}>Danger</Badge>
+                  <span className="ml-2">Delete Permissions</span>
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                  {allAvailablePermissions
+                    .filter(p => p.type === 'danger')
+                    .map(permission => (
+                      <div 
+                        key={permission.id} 
+                        className="flex items-center justify-between p-2 rounded-lg bg-white border"
+                      >
+                        <div className="flex flex-col">
+                          <Label 
+                            htmlFor={`perm-${permission.id}`} 
+                            className="text-sm cursor-pointer"
+                          >
+                            {permission.label}
+                          </Label>
+                          <span className="text-xs text-muted-foreground">{permission.module}</span>
+                        </div>
+                        <Switch
+                          id={`perm-${permission.id}`}
+                          checked={permissions.includes(permission.id) || hasAllPermission}
+                          disabled={hasAllPermission}
+                          onCheckedChange={() => handleTogglePermission(permission.id)}
+                        />
+                      </div>
+                    ))
+                  }
+                </div>
+              </div>
+              
+              {/* Admin Permissions */}
+              <div>
+                <h3 className="font-medium mb-2 flex items-center">
+                  <Badge className={getPermissionTypeColor('admin')}>Admin</Badge>
+                  <span className="ml-2">Administrative Permissions</span>
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                  {allAvailablePermissions
+                    .filter(p => p.type === 'admin' && p.id !== 'all')
+                    .map(permission => (
+                      <div 
+                        key={permission.id} 
+                        className="flex items-center justify-between p-2 rounded-lg bg-white border"
+                      >
+                        <div className="flex flex-col">
+                          <Label 
+                            htmlFor={`perm-${permission.id}`} 
+                            className="text-sm cursor-pointer"
+                          >
+                            {permission.label}
+                          </Label>
+                          <span className="text-xs text-muted-foreground">{permission.module}</span>
+                        </div>
+                        <Switch
+                          id={`perm-${permission.id}`}
+                          checked={permissions.includes(permission.id) || hasAllPermission}
+                          disabled={hasAllPermission}
+                          onCheckedChange={() => handleTogglePermission(permission.id)}
+                        />
+                      </div>
+                    ))
+                  }
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
 
         <div className="mt-6 flex justify-end">
           <Button 
