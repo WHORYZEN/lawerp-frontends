@@ -191,7 +191,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
             <NavItem
               icon={<User className="h-5 w-5" />}
-              label="Patients Portal"
+              label="Patients"
               to="/patients"
               active={pathname === "/patients" || pathname.startsWith("/patients/")}
               hasSubmenu
@@ -200,6 +200,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 label="Dashboard" 
                 to="/patients" 
                 active={pathname === "/patients" && !patientsTab} 
+              />
+              <SubNavItem 
+                label="Patient List" 
+                to="/patients/list" 
+                active={pathname === "/patients/list"} 
               />
               <SubNavItem 
                 label="Case Report" 

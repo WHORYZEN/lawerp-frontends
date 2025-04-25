@@ -13,6 +13,8 @@ import PatientsMedicalRecords from '@/components/patients/PatientsMedicalRecords
 import PatientsAppointments from '@/components/patients/PatientsAppointments';
 import PatientsCommunication from '@/components/patients/PatientsCommunication';
 import PatientsLegalDocuments from '@/components/patients/PatientsLegalDocuments';
+import PatientsList from '@/components/patients/PatientsList';
+import PatientDetail from '@/components/patients/PatientDetail';
 import { useToast } from '@/components/ui/use-toast';
 
 const Patients: React.FC = () => {
@@ -20,9 +22,7 @@ const Patients: React.FC = () => {
   const { toast } = useToast();
 
   const handleSearchClick = () => {
-    // This would typically open a search modal or navigate to search page
-    // For now, we'll just navigate to documents where search is implemented
-    navigate('/patients/documents');
+    navigate('/patients/list');
   };
 
   const handleDownloadCaseSummary = () => {
@@ -48,9 +48,9 @@ const Patients: React.FC = () => {
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Patients Portal</h1>
+            <h1 className="text-2xl font-bold tracking-tight">Patients</h1>
             <p className="text-muted-foreground">
-              View your case details, documents, and appointments
+              View and manage all patient information and cases
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -67,6 +67,8 @@ const Patients: React.FC = () => {
 
         <Routes>
           <Route index element={<PatientsDashboard />} />
+          <Route path="list" element={<PatientsList />} />
+          <Route path="detail/:patientId" element={<PatientDetail />} />
           <Route path="case-report" element={<PatientsCaseReport />} />
           <Route path="documents" element={<PatientsDocuments />} />
           <Route path="medical-records" element={<PatientsMedicalRecords />} />
