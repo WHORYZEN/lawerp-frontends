@@ -1,4 +1,3 @@
-
 import { v4 as uuidv4 } from 'uuid';
 
 // User types
@@ -11,6 +10,7 @@ export interface User {
   status: 'active' | 'inactive';
   createdAt: string;
   lastActive: string;
+  password?: string; // Password field for new users
 }
 
 // Role types
@@ -29,6 +29,15 @@ export interface AuditLog {
   details: string;
   timestamp: string;
   ipAddress: string;
+}
+
+// Email notification types
+export interface EmailNotification {
+  recipientEmail: string;
+  subject: string;
+  body: string;
+  status: 'sent' | 'failed' | 'pending';
+  timestamp: string;
 }
 
 // Mock data for users
@@ -231,6 +240,36 @@ const mockAuditLogs: AuditLog[] = [
   }
 ];
 
+// Mock data for email notifications
+const mockEmailNotifications: EmailNotification[] = [];
+
+// Generate a random password
+const generateRandomPassword = (): string => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+  let password = '';
+  for (let i = 0; i < 12; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return password;
+};
+
+// Function to send email notification (mock implementation)
+const sendEmailNotification = async (recipientEmail: string, subject: string, body: string): Promise<boolean> => {
+  // In a real application, this would connect to an email service like SendGrid, Mailgun, etc.
+  console.log(`Sending email to ${recipientEmail} with subject: ${subject}`);
+  
+  const notification: EmailNotification = {
+    recipientEmail,
+    subject,
+    body,
+    status: 'sent', // Assume success in mock implementation
+    timestamp: new Date().toISOString()
+  };
+  
+  mockEmailNotifications.push(notification);
+  return true;
+};
+
 // Admin API
 export const adminApi = {
   // User Management
@@ -244,25 +283,65 @@ export const adminApi = {
   },
 
   createUser: async (userData: Omit<User, 'id' | 'createdAt' | 'lastActive'>): Promise<User> => {
+    // Generate a random password if not provided
+    const password = userData.password || generateRandomPassword();
+    
     const newUser: User = {
       ...userData,
       id: uuidv4(),
       createdAt: new Date().toISOString(),
-      lastActive: new Date().toISOString()
+      lastActive: new Date().toISOString(),
+      password: password // Store password temporarily for email notification
     };
-    mockUsers.push(newUser);
     
-    // Log the action
-    mockAuditLogs.push({
-      id: uuidv4(),
-      userId: 'user1', // Assuming current user is user1
-      action: 'create_user',
-      details: `Created new user: ${newUser.name}`,
-      timestamp: new Date().toISOString(),
-      ipAddress: '192.168.1.1'
-    });
+    // Remove password before storing in mock database (in real app, would hash it)
+    const storedUser = { ...newUser };
+    delete storedUser.password;
+    mockUsers.push(storedUser);
     
-    return newUser;
+    // Send welcome email with password
+    const emailSubject = "Welcome to Law EMR - Your Account Details";
+    const emailBody = `
+      Hello ${newUser.name},
+      
+      Your account has been created in the Law EMR system.
+      
+      Here are your login details:
+      Email: ${newUser.email}
+      Password: ${password}
+      
+      For security reasons, please change your password after your first login.
+      
+      Best regards,
+      Law EMR Administration Team
+    `;
+    
+    try {
+      await sendEmailNotification(newUser.email, emailSubject, emailBody);
+      
+      // Log the action
+      mockAuditLogs.push({
+        id: uuidv4(),
+        userId: 'user1', // Assuming current user is user1
+        action: 'create_user',
+        details: `Created new user: ${newUser.name} and sent welcome email`,
+        timestamp: new Date().toISOString(),
+        ipAddress: '192.168.1.1'
+      });
+    } catch (error) {
+      console.error('Failed to send welcome email:', error);
+      mockAuditLogs.push({
+        id: uuidv4(),
+        userId: 'user1',
+        action: 'create_user_error',
+        details: `Created user ${newUser.name} but failed to send welcome email`,
+        timestamp: new Date().toISOString(),
+        ipAddress: '192.168.1.1'
+      });
+    }
+    
+    // Return user without password
+    return { ...newUser, password: undefined };
   },
 
   updateUser: async (id: string, userData: Partial<User>): Promise<User | null> => {
@@ -496,6 +575,52 @@ export const adminApi = {
       ],
       types: ['view', 'create', 'edit', 'delete', 'upload', 'download']
     };
+  },
+  
+  // Email Notifications
+  getEmailNotifications: async (): Promise<EmailNotification[]> => {
+    return mockEmailNotifications;
+  },
+  
+  resendWelcomeEmail: async (userId: string): Promise<boolean> => {
+    const user = mockUsers.find(user => user.id === userId);
+    if (!user) return false;
+    
+    const password = generateRandomPassword();
+    
+    const emailSubject = "Law EMR - Password Reset";
+    const emailBody = `
+      Hello ${user.name},
+      
+      Your password has been reset in the Law EMR system.
+      
+      Here are your new login details:
+      Email: ${user.email}
+      Password: ${password}
+      
+      For security reasons, please change your password after your login.
+      
+      Best regards,
+      Law EMR Administration Team
+    `;
+    
+    try {
+      await sendEmailNotification(user.email, emailSubject, emailBody);
+      
+      // Log the action
+      mockAuditLogs.push({
+        id: uuidv4(),
+        userId: 'user1', // Assuming current user is user1
+        action: 'resend_welcome_email',
+        details: `Reset password and sent email to user: ${user.name}`,
+        timestamp: new Date().toISOString(),
+        ipAddress: '192.168.1.1'
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('Failed to send password reset email:', error);
+      return false;
+    }
   }
 };
-

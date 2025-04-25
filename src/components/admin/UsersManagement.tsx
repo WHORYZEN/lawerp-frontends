@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { User } from '@/backend/admin-api';
 import { adminApi } from '@/backend';
 import { Skeleton } from "@/components/ui/skeleton";
-import { Edit, Plus, Trash2, UserCog, Settings } from 'lucide-react';
+import { Edit, Plus, Trash2, UserCog, Settings, Mail, Shield, Key } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import RolePermissions from './RolePermissions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const UsersManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -30,6 +31,7 @@ const UsersManagement: React.FC = () => {
     role: 'staff' as 'admin' | 'attorney' | 'paralegal' | 'staff' | 'billing_admin' | 'case_manager' | 'medical_staff',
     status: 'active' as 'active' | 'inactive'
   });
+  const [emailSent, setEmailSent] = useState<{success: boolean, message: string} | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -67,15 +69,29 @@ const UsersManagement: React.FC = () => {
         status: formData.status,
         permissions: []
       });
+      
       setUsers(prev => [...prev, newUser]);
-      setIsCreateDialogOpen(false);
-      resetForm();
-      toast({
-        title: "Success",
-        description: "User created successfully.",
+      setEmailSent({
+        success: true,
+        message: `User created successfully. Welcome email sent to ${formData.email} with login credentials.`
       });
+      
+      setTimeout(() => {
+        setIsCreateDialogOpen(false);
+        resetForm();
+        toast({
+          title: "Success",
+          description: "User created successfully and welcome email sent.",
+        });
+      }, 3000);
+      
     } catch (error) {
       console.error('Error creating user:', error);
+      setEmailSent({
+        success: false,
+        message: `Failed to create user. Please try again.`
+      });
+      
       toast({
         title: "Error",
         description: "Failed to create user. Please try again.",
@@ -181,6 +197,31 @@ const UsersManagement: React.FC = () => {
       });
     }
   };
+  
+  const handleResendWelcomeEmail = async (userId: string) => {
+    try {
+      const success = await adminApi.resendWelcomeEmail(userId);
+      if (success) {
+        toast({
+          title: "Success",
+          description: "Password reset email sent successfully.",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to send password reset email. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error sending welcome email:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send password reset email. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const openEditDialog = (user: User) => {
     setSelectedUser(user);
@@ -207,6 +248,7 @@ const UsersManagement: React.FC = () => {
     });
     setSelectedUser(null);
     setActiveTab('basic');
+    setEmailSent(null);
   };
 
   return (
@@ -224,9 +266,16 @@ const UsersManagement: React.FC = () => {
             <DialogHeader>
               <DialogTitle>Create New User</DialogTitle>
               <DialogDescription>
-                Add a new user to the system with specific role and permissions
+                Add a new user to the system with specific role and permissions. An email with login credentials will be sent to the user.
               </DialogDescription>
             </DialogHeader>
+            {emailSent && (
+              <Alert className={emailSent.success ? "bg-green-50 text-green-800 border-green-200" : "bg-red-50 text-red-800 border-red-200"}>
+                <Mail className={`h-4 w-4 ${emailSent.success ? "text-green-600" : "text-red-600"}`} />
+                <AlertTitle>{emailSent.success ? "Email Sent" : "Email Failed"}</AlertTitle>
+                <AlertDescription>{emailSent.message}</AlertDescription>
+              </Alert>
+            )}
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
                 <Label htmlFor="name">Full Name</Label>
@@ -246,6 +295,7 @@ const UsersManagement: React.FC = () => {
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                   placeholder="Enter email address"
                 />
+                <p className="text-xs text-muted-foreground">A welcome email with login credentials will be sent to this address.</p>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="role">Role</Label>
@@ -285,9 +335,9 @@ const UsersManagement: React.FC = () => {
               }}>Cancel</Button>
               <Button 
                 onClick={handleCreateUser}
-                disabled={!formData.name || !formData.email}
+                disabled={!formData.name || !formData.email || !!emailSent}
               >
-                Create User
+                {emailSent ? "Processing..." : "Create User & Send Email"}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -349,13 +399,21 @@ const UsersManagement: React.FC = () => {
                     <TableCell>{new Date(user.lastActive).toLocaleDateString()}</TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
-                        <Button variant="ghost" size="icon" onClick={() => openEditDialog(user)}>
+                        <Button variant="ghost" size="icon" title="Edit User" onClick={() => openEditDialog(user)}>
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => openPermissionsDialog(user)}>
-                          <Settings className="h-4 w-4" />
+                        <Button variant="ghost" size="icon" title="Permissions" onClick={() => openPermissionsDialog(user)}>
+                          <Shield className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDeleteUser(user.id)}>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          title="Reset Password & Send Email" 
+                          onClick={() => handleResendWelcomeEmail(user.id)}
+                        >
+                          <Key className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" title="Delete User" onClick={() => handleDeleteUser(user.id)}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
