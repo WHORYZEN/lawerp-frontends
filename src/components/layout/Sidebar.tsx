@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -313,7 +312,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
             <NavItem
               icon={<Briefcase className="h-5 w-5" />}
-              label="Case Management"
+              label="Cases"
               to="/cases"
               active={pathname === "/cases" || pathname.startsWith("/cases/")}
               hasSubmenu
@@ -429,7 +428,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
             <NavItem
               icon={<FileHeart className="h-5 w-5" />}
-              label="Medical Management"
+              label="Medicals"
               to="/medical"
               active={pathname === "/medical" || pathname.startsWith("/medical/")}
               hasSubmenu
@@ -463,7 +462,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
             <NavItem
               icon={<DollarSign className="h-5 w-5" />}
-              label="Billing & Settlements"
+              label="Billings"
               to="/billing"
               active={pathname === "/billing" || pathname.startsWith("/billing/")}
               hasSubmenu
@@ -492,7 +491,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
             <NavItem
               icon={<Calculator className="h-5 w-5" />}
-              label="AI Lien Reduction Calculator"
+              label="Lien Reduction Calculator"
               to="/calculator"
               active={pathname === "/calculator"}
             />
