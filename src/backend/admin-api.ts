@@ -74,7 +74,7 @@ const mockUsers: User[] = [
   }
 ];
 
-// Mock data for roles
+// Mock roles with detailed permissions
 const mockRoles: Role[] = [
   {
     id: 'role1',
@@ -86,20 +86,19 @@ const mockRoles: Role[] = [
     id: 'role2',
     name: 'Attorney',
     permissions: [
-      'access:attorney-portal', 
-      'view:clients', 
-      'manage:clients', 
+      'access:attorney-portal',
+      'access:client-portal',
+      'view:clients',
+      'manage:clients',
       'view:attorneys',
       'access:documents',
       'upload:documents',
       'manage:documents',
       'access:patient-portal',
-      'view:patients',
-      'manage:patients',
-      'access:patient-documents',
-      'upload:patient-documents'
+      'view:patient-appointments',
+      'manage:patient-records'
     ],
-    description: 'Access to client and case information, patient data, and document management'
+    description: 'Access to client and case information with document management'
   },
   {
     id: 'role3',
@@ -110,21 +109,35 @@ const mockRoles: Role[] = [
       'access:documents',
       'upload:documents',
       'access:patient-portal',
-      'view:patients',
-      'access:patient-documents'
+      'view:patient-appointments',
+      'schedule:appointments'
     ],
-    description: 'Access to client information, patient data, and document management'
+    description: 'Limited access to manage client information and documents'
   },
   {
     id: 'role4',
     name: 'Staff',
     permissions: [
-      'access:client-portal',
       'view:clients',
-      'access:patient-portal',
-      'view:patients'
+      'view:attorneys',
+      'access:documents',
+      'view:patient-appointments'
     ],
-    description: 'Read-only access to client and patient information'
+    description: 'Basic access to view information'
+  },
+  {
+    id: 'role5',
+    name: 'Billing Administrator',
+    permissions: [
+      'access:billing',
+      'manage:invoices',
+      'process:payments',
+      'manage:settlements',
+      'access:calculator',
+      'run:calculations',
+      'export:reports'
+    ],
+    description: 'Full access to billing and settlement functions'
   }
 ];
 
