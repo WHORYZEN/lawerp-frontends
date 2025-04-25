@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate, useParams } from "react-router-dom";
-import { Plus, Search, Filter, SlidersHorizontal, Loader2 } from "lucide-react";
+import { Plus, Search, Filter, SlidersHorizontal, Loader2, UserPlus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,6 +12,8 @@ import CaseDetails from "./CaseDetails";
 import CaseForm from "./CaseForm";
 import { Client } from "@/types/client";
 import { clientsApi } from "@/lib/api/mongodb-api";
+import PatientForm from "@/components/patients/PatientForm";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const CaseManagement = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -27,8 +28,8 @@ const CaseManagement = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isAddingPatient, setIsAddingPatient] = useState(false);
 
-  // Get clientId from URL if available
   const clientIdFromURL = searchParams.get('clientId');
 
   useEffect(() => {
@@ -36,15 +37,12 @@ const CaseManagement = () => {
       try {
         setIsLoading(true);
         
-        // Fetch all cases
         const casesData = await casesApi.getCases();
         setCases(casesData);
         
-        // Fetch all clients for reference
         const clientsData = await clientsApi.getClients();
         setClients(clientsData);
         
-        // If there's an ID in the URL, fetch and select that case
         if (id) {
           const caseItem = await casesApi.getCase(id);
           if (caseItem) {
@@ -57,9 +55,7 @@ const CaseManagement = () => {
             });
             navigate('/cases');
           }
-        } 
-        // If creating a new case with a client ID
-        else if (searchParams.get('new') === 'true') {
+        } else if (searchParams.get('new') === 'true') {
           setIsCreating(true);
         }
       } catch (error) {
@@ -121,7 +117,6 @@ const CaseManagement = () => {
   const handleCaseFormSubmit = async (data: any) => {
     try {
       if (isEditing && selectedCase) {
-        // Update existing case
         const updatedCase = await casesApi.updateCase(selectedCase.id, data);
         if (updatedCase) {
           toast({
@@ -129,14 +124,12 @@ const CaseManagement = () => {
             description: "Case updated successfully",
           });
           
-          // Update cases list
           setCases(cases.map(c => c.id === updatedCase.id ? updatedCase : c));
           setSelectedCase(updatedCase);
           setIsEditing(false);
           navigate(`/cases/${updatedCase.id}`);
         }
       } else {
-        // Create new case
         const newCase = await casesApi.createCase(data);
         if (newCase) {
           toast({
@@ -144,7 +137,6 @@ const CaseManagement = () => {
             description: "Case created successfully",
           });
           
-          // Add to cases list
           setCases([...cases, newCase]);
           setSelectedCase(newCase);
           setIsCreating(false);
@@ -161,14 +153,18 @@ const CaseManagement = () => {
     }
   };
 
-  const handleBackToList = () => {
-    setSelectedCase(null);
-    setIsCreating(false);
-    setIsEditing(false);
-    navigate('/cases');
+  const handleAddPatient = () => {
+    setIsAddingPatient(true);
   };
 
-  // Content for different views
+  const handlePatientCreated = () => {
+    setIsAddingPatient(false);
+    toast({
+      title: "Success",
+      description: "Patient has been created successfully",
+    });
+  };
+
   const renderContent = () => {
     if (isLoading) {
       return (
@@ -206,7 +202,6 @@ const CaseManagement = () => {
     }
 
     if (selectedCase) {
-      // Find the client for this case
       const client = clients.find((c) => c.id === selectedCase.clientId);
       
       return (
@@ -231,11 +226,29 @@ const CaseManagement = () => {
               onChange={handleSearch}
             />
           </div>
-          <Button onClick={handleCreateNew} className="gap-1 whitespace-nowrap">
-            <Plus className="h-4 w-4" />
-            New Case
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={handleAddPatient} variant="outline" className="gap-1 whitespace-nowrap">
+              <UserPlus className="h-4 w-4" />
+              Add Patient
+            </Button>
+            <Button onClick={handleCreateNew} className="gap-1 whitespace-nowrap">
+              <Plus className="h-4 w-4" />
+              New Case
+            </Button>
+          </div>
         </div>
+
+        <Dialog open={isAddingPatient} onOpenChange={setIsAddingPatient}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Add New Patient</DialogTitle>
+            </DialogHeader>
+            <PatientForm
+              onSuccess={handlePatientCreated}
+              onCancel={() => setIsAddingPatient(false)}
+            />
+          </DialogContent>
+        </Dialog>
 
         <Tabs defaultValue="all" className="w-full">
           <TabsList className="grid w-full max-w-md grid-cols-4">
