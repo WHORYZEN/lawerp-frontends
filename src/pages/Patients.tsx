@@ -47,26 +47,47 @@ const Patients: React.FC = () => {
 
   const defaultContent = (
     <div className="space-y-8">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="bg-white p-6 rounded-lg shadow-sm border">
         <div className="space-y-6">
           <div className="flex items-center gap-2">
             <div className="h-8 w-1 bg-purple-500 rounded-full"></div>
-            <h2 className="text-xl font-semibold">Patient Dashboard</h2>
+            <h2 className="text-xl font-semibold">Patient Information Overview</h2>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <PatientsDashboard />
-          </div>
+          <PatientsDashboard />
         </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow-sm border">
         <div className="space-y-6">
           <div className="flex items-center gap-2">
             <div className="h-8 w-1 bg-purple-500 rounded-full"></div>
-            <h2 className="text-xl font-semibold">Patients Overview</h2>
+            <h2 className="text-xl font-semibold">Patients List</h2>
           </div>
           <PatientsList 
             onPatientSelect={(patientId) => {
               navigate(`/patients/detail/${patientId}`);
             }} 
           />
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="space-y-6">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-1 bg-purple-500 rounded-full"></div>
+            <h2 className="text-xl font-semibold">Patient Documents</h2>
+          </div>
+          <PatientsDocuments />
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="space-y-6">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-1 bg-purple-500 rounded-full"></div>
+            <h2 className="text-xl font-semibold">Medical Records</h2>
+          </div>
+          <PatientsMedicalRecords />
         </div>
       </div>
     </div>
@@ -81,9 +102,9 @@ const Patients: React.FC = () => {
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight mb-1">Patients</h1>
+              <h1 className="text-2xl font-bold tracking-tight mb-1">Patient Management</h1>
               <p className="text-muted-foreground">
-                View and manage all patient information and cases
+                Comprehensive view of patient information and records
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
@@ -94,7 +115,7 @@ const Patients: React.FC = () => {
                 className="flex items-center gap-2 hover:bg-gray-100/80"
               >
                 <Search className="h-4 w-4" />
-                <span>Search</span>
+                <span>Search Patients</span>
               </Button>
               <Button 
                 variant="outline" 
@@ -103,7 +124,7 @@ const Patients: React.FC = () => {
                 className="flex items-center gap-2 hover:bg-gray-100/80"
               >
                 <Download className="h-4 w-4" />
-                <span>Download Case Summary</span>
+                <span>Download Summary</span>
               </Button>
               <Button 
                 variant="default" 
