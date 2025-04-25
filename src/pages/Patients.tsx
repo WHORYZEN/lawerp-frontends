@@ -72,7 +72,7 @@ const Patients: React.FC = () => {
         </div>
 
         <Routes>
-          <Route index element={<PatientsDashboard />} />
+          <Route index element={<PatientsList />} />
           <Route path="detail/:patientId" element={<PatientDetail />} />
           <Route path="case-report" element={<PatientsCaseReport />} />
           <Route path="documents" element={<PatientsDocuments />} />
