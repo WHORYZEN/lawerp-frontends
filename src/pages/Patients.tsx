@@ -1,9 +1,7 @@
-
 import React from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import PageLayout from '@/components/layout/PageLayout';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Search, Download } from 'lucide-react';
 import PatientsDashboard from '@/components/patients/PatientsDashboard';
