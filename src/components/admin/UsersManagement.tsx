@@ -237,6 +237,10 @@ const UsersManagement: React.FC = () => {
   const openPermissionsDialog = (user: User) => {
     setSelectedUser(user);
     setIsPermissionsDialogOpen(true);
+    // Expand the first module by default for better UX
+    if (permissionModules && permissionModules.length > 0) {
+      setActiveTab('custom'); // Switch to custom permissions tab
+    }
   };
 
   const resetForm = () => {

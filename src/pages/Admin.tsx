@@ -13,6 +13,20 @@ import { Card, CardContent } from "@/components/ui/card";
 const Admin: React.FC = () => {
   const [activeTab, setActiveTab] = useState("users");
 
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    // Save the active tab in localStorage to persist between page refreshes
+    localStorage.setItem('adminActiveTab', value);
+  };
+
+  // Load the active tab from localStorage when component mounts
+  React.useEffect(() => {
+    const savedTab = localStorage.getItem('adminActiveTab');
+    if (savedTab) {
+      setActiveTab(savedTab);
+    }
+  }, []);
+
   return (
     <PageLayout>
       <Helmet>
@@ -28,7 +42,7 @@ const Admin: React.FC = () => {
             
             <Card className="overflow-hidden">
               <CardContent className="p-0">
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
                   <TabsList className="grid grid-cols-4 h-14 rounded-none bg-muted/20">
                     <TabsTrigger value="users" className="text-sm md:text-base font-medium">
                       Users & Permissions
