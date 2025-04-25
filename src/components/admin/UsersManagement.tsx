@@ -27,7 +27,7 @@ const UsersManagement: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    role: 'staff' as 'admin' | 'attorney' | 'paralegal' | 'staff',
+    role: 'staff' as 'admin' | 'attorney' | 'paralegal' | 'staff' | 'billing_admin' | 'case_manager' | 'medical_staff',
     status: 'active' as 'active' | 'inactive'
   });
   const { toast } = useToast();
@@ -261,6 +261,9 @@ const UsersManagement: React.FC = () => {
                     <SelectItem value="attorney">Attorney</SelectItem>
                     <SelectItem value="paralegal">Paralegal</SelectItem>
                     <SelectItem value="staff">Staff</SelectItem>
+                    <SelectItem value="billing_admin">Billing Admin</SelectItem>
+                    <SelectItem value="case_manager">Case Manager</SelectItem>
+                    <SelectItem value="medical_staff">Medical Staff</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -330,9 +333,12 @@ const UsersManagement: React.FC = () => {
                         ${user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 
                         user.role === 'attorney' ? 'bg-blue-100 text-blue-800' :
                         user.role === 'paralegal' ? 'bg-green-100 text-green-800' :
+                        user.role === 'billing_admin' ? 'bg-orange-100 text-orange-800' :
+                        user.role === 'case_manager' ? 'bg-indigo-100 text-indigo-800' :
+                        user.role === 'medical_staff' ? 'bg-teal-100 text-teal-800' :
                         'bg-gray-100 text-gray-800'}`}
                       >
-                        {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                        {user.role.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
                       </span>
                     </TableCell>
                     <TableCell>
@@ -405,6 +411,9 @@ const UsersManagement: React.FC = () => {
                   <SelectItem value="attorney">Attorney</SelectItem>
                   <SelectItem value="paralegal">Paralegal</SelectItem>
                   <SelectItem value="staff">Staff</SelectItem>
+                  <SelectItem value="billing_admin">Billing Admin</SelectItem>
+                  <SelectItem value="case_manager">Case Manager</SelectItem>
+                  <SelectItem value="medical_staff">Medical Staff</SelectItem>
                 </SelectContent>
               </Select>
             </div>
