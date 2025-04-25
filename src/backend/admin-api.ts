@@ -47,7 +47,7 @@ const mockUsers: User[] = [
     name: 'Jane Smith',
     email: 'jane.smith@example.com',
     role: 'attorney',
-    permissions: ['access:attorney-portal', 'view:clients', 'manage:clients', 'view:attorneys'],
+    permissions: ['access:attorney-portal', 'view:clients', 'manage:clients', 'view:attorneys', 'access:patient-portal', 'view:patients', 'manage:patients'],
     status: 'active',
     createdAt: new Date(Date.now() - 25 * 24 * 3600000).toISOString(),
     lastActive: new Date(Date.now() - 2 * 3600000).toISOString()
@@ -57,7 +57,7 @@ const mockUsers: User[] = [
     name: 'Michael Johnson',
     email: 'michael.johnson@example.com',
     role: 'paralegal',
-    permissions: ['access:client-portal', 'view:clients', 'access:documents', 'upload:documents'],
+    permissions: ['access:client-portal', 'view:clients', 'access:documents', 'upload:documents', 'access:patient-portal', 'view:patients'],
     status: 'active',
     createdAt: new Date(Date.now() - 20 * 24 * 3600000).toISOString(),
     lastActive: new Date(Date.now() - 8 * 3600000).toISOString()
@@ -67,7 +67,7 @@ const mockUsers: User[] = [
     name: 'Sarah Williams',
     email: 'sarah.williams@example.com',
     role: 'staff',
-    permissions: ['access:client-portal', 'view:clients'],
+    permissions: ['access:client-portal', 'view:clients', 'access:patient-portal', 'view:patients'],
     status: 'inactive',
     createdAt: new Date(Date.now() - 15 * 24 * 3600000).toISOString(),
     lastActive: new Date(Date.now() - 5 * 24 * 3600000).toISOString()
@@ -92,9 +92,14 @@ const mockRoles: Role[] = [
       'view:attorneys',
       'access:documents',
       'upload:documents',
-      'manage:documents'
+      'manage:documents',
+      'access:patient-portal',
+      'view:patients',
+      'manage:patients',
+      'access:patient-documents',
+      'upload:patient-documents'
     ],
-    description: 'Access to client and case information, and document management'
+    description: 'Access to client and case information, patient data, and document management'
   },
   {
     id: 'role3',
@@ -103,18 +108,23 @@ const mockRoles: Role[] = [
       'access:client-portal',
       'view:clients',
       'access:documents',
-      'upload:documents'
+      'upload:documents',
+      'access:patient-portal',
+      'view:patients',
+      'access:patient-documents'
     ],
-    description: 'Access to client information and document management'
+    description: 'Access to client information, patient data, and document management'
   },
   {
     id: 'role4',
     name: 'Staff',
     permissions: [
       'access:client-portal',
-      'view:clients'
+      'view:clients',
+      'access:patient-portal',
+      'view:patients'
     ],
-    description: 'Read-only access to client information'
+    description: 'Read-only access to client and patient information'
   }
 ];
 

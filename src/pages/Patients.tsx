@@ -13,7 +13,7 @@ import PatientsMedicalRecords from '@/components/patients/PatientsMedicalRecords
 import PatientsAppointments from '@/components/patients/PatientsAppointments';
 import PatientsCommunication from '@/components/patients/PatientsCommunication';
 import PatientsLegalDocuments from '@/components/patients/PatientsLegalDocuments';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 
 const Patients: React.FC = () => {
   const navigate = useNavigate();

@@ -98,7 +98,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             password,
             isVerified: false,
             role: 'staff', // Default role
-            permissions: [], // Default no permissions
+            permissions: ['access:client-portal', 'view:clients', 'access:patient-portal', 'view:patients'], // Default permissions
             registeredAt: new Date().toISOString()
           };
           

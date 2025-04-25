@@ -1,41 +1,29 @@
 
-import { useState } from "react";
-import Navbar from "@/components/layout/Navbar";
-import Sidebar from "@/components/layout/Sidebar";
+import React from 'react';
+import { Helmet } from 'react-helmet-async';
+import PageLayout from '@/components/layout/PageLayout';
 import ClientManagement from "@/components/client-management/ClientManagement";
 
 const Clients = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+    <PageLayout>
+      <Helmet>
+        <title>Client Management - LAW ERP 500</title>
+      </Helmet>
       
-      <main className="pt-16 md:pl-64">
-        <div className="container mx-auto px-4 py-6">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold">Client Management</h1>
-            <p className="text-muted-foreground mt-1">
-              View, add, edit and manage all your clients
-            </p>
-          </div>
-          
-          <div className="max-w-7xl mx-auto">
-            <ClientManagement />
-          </div>
+      <div className="space-y-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Client Management</h1>
+          <p className="text-muted-foreground">
+            View, add, edit and manage all your clients
+          </p>
         </div>
-      </main>
-      
-      <footer className="md:pl-64 px-4 py-6 border-t text-sm text-muted-foreground">
-        <div className="container mx-auto flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="font-medium">LYZ Law Firm</span> | Client Management
-          </div>
-          <div className="text-sm">© 2023 LYZ Law Firm. All rights reserved.</div>
+        
+        <div className="max-w-7xl mx-auto">
+          <ClientManagement />
         </div>
-      </footer>
-    </div>
+      </div>
+    </PageLayout>
   );
 };
 
