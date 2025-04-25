@@ -84,6 +84,11 @@ const CaseManagement = () => {
       caseItem.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleBackToList = () => {
+    setSelectedCase(null);
+    navigate('/cases');
+  };
+
   const handleSelectCase = (caseItem: Case) => {
     setSelectedCase(caseItem);
     setIsCreating(false);
