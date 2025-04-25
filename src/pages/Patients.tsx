@@ -46,6 +46,21 @@ const Patients: React.FC = () => {
     }, 2000);
   };
 
+  const defaultContent = (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold">Patient Dashboard</h2>
+        <PatientsDashboard />
+      </div>
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold">Patients List</h2>
+        <PatientsList onPatientSelect={(patientId) => {
+          navigate(`/patients/detail/${patientId}`);
+        }} />
+      </div>
+    </div>
+  );
+
   return (
     <PageLayout>
       <Helmet>
@@ -72,7 +87,7 @@ const Patients: React.FC = () => {
         </div>
 
         <Routes>
-          <Route index element={<PatientsList />} />
+          <Route index element={defaultContent} />
           <Route path="detail/:patientId" element={<PatientDetail />} />
           <Route path="case-report" element={<PatientsCaseReport />} />
           <Route path="documents" element={<PatientsDocuments />} />
