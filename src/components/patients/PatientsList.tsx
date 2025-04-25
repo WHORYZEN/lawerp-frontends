@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -13,7 +12,11 @@ import { Patient } from '@/backend/patients-api';
 import { patientsApi } from '@/backend';
 import { useToast } from '@/hooks/use-toast';
 
-const PatientsList: React.FC = () => {
+interface PatientsListProps {
+  onPatientSelect?: (patientId: string) => void;
+}
+
+const PatientsList: React.FC<PatientsListProps> = ({ onPatientSelect }) => {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -68,7 +71,11 @@ const PatientsList: React.FC = () => {
   }, [searchQuery, statusFilter, patients]);
 
   const handlePatientClick = (patientId: string) => {
-    navigate(`/patients/detail/${patientId}`);
+    if (onPatientSelect) {
+      onPatientSelect(patientId);
+    } else {
+      navigate(`/patients/detail/${patientId}`);
+    }
   };
 
   const handleAddPatient = () => {

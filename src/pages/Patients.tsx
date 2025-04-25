@@ -1,9 +1,16 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import PageLayout from '@/components/layout/PageLayout';
 import { Button } from '@/components/ui/button';
 import { Search, Download } from 'lucide-react';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import PatientsDashboard from '@/components/patients/PatientsDashboard';
 import PatientsCaseReport from '@/components/patients/PatientsCaseReport';
 import PatientsDocuments from '@/components/patients/PatientsDocuments';
@@ -18,9 +25,10 @@ import { useToast } from '@/components/ui/use-toast';
 const Patients: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const handleSearchClick = () => {
-    navigate('/patients/list');
+    setIsSearchOpen(true);
   };
 
   const handleDownloadCaseSummary = () => {
@@ -65,7 +73,6 @@ const Patients: React.FC = () => {
 
         <Routes>
           <Route index element={<PatientsDashboard />} />
-          <Route path="list" element={<PatientsList />} />
           <Route path="detail/:patientId" element={<PatientDetail />} />
           <Route path="case-report" element={<PatientsCaseReport />} />
           <Route path="documents" element={<PatientsDocuments />} />
@@ -74,6 +81,20 @@ const Patients: React.FC = () => {
           <Route path="communication" element={<PatientsCommunication />} />
           <Route path="legal-documents" element={<PatientsLegalDocuments />} />
         </Routes>
+
+        <Sheet open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+          <SheetContent side="right" className="w-full sm:w-[640px] sm:max-w-full">
+            <SheetHeader>
+              <SheetTitle>Search Patients</SheetTitle>
+            </SheetHeader>
+            <div className="mt-4">
+              <PatientsList onPatientSelect={(patientId) => {
+                navigate(`/patients/detail/${patientId}`);
+                setIsSearchOpen(false);
+              }} />
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
     </PageLayout>
   );
