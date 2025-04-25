@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -72,7 +71,7 @@ const Patients: React.FC = () => {
         </div>
 
         <Routes>
-          <Route index element={<PatientsList />} />
+          <Route index element={<PatientsDashboard />} />
           <Route path="detail/:patientId" element={<PatientDetail />} />
           <Route path="case-report" element={<PatientsCaseReport />} />
           <Route path="documents" element={<PatientsDocuments />} />
