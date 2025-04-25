@@ -43,7 +43,7 @@ const Patients: React.FC = () => {
   return (
     <PageLayout>
       <Helmet>
-        <title>Patients Portal - LAW ERP 500</title>
+        <title>Patients - LAW ERP 500</title>
       </Helmet>
       <div className="space-y-4">
         <div className="flex justify-between items-center">
