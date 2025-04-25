@@ -6,14 +6,17 @@ import { useToast } from "@/components/ui/use-toast";
 interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   currentUser: UserData | null;
 }
 
 interface UserData {
+  name?: string;
   email: string;
   isVerified: boolean;
+  role?: string;
+  permissions?: string[];
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -55,8 +58,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           }
 
           const userData: UserData = {
+            name: user.name,
             email: user.email,
-            isVerified: user.isVerified
+            isVerified: user.isVerified,
+            role: user.role || 'staff',
+            permissions: user.permissions || []
           };
 
           localStorage.setItem('isAuthenticated', 'true');
@@ -71,7 +77,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const register = async (email: string, password: string): Promise<void> => {
+  const register = async (name: string, email: string, password: string): Promise<void> => {
     return new Promise<void>((resolve, reject) => {
       // Simulate API call
       setTimeout(() => {
@@ -87,9 +93,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           
           // Create new user with verification status
           const newUser = {
+            name,
             email,
             password,
             isVerified: false,
+            role: 'staff', // Default role
+            permissions: [], // Default no permissions
             registeredAt: new Date().toISOString()
           };
           

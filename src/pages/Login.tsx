@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 
 const Login = () => {
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -89,7 +90,7 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (!email || !password || !confirmPassword) {
+    if (!fullName || !email || !password || !confirmPassword) {
       toast({
         title: "Error",
         description: "Please fill in all fields",
@@ -130,7 +131,7 @@ const Login = () => {
     }
 
     try {
-      await register(email, password);
+      await register(fullName, email, password);
       setVerificationSent(true);
       toast({
         title: "Success",
@@ -290,6 +291,17 @@ const Login = () => {
                 </div>
               ) : (
                 <form onSubmit={handleRegister} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="full-name">Full Name</Label>
+                    <Input 
+                      id="full-name" 
+                      type="text" 
+                      placeholder="John Doe"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      required
+                    />
+                  </div>
                   <div className="space-y-2">
                     <Label htmlFor="register-email">Email</Label>
                     <Input 

@@ -5,20 +5,25 @@ import { Button } from "@/components/ui/button";
 import { User } from '@/backend/admin-api';
 import { adminApi } from '@/backend';
 import { Skeleton } from "@/components/ui/skeleton";
-import { Edit, Plus, Trash2, UserCog } from 'lucide-react';
+import { Edit, Plus, Trash2, UserCog, Settings } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import RolePermissions from './RolePermissions';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const UsersManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
+  const [roles, setRoles] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isPermissionsDialogOpen, setIsPermissionsDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [activeTab, setActiveTab] = useState('basic');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -31,10 +36,15 @@ const UsersManagement: React.FC = () => {
     const fetchUsers = async () => {
       setIsLoading(true);
       try {
-        const fetchedUsers = await adminApi.getUsers();
+        const [fetchedUsers, fetchedRoles] = await Promise.all([
+          adminApi.getUsers(),
+          adminApi.getRoles()
+        ]);
+        
         setUsers(fetchedUsers);
+        setRoles(fetchedRoles);
       } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error('Error fetching data:', error);
         toast({
           title: "Error",
           description: "Failed to load users. Please try again.",
@@ -54,7 +64,8 @@ const UsersManagement: React.FC = () => {
         name: formData.name,
         email: formData.email,
         role: formData.role,
-        status: formData.status
+        status: formData.status,
+        permissions: []
       });
       setUsers(prev => [...prev, newUser]);
       setIsCreateDialogOpen(false);
@@ -125,6 +136,52 @@ const UsersManagement: React.FC = () => {
     }
   };
 
+  const handleUpdatePermissions = async (permissions: string[]) => {
+    if (!selectedUser) return;
+    
+    try {
+      const updatedUser = await adminApi.updateUserPermissions(selectedUser.id, permissions);
+      
+      if (updatedUser) {
+        setUsers(prev => prev.map(user => user.id === updatedUser.id ? updatedUser : user));
+        toast({
+          title: "Success",
+          description: "User permissions updated successfully.",
+        });
+      }
+    } catch (error) {
+      console.error('Error updating user permissions:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update user permissions. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleApplyRole = async (roleId: string) => {
+    if (!selectedUser) return;
+    
+    try {
+      const updatedUser = await adminApi.applyRoleToUser(selectedUser.id, roleId);
+      
+      if (updatedUser) {
+        setUsers(prev => prev.map(user => user.id === updatedUser.id ? updatedUser : user));
+        toast({
+          title: "Success",
+          description: `Applied role to user successfully.`,
+        });
+      }
+    } catch (error) {
+      console.error('Error applying role to user:', error);
+      toast({
+        title: "Error",
+        description: "Failed to apply role to user. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const openEditDialog = (user: User) => {
     setSelectedUser(user);
     setFormData({
@@ -136,6 +193,11 @@ const UsersManagement: React.FC = () => {
     setIsEditDialogOpen(true);
   };
 
+  const openPermissionsDialog = (user: User) => {
+    setSelectedUser(user);
+    setIsPermissionsDialogOpen(true);
+  };
+
   const resetForm = () => {
     setFormData({
       name: '',
@@ -144,6 +206,7 @@ const UsersManagement: React.FC = () => {
       status: 'active'
     });
     setSelectedUser(null);
+    setActiveTab('basic');
   };
 
   return (
@@ -283,6 +346,9 @@ const UsersManagement: React.FC = () => {
                         <Button variant="ghost" size="icon" onClick={() => openEditDialog(user)}>
                           <Edit className="h-4 w-4" />
                         </Button>
+                        <Button variant="ghost" size="icon" onClick={() => openPermissionsDialog(user)}>
+                          <Settings className="h-4 w-4" />
+                        </Button>
                         <Button variant="ghost" size="icon" onClick={() => handleDeleteUser(user.id)}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -363,6 +429,90 @@ const UsersManagement: React.FC = () => {
               disabled={!formData.name || !formData.email}
             >
               Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* User Permissions Dialog */}
+      <Dialog open={isPermissionsDialogOpen} onOpenChange={setIsPermissionsDialogOpen}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Manage User Permissions</DialogTitle>
+            <DialogDescription>
+              {selectedUser ? `Configure access levels for ${selectedUser.name}` : 'Configure access levels'}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedUser && (
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="grid grid-cols-2 mb-4">
+                <TabsTrigger value="basic">Roles</TabsTrigger>
+                <TabsTrigger value="custom">Custom Permissions</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="basic" className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {roles.map((role) => (
+                    <div key={role.id} className="border rounded-lg p-4 hover:border-purple-300 transition-colors">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h3 className="font-medium text-lg">{role.name}</h3>
+                          <p className="text-sm text-gray-500">{role.description}</p>
+                        </div>
+                        <Button 
+                          onClick={() => handleApplyRole(role.id)}
+                          variant={selectedUser?.role === role.name.toLowerCase() ? "default" : "outline"}
+                          size="sm"
+                        >
+                          {selectedUser?.role === role.name.toLowerCase() ? "Applied" : "Apply Role"}
+                        </Button>
+                      </div>
+                      <div className="mt-3">
+                        <div className="text-xs text-gray-500 mb-2">Permissions:</div>
+                        <div className="flex flex-wrap gap-1">
+                          {role.permissions.includes('all') ? (
+                            <span className="px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-800">
+                              All Permissions
+                            </span>
+                          ) : (
+                            role.permissions.slice(0, 3).map((permission: string, idx: number) => (
+                              <span key={idx} className="px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                                {permission.split(':')[1]}
+                              </span>
+                            ))
+                          )}
+                          {role.permissions.length > 3 && !role.permissions.includes('all') && (
+                            <span className="px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-800">
+                              +{role.permissions.length - 3} more
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="custom">
+                <RolePermissions
+                  role={selectedUser.name}
+                  permissions={selectedUser.permissions || []}
+                  onUpdatePermissions={handleUpdatePermissions}
+                />
+              </TabsContent>
+            </Tabs>
+          )}
+
+          <DialogFooter className="mt-6">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setIsPermissionsDialogOpen(false);
+                setSelectedUser(null);
+              }}
+            >
+              Close
             </Button>
           </DialogFooter>
         </DialogContent>
