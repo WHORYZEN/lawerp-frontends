@@ -1,9 +1,10 @@
+
 import { v4 as uuidv4 } from 'uuid';
 
 // Message types
 export interface ChatbotMessage {
   id: string;
-  role: 'user' | 'bot';
+  role: 'user' | 'bot' | 'system';
   content: string;
   timestamp: string;
 }
@@ -15,7 +16,7 @@ export interface ChatbotSession {
   lastUpdated: string;
 }
 
-// Mock responses for different topics
+// Features responses map by section
 const responses: Record<string, string[]> = {
   dashboard: [
     "The Dashboard provides an overview of your firm's activity, including recent cases, upcoming events, and key metrics.",
@@ -72,6 +73,32 @@ const responses: Record<string, string[]> = {
     "You can update your profile, notification preferences, and security settings.",
     "System-wide settings are available for administrators."
   ],
+  depositions: [
+    "The Depositions module lets you manage all your deposition transcripts and schedules.",
+    "You can schedule new depositions and track their status.",
+    "Upload and access deposition transcripts and related documents.",
+    "Generate summary reports of depositions for case preparation."
+  ],
+  attorneys: [
+    "The Attorneys section manages your firm's attorneys and their case assignments.",
+    "You can add new attorneys, view their workload, and manage their profiles.",
+    "The section shows case assignments and current workload for each attorney."
+  ],
+  patients: [
+    "The Patients section contains medical information for all clients.",
+    "You can track medical treatment history, providers, and records.",
+    "Patient communication logs and appointment history are available here."
+  ],
+  files: [
+    "The Files section provides file management for all case-related documents.",
+    "You can organize files by case, client, or document type.",
+    "Advanced search features help you find files quickly."
+  ],
+  reports: [
+    "Generate various reports about your firm's cases and performance.",
+    "Medical reports and reduction statements are created in this section.",
+    "You can export reports in multiple formats for presentations."
+  ],
   help: [
     "For additional assistance, please contact our support team.",
     "Training videos and documentation are available in the Help section.",
@@ -83,9 +110,17 @@ const responses: Record<string, string[]> = {
 const activeSessions: Record<string, ChatbotSession> = {};
 
 // Function to analyze user query and determine the topic
-const determineTopics = (query: string): string[] => {
+const determineTopics = (query: string, currentRoute?: string): string[] => {
   const topics: string[] = [];
   const queryLower = query.toLowerCase();
+  
+  // First check if the query is about the current route
+  if (currentRoute) {
+    const routeName = currentRoute.replace('/', '').toLowerCase();
+    if (routeName && responses[routeName]) {
+      topics.push(routeName);
+    }
+  }
   
   if (queryLower.includes('dashboard') || queryLower.includes('overview') || queryLower.includes('home')) {
     topics.push('dashboard');
@@ -120,6 +155,18 @@ const determineTopics = (query: string): string[] => {
   if (queryLower.includes('setting') || queryLower.includes('preference') || queryLower.includes('configuration')) {
     topics.push('settings');
   }
+  if (queryLower.includes('deposition') || queryLower.includes('transcript') || queryLower.includes('testimony')) {
+    topics.push('depositions');
+  }
+  if (queryLower.includes('attorney') || queryLower.includes('lawyer') || queryLower.includes('counsel')) {
+    topics.push('attorneys');
+  }
+  if (queryLower.includes('patient') || queryLower.includes('treatment') || queryLower.includes('medical history')) {
+    topics.push('patients');
+  }
+  if (queryLower.includes('report') || queryLower.includes('analytics') || queryLower.includes('statistics')) {
+    topics.push('reports');
+  }
   
   // If no specific topic is detected, return general help
   if (topics.length === 0) {
@@ -130,8 +177,8 @@ const determineTopics = (query: string): string[] => {
 };
 
 // Generate a response based on the user query
-const generateResponse = (query: string): string => {
-  const topics = determineTopics(query);
+const generateResponse = (query: string, currentRoute?: string): string => {
+  const topics = determineTopics(query, currentRoute);
   
   if (topics.length === 1) {
     const topic = topics[0];
@@ -148,6 +195,19 @@ const generateResponse = (query: string): string => {
     });
     return response;
   }
+};
+
+// Extract route context from messages
+const getCurrentRouteFromMessages = (messages: ChatbotMessage[]): string | undefined => {
+  for (const message of messages) {
+    if (message.role === 'system' && message.content.includes("I'm currently on the")) {
+      const match = message.content.match(/I'm currently on the (\w+) page/);
+      if (match && match[1]) {
+        return match[1].toLowerCase();
+      }
+    }
+  }
+  return undefined;
 };
 
 // Chatbot API
@@ -179,14 +239,14 @@ export const chatbotApi = {
   },
   
   // Send a message
-  sendMessage: async (sessionId: string, content: string): Promise<ChatbotMessage> => {
+  sendMessage: async (sessionId: string, content: string, isSystem: boolean = false): Promise<ChatbotMessage> => {
     // Get or create session
     const session = await chatbotApi.getOrCreateSession(sessionId);
     
     // Create user message
     const userMessage: ChatbotMessage = {
       id: uuidv4(),
-      role: 'user',
+      role: isSystem ? 'system' : 'user',
       content,
       timestamp: new Date().toISOString()
     };
@@ -194,8 +254,16 @@ export const chatbotApi = {
     // Add message to session
     session.messages.push(userMessage);
     
+    // Don't respond to system messages with bot messages
+    if (isSystem) {
+      return userMessage;
+    }
+    
+    // Get current route context from messages
+    const currentRoute = getCurrentRouteFromMessages(session.messages);
+    
     // Generate bot response
-    const responseContent = generateResponse(content);
+    const responseContent = generateResponse(content, currentRoute);
     const botMessage: ChatbotMessage = {
       id: uuidv4(),
       role: 'bot',
@@ -213,7 +281,7 @@ export const chatbotApi = {
   // Get session messages
   getSessionMessages: async (sessionId: string): Promise<ChatbotMessage[]> => {
     const session = await chatbotApi.getOrCreateSession(sessionId);
-    return session.messages;
+    return session.messages.filter(msg => msg.role !== 'system'); // Filter out system messages for display
   },
   
   // Clear session

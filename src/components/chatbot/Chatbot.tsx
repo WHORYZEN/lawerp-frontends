@@ -9,7 +9,7 @@ import { useChatbot } from '@/contexts/ChatbotContext';
 import { Bot, MessageCircle, Send, XCircle, Trash2, Loader2 } from 'lucide-react';
 
 const Chatbot: React.FC = () => {
-  const { isOpen, messages, loading, sendMessage, closeChatbot, clearChat } = useChatbot();
+  const { isOpen, messages, loading, sendMessage, closeChatbot, clearChat, currentRoute } = useChatbot();
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -36,6 +36,11 @@ const Chatbot: React.FC = () => {
   
   if (!isOpen) return null;
   
+  const getCurrentPageName = () => {
+    if (!currentRoute) return 'Home';
+    return currentRoute.slice(1).charAt(0).toUpperCase() + currentRoute.slice(2) || 'Home';
+  };
+  
   return (
     <div className="fixed bottom-4 right-4 z-50 w-80 md:w-96 shadow-xl">
       <Card className="overflow-hidden border-primary/10 bg-white">
@@ -43,6 +48,11 @@ const Chatbot: React.FC = () => {
           <CardTitle className="text-lg flex items-center">
             <Bot className="h-5 w-5 mr-2" />
             LawAssistant
+            {currentRoute && (
+              <span className="ml-2 text-xs bg-white/20 px-2 py-1 rounded-full">
+                {getCurrentPageName()}
+              </span>
+            )}
           </CardTitle>
           <div className="flex gap-1">
             <Button 
@@ -105,6 +115,11 @@ const Chatbot: React.FC = () => {
                   </div>
                 </div>
               ))}
+              {loading && (
+                <div className="flex items-center justify-center py-2">
+                  <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+                </div>
+              )}
               <div ref={messagesEndRef} />
             </div>
           </CardContent>

@@ -1,5 +1,5 @@
 
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import { ChatbotMessage, chatbotApi } from '@/backend/chatbot-api';
 import { useToast } from "@/hooks/use-toast";
 
@@ -8,10 +8,12 @@ interface ChatbotContextType {
   messages: ChatbotMessage[];
   loading: boolean;
   sessionId: string | null;
+  currentRoute: string;
   openChatbot: () => void;
   closeChatbot: () => void;
   sendMessage: (content: string) => Promise<void>;
   clearChat: () => Promise<void>;
+  setCurrentRoute: (route: string) => void;
 }
 
 const ChatbotContext = createContext<ChatbotContextType | undefined>(undefined);
@@ -21,6 +23,7 @@ export const ChatbotProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [messages, setMessages] = useState<ChatbotMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [currentRoute, setCurrentRoute] = useState<string>('/');
   const { toast } = useToast();
 
   // Initialize session
@@ -52,9 +55,34 @@ export const ChatbotProvider: React.FC<{ children: React.ReactNode }> = ({ child
     initSession();
   }, [toast]);
 
-  const openChatbot = () => setIsOpen(true);
+  const openChatbot = useCallback(() => {
+    setIsOpen(true);
+    // When opening the chatbot, send current context if no messages yet
+    if (messages.length <= 1 && sessionId) {
+      const routeName = currentRoute.replace('/', '').charAt(0).toUpperCase() + currentRoute.replace('/', '').slice(1);
+      if (routeName) {
+        sendContextMessage(`I'm currently on the ${routeName} page. Can you help me with this section?`);
+      }
+    }
+  }, [currentRoute, messages.length, sessionId]);
   
   const closeChatbot = () => setIsOpen(false);
+  
+  const sendContextMessage = async (content: string) => {
+    if (!sessionId) return;
+    
+    try {
+      // Add system message about context
+      await chatbotApi.sendMessage(sessionId, content, true);
+      
+      // Update messages with API response
+      const sessionMessages = await chatbotApi.getSessionMessages(sessionId);
+      setMessages(sessionMessages);
+      
+    } catch (error) {
+      console.error('Error sending context message:', error);
+    }
+  };
   
   const sendMessage = async (content: string) => {
     if (!sessionId || !content.trim()) return;
@@ -72,7 +100,7 @@ export const ChatbotProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setMessages(prev => [...prev, tempUserMsg]);
       
       // Send to API
-      const botResponse = await chatbotApi.sendMessage(sessionId, content);
+      await chatbotApi.sendMessage(sessionId, content);
       
       // Update messages with API response
       const sessionMessages = await chatbotApi.getSessionMessages(sessionId);
@@ -125,10 +153,12 @@ export const ChatbotProvider: React.FC<{ children: React.ReactNode }> = ({ child
         messages,
         loading,
         sessionId,
+        currentRoute,
         openChatbot,
         closeChatbot,
         sendMessage,
-        clearChat
+        clearChat,
+        setCurrentRoute
       }}
     >
       {children}

@@ -11,6 +11,7 @@ import ChatbotButton from './components/chatbot/ChatbotButton';
 
 import './App.css';
 
+import LandingPage from './pages/LandingPage';
 import Index from './pages/Index';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -43,7 +44,8 @@ function App() {
             <UserProvider>
               <ChatbotProvider>
                 <Routes>
-                  <Route path="/" element={<Index />} />
+                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/home" element={<Index />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                   <Route path="/clients/*" element={<ProtectedRoute><Clients /></ProtectedRoute>} />
