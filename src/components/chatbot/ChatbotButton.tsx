@@ -23,8 +23,8 @@ const ChatbotButton: React.FC = () => {
     if (!hasSeenChatNotification && location.pathname !== '/login') {
       setTimeout(() => {
         toast({
-          title: "Need help?",
-          description: "Use the AI LYZ Assistant to get help with any feature.",
+          title: "Need help with any feature?",
+          description: "The AI LYZ Assistant can help you navigate the entire application.",
           action: (
             <Button 
               variant="outline" 
@@ -56,6 +56,7 @@ const ChatbotButton: React.FC = () => {
   };
   
   const isLandingPage = location.pathname === '/' || location.pathname === '/home';
+  const currentSection = location.pathname.split('/')[1] || 'home';
   
   return (
     <Button
@@ -63,7 +64,7 @@ const ChatbotButton: React.FC = () => {
       className={`fixed bottom-8 right-8 z-40 rounded-full shadow-lg ${
         isLandingPage 
           ? 'w-auto px-4 py-6 bg-primary hover:bg-primary/90'
-          : 'w-14 h-14 p-0 bg-primary hover:bg-primary/90 animate-pulse'
+          : 'w-auto px-4 py-2 bg-primary hover:bg-primary/90'
       }`}
     >
       {isLandingPage ? (
@@ -72,7 +73,11 @@ const ChatbotButton: React.FC = () => {
           <span>AI LYZ Assistant</span>
         </>
       ) : (
-        <MessageCircle className="h-6 w-6" />
+        <>
+          <MessageCircle className="h-5 w-5 mr-2" />
+          <span className="hidden md:inline">Need help with {currentSection}?</span>
+          <span className="md:hidden">Help</span>
+        </>
       )}
       <span className="sr-only">Open Chat Assistant</span>
     </Button>

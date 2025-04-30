@@ -6,7 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useChatbot } from '@/contexts/ChatbotContext';
-import { Bot, Laptop, MessageCircle, Send, XCircle, Trash2, Loader2, HelpCircle } from 'lucide-react';
+import { Bot, Laptop, MessageCircle, Send, XCircle, Trash2, Loader2, HelpCircle, Info } from 'lucide-react';
 
 const Chatbot: React.FC = () => {
   const { isOpen, messages, loading, sendMessage, closeChatbot, clearChat, currentRoute } = useChatbot();
@@ -102,6 +102,42 @@ const Chatbot: React.FC = () => {
         "How can I organize patient treatments?",
         "Where are provider details stored?"
       ];
+    } else if (route.includes('dashboard')) {
+      return [
+        "What information is shown on the dashboard?",
+        "How do I customize my dashboard?",
+        "What do the different charts mean?"
+      ];
+    } else if (route.includes('report')) {
+      return [
+        "What types of reports can I generate?",
+        "How do I export report data?",
+        "Can I schedule automatic reports?"
+      ];
+    } else if (route.includes('message')) {
+      return [
+        "How do I send messages to clients?",
+        "Can I create message templates?",
+        "Where are my past communications stored?"
+      ];
+    } else if (route.includes('setting')) {
+      return [
+        "How do I change my profile information?",
+        "Where can I update notification settings?",
+        "How do I manage security preferences?"
+      ];
+    } else if (route.includes('attorney')) {
+      return [
+        "How do I add a new attorney to the system?",
+        "How can I view an attorney's caseload?",
+        "How do I assign cases to attorneys?"
+      ];
+    } else if (route.includes('patient')) {
+      return [
+        "How do I add a new patient record?",
+        "Where can I see patient medical history?",
+        "How do I link patients to cases?"
+      ];
     } else {
       // Default suggestions
       return [
@@ -110,6 +146,15 @@ const Chatbot: React.FC = () => {
         "What billing features are available?"
       ];
     }
+  };
+  
+  // Get general app suggestions
+  const getGeneralSuggestions = () => {
+    return [
+      "What can you help me with?",
+      "How do I navigate this application?",
+      "What features are available?"
+    ];
   };
   
   return (
@@ -158,19 +203,59 @@ const Chatbot: React.FC = () => {
                   <Bot className="h-12 w-12 mx-auto text-primary/40 mb-4" />
                   <h3 className="text-lg font-medium mb-2">Welcome to AI LYZ Assistant</h3>
                   <p className="text-sm text-gray-500">
-                    How can I help you with your legal practice today?
+                    I can help you with all features of the LAW ERP 500 system. Ask me anything!
                   </p>
+                  
+                  {currentRoute && currentRoute !== '/' && currentRoute !== '/home' && (
+                    <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                      <div className="flex items-start">
+                        <Info className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
+                        <div className="text-left">
+                          <p className="text-sm font-medium text-blue-700">
+                            You're currently in the {getCurrentPageName()} section
+                          </p>
+                          <p className="text-xs text-blue-600 mt-1">
+                            I can provide specific help for this area
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
                   <div className="mt-6 space-y-2">
+                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-1">
+                      {currentRoute && currentRoute !== '/' && currentRoute !== '/home' 
+                        ? `${getCurrentPageName()} Help` 
+                        : 'Suggestions'}
+                    </p>
                     {getRouteSuggestions().map((suggestion, index) => (
                       <Button 
                         key={index}
                         variant="outline" 
-                        className="w-full justify-start text-left" 
+                        className="w-full justify-start text-left text-sm" 
                         onClick={() => sendMessage(suggestion)}
                       >
                         {suggestion}
                       </Button>
                     ))}
+                    
+                    {(currentRoute && currentRoute !== '/' && currentRoute !== '/home') && (
+                      <>
+                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-1 mt-4">
+                          General Help
+                        </p>
+                        {getGeneralSuggestions().map((suggestion, index) => (
+                          <Button 
+                            key={`general-${index}`}
+                            variant="outline" 
+                            className="w-full justify-start text-left text-sm" 
+                            onClick={() => sendMessage(suggestion)}
+                          >
+                            {suggestion}
+                          </Button>
+                        ))}
+                      </>
+                    )}
                   </div>
                 </div>
               )}
