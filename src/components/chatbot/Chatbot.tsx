@@ -6,7 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useChatbot } from '@/contexts/ChatbotContext';
-import { Bot, Laptop, MessageCircle, Send, XCircle, Trash2, Loader2, HelpCircle, Info } from 'lucide-react';
+import { Bot, Laptop, MessageCircle, Send, XCircle, Trash2, Loader2, HelpCircle, Info, Scale, FileText, Gavel } from 'lucide-react';
 
 const Chatbot: React.FC = () => {
   const { isOpen, messages, loading, sendMessage, closeChatbot, clearChat, currentRoute } = useChatbot();
@@ -151,18 +151,18 @@ const Chatbot: React.FC = () => {
   // Get general app suggestions
   const getGeneralSuggestions = () => {
     return [
-      "What can you help me with?",
+      "What legal services can you help me with?",
       "How do I navigate this application?",
-      "What features are available?"
+      "Explain the confidentiality features"
     ];
   };
   
   return (
     <div className="fixed bottom-8 right-8 z-50 w-96 lg:w-[450px] shadow-xl">
-      <Card className="overflow-hidden border-primary/10 bg-white">
-        <CardHeader className="bg-primary text-primary-foreground p-4 flex flex-row justify-between items-center">
+      <Card className="overflow-hidden border-lawfirm-purple/20 bg-white">
+        <CardHeader className="bg-gradient-to-r from-lawfirm-purple to-lawfirm-purple-dark text-white p-4 flex flex-row justify-between items-center">
           <CardTitle className="text-lg flex items-center">
-            <Bot className="h-5 w-5 mr-2" />
+            <Scale className="h-5 w-5 mr-2" />
             AI LYZ Assistant
             {currentRoute && (
               <span className="ml-2 text-xs bg-white/20 px-2 py-1 rounded-full">
@@ -174,7 +174,7 @@ const Chatbot: React.FC = () => {
             <Button 
               variant="ghost" 
               size="icon"
-              className="h-8 w-8 rounded-full hover:bg-white/20" 
+              className="h-8 w-8 rounded-full hover:bg-white/20 text-white" 
               onClick={() => clearChat()}
               disabled={loading}
               title="Clear chat history"
@@ -185,7 +185,7 @@ const Chatbot: React.FC = () => {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-8 w-8 rounded-full hover:bg-white/20" 
+              className="h-8 w-8 rounded-full hover:bg-white/20 text-white" 
               onClick={() => closeChatbot()}
               title="Close chat"
             >
@@ -200,22 +200,24 @@ const Chatbot: React.FC = () => {
             <div className="flex flex-col gap-4">
               {messages.length === 0 && (
                 <div className="text-center py-8">
-                  <Bot className="h-12 w-12 mx-auto text-primary/40 mb-4" />
-                  <h3 className="text-lg font-medium mb-2">Welcome to AI LYZ Assistant</h3>
+                  <div className="bg-lawfirm-purple/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <Scale className="h-8 w-8 text-lawfirm-purple" />
+                  </div>
+                  <h3 className="text-lg font-medium mb-2">Welcome to AI LYZ Legal Assistant</h3>
                   <p className="text-sm text-gray-500">
-                    I can help you with all features of the LAW ERP 500 system. Ask me anything!
+                    I can assist with all aspects of your legal case management. How can I help you today?
                   </p>
                   
                   {currentRoute && currentRoute !== '/' && currentRoute !== '/home' && (
                     <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
                       <div className="flex items-start">
-                        <Info className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
+                        <Gavel className="h-5 w-5 text-lawfirm-purple mr-2 mt-0.5" />
                         <div className="text-left">
                           <p className="text-sm font-medium text-blue-700">
                             You're currently in the {getCurrentPageName()} section
                           </p>
                           <p className="text-xs text-blue-600 mt-1">
-                            I can provide specific help for this area
+                            I can provide specific legal guidance for this area
                           </p>
                         </div>
                       </div>
@@ -225,16 +227,17 @@ const Chatbot: React.FC = () => {
                   <div className="mt-6 space-y-2">
                     <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-1">
                       {currentRoute && currentRoute !== '/' && currentRoute !== '/home' 
-                        ? `${getCurrentPageName()} Help` 
-                        : 'Suggestions'}
+                        ? `${getCurrentPageName()} Assistance` 
+                        : 'Legal Inquiries'}
                     </p>
                     {getRouteSuggestions().map((suggestion, index) => (
                       <Button 
                         key={index}
                         variant="outline" 
-                        className="w-full justify-start text-left text-sm" 
+                        className="w-full justify-start text-left text-sm border-lawfirm-purple/20 hover:bg-lawfirm-purple/5" 
                         onClick={() => sendMessage(suggestion)}
                       >
+                        <FileText className="h-4 w-4 mr-2 text-lawfirm-purple" />
                         {suggestion}
                       </Button>
                     ))}
@@ -242,15 +245,16 @@ const Chatbot: React.FC = () => {
                     {(currentRoute && currentRoute !== '/' && currentRoute !== '/home') && (
                       <>
                         <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-1 mt-4">
-                          General Help
+                          General Legal Help
                         </p>
                         {getGeneralSuggestions().map((suggestion, index) => (
                           <Button 
                             key={`general-${index}`}
                             variant="outline" 
-                            className="w-full justify-start text-left text-sm" 
+                            className="w-full justify-start text-left text-sm border-lawfirm-purple/20 hover:bg-lawfirm-purple/5" 
                             onClick={() => sendMessage(suggestion)}
                           >
+                            <HelpCircle className="h-4 w-4 mr-2 text-lawfirm-purple" />
                             {suggestion}
                           </Button>
                         ))}
@@ -264,7 +268,7 @@ const Chatbot: React.FC = () => {
                   key={message.id} 
                   className={`flex items-start gap-3 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
                 >
-                  <Avatar className={`h-8 w-8 ${message.role === 'user' ? 'bg-blue-500' : 'bg-primary'}`}>
+                  <Avatar className={`h-8 w-8 ${message.role === 'user' ? 'bg-blue-500' : 'bg-lawfirm-purple'}`}>
                     {message.role === 'user' ? (
                       <>
                         <AvatarImage src="/placeholder.svg" alt="User" />
@@ -273,7 +277,7 @@ const Chatbot: React.FC = () => {
                     ) : (
                       <>
                         <AvatarImage src="/placeholder.svg" alt="AI Assistant" />
-                        <AvatarFallback><Bot className="h-4 w-4" /></AvatarFallback>
+                        <AvatarFallback><Scale className="h-4 w-4" /></AvatarFallback>
                       </>
                     )}
                   </Avatar>
@@ -283,7 +287,7 @@ const Chatbot: React.FC = () => {
                       rounded-lg px-4 py-3 max-w-[75%] text-sm
                       ${message.role === 'user' 
                         ? 'bg-blue-500 text-white' 
-                        : 'bg-gray-100 text-gray-900'
+                        : 'bg-gray-100 text-gray-900 border-l-2 border-lawfirm-purple'
                       }
                     `}
                   >
@@ -296,7 +300,7 @@ const Chatbot: React.FC = () => {
               ))}
               {loading && (
                 <div className="flex items-center justify-center py-2">
-                  <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+                  <Loader2 className="h-5 w-5 animate-spin text-lawfirm-purple" />
                 </div>
               )}
               <div ref={messagesEndRef} />
@@ -304,22 +308,22 @@ const Chatbot: React.FC = () => {
           </CardContent>
         </ScrollArea>
         
-        <CardFooter className="border-t p-4">
+        <CardFooter className="border-t p-4 bg-gray-50">
           <form onSubmit={handleSendMessage} className="flex w-full gap-2">
             <Input
               ref={inputRef}
-              placeholder="Type your message..."
+              placeholder="Ask about any legal matter..."
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               disabled={loading}
-              className="flex-1"
+              className="flex-1 border-lawfirm-purple/20 focus-visible:ring-lawfirm-purple"
               aria-label="Chat message"
             />
             <Button 
               size="icon" 
               type="submit" 
               disabled={loading || !inputValue.trim()}
-              className="h-10 w-10"
+              className="h-10 w-10 bg-lawfirm-purple hover:bg-lawfirm-purple-dark"
               title="Send message"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}

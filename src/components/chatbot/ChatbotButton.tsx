@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { useChatbot } from '@/contexts/ChatbotContext';
-import { MessageCircle, HelpCircle, Bot } from 'lucide-react';
+import { MessageCircle, HelpCircle, Bot, Scale } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
 
@@ -23,8 +23,8 @@ const ChatbotButton: React.FC = () => {
     if (!hasSeenChatNotification && location.pathname !== '/login') {
       setTimeout(() => {
         toast({
-          title: "Need help with any feature?",
-          description: "The AI LYZ Assistant can help you navigate the entire application.",
+          title: "Need legal assistance?",
+          description: "Our AI LYZ Assistant can guide you through all our legal services.",
           action: (
             <Button 
               variant="outline" 
@@ -34,7 +34,7 @@ const ChatbotButton: React.FC = () => {
                 localStorage.setItem('hasSeenChatNotification', 'true');
               }}
             >
-              Open Assistant
+              Connect Now
             </Button>
           )
         });
@@ -63,23 +63,23 @@ const ChatbotButton: React.FC = () => {
       onClick={handleOpenChat}
       className={`fixed bottom-8 right-8 z-40 rounded-full shadow-lg ${
         isLandingPage 
-          ? 'w-auto px-4 py-6 bg-primary hover:bg-primary/90'
-          : 'w-auto px-4 py-2 bg-primary hover:bg-primary/90'
+          ? 'w-auto px-4 py-6 bg-lawfirm-purple hover:bg-lawfirm-purple-dark text-white'
+          : 'w-auto px-4 py-2 bg-lawfirm-purple hover:bg-lawfirm-purple-dark text-white border border-white/20'
       }`}
     >
       {isLandingPage ? (
         <>
-          <Bot className="h-5 w-5 mr-2" />
-          <span>AI LYZ Assistant</span>
+          <Scale className="h-5 w-5 mr-2" />
+          <span className="font-medium">Legal Assistant</span>
         </>
       ) : (
         <>
           <MessageCircle className="h-5 w-5 mr-2" />
-          <span className="hidden md:inline">Need help with {currentSection}?</span>
+          <span className="hidden md:inline font-medium">Legal help with {currentSection}?</span>
           <span className="md:hidden">Help</span>
         </>
       )}
-      <span className="sr-only">Open Chat Assistant</span>
+      <span className="sr-only">Open Legal Assistant</span>
     </Button>
   );
 };
