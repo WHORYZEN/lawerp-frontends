@@ -6,7 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useChatbot } from '@/contexts/ChatbotContext';
-import { Bot, Laptop, MessageCircle, Send, XCircle, Trash2, Loader2 } from 'lucide-react';
+import { Bot, Laptop, MessageCircle, Send, XCircle, Trash2, Loader2, HelpCircle } from 'lucide-react';
 
 const Chatbot: React.FC = () => {
   const { isOpen, messages, loading, sendMessage, closeChatbot, clearChat, currentRoute } = useChatbot();
@@ -34,11 +34,82 @@ const Chatbot: React.FC = () => {
     setInputValue('');
   };
   
+  // Handle keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Escape key to close chatbot
+      if (e.key === 'Escape' && isOpen) {
+        closeChatbot();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, closeChatbot]);
+  
   if (!isOpen) return null;
   
   const getCurrentPageName = () => {
     if (!currentRoute) return 'Home';
     return currentRoute.slice(1).charAt(0).toUpperCase() + currentRoute.slice(2) || 'Home';
+  };
+  
+  // Generate context-aware suggestions based on current route
+  const getRouteSuggestions = () => {
+    const route = currentRoute?.toLowerCase() || '';
+    
+    if (route.includes('client')) {
+      return [
+        "How do I add a new client?",
+        "What client information is required?",
+        "How do I link cases to a client?"
+      ];
+    } else if (route.includes('case')) {
+      return [
+        "How do I create a new case?",
+        "What documents are required for a case?",
+        "How do I track case progress?"
+      ];
+    } else if (route.includes('bill') || route.includes('payment')) {
+      return [
+        "How do I create a new invoice?",
+        "What billing features are available?",
+        "How do I process a payment?"
+      ];
+    } else if (route.includes('document') || route.includes('file')) {
+      return [
+        "How do I upload documents?",
+        "Where are client documents stored?",
+        "Can I organize documents by category?"
+      ];
+    } else if (route.includes('calendar')) {
+      return [
+        "How do I create a new appointment?",
+        "Can I set reminders for events?",
+        "How do I share my calendar?"
+      ];
+    } else if (route.includes('deposition')) {
+      return [
+        "How do I schedule a deposition?",
+        "What deposition transcripts are available?",
+        "How do I add deposition notes?"
+      ];
+    } else if (route.includes('medical')) {
+      return [
+        "How do I add medical records?",
+        "How can I organize patient treatments?",
+        "Where are provider details stored?"
+      ];
+    } else {
+      // Default suggestions
+      return [
+        "Tell me about case management features",
+        "How do I add a new client?",
+        "What billing features are available?"
+      ];
+    }
   };
   
   return (
@@ -61,6 +132,7 @@ const Chatbot: React.FC = () => {
               className="h-8 w-8 rounded-full hover:bg-white/20" 
               onClick={() => clearChat()}
               disabled={loading}
+              title="Clear chat history"
             >
               <Trash2 className="h-4 w-4" />
               <span className="sr-only">Clear chat</span>
@@ -70,6 +142,7 @@ const Chatbot: React.FC = () => {
               size="icon" 
               className="h-8 w-8 rounded-full hover:bg-white/20" 
               onClick={() => closeChatbot()}
+              title="Close chat"
             >
               <XCircle className="h-4 w-4" />
               <span className="sr-only">Close</span>
@@ -82,33 +155,22 @@ const Chatbot: React.FC = () => {
             <div className="flex flex-col gap-4">
               {messages.length === 0 && (
                 <div className="text-center py-8">
-                  <Laptop className="h-12 w-12 mx-auto text-primary/40 mb-4" />
-                  <h3 className="text-lg font-medium mb-2">Welcome to LawAssistant</h3>
+                  <Bot className="h-12 w-12 mx-auto text-primary/40 mb-4" />
+                  <h3 className="text-lg font-medium mb-2">Welcome to AI LYZ Assistant</h3>
                   <p className="text-sm text-gray-500">
                     How can I help you with your legal practice today?
                   </p>
                   <div className="mt-6 space-y-2">
-                    <Button 
-                      variant="outline" 
-                      className="w-full justify-start text-left" 
-                      onClick={() => sendMessage("Tell me about case management features")}
-                    >
-                      Tell me about case management features
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      className="w-full justify-start text-left" 
-                      onClick={() => sendMessage("How do I add a new client?")}
-                    >
-                      How do I add a new client?
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      className="w-full justify-start text-left" 
-                      onClick={() => sendMessage("What billing features are available?")}
-                    >
-                      What billing features are available?
-                    </Button>
+                    {getRouteSuggestions().map((suggestion, index) => (
+                      <Button 
+                        key={index}
+                        variant="outline" 
+                        className="w-full justify-start text-left" 
+                        onClick={() => sendMessage(suggestion)}
+                      >
+                        {suggestion}
+                      </Button>
+                    ))}
                   </div>
                 </div>
               )}
@@ -120,12 +182,12 @@ const Chatbot: React.FC = () => {
                   <Avatar className={`h-8 w-8 ${message.role === 'user' ? 'bg-blue-500' : 'bg-primary'}`}>
                     {message.role === 'user' ? (
                       <>
-                        <AvatarImage src="/placeholder.svg" />
+                        <AvatarImage src="/placeholder.svg" alt="User" />
                         <AvatarFallback>U</AvatarFallback>
                       </>
                     ) : (
                       <>
-                        <AvatarImage src="/placeholder.svg" />
+                        <AvatarImage src="/placeholder.svg" alt="AI Assistant" />
                         <AvatarFallback><Bot className="h-4 w-4" /></AvatarFallback>
                       </>
                     )}
@@ -166,12 +228,14 @@ const Chatbot: React.FC = () => {
               onChange={(e) => setInputValue(e.target.value)}
               disabled={loading}
               className="flex-1"
+              aria-label="Chat message"
             />
             <Button 
               size="icon" 
               type="submit" 
               disabled={loading || !inputValue.trim()}
               className="h-10 w-10"
+              title="Send message"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             </Button>
