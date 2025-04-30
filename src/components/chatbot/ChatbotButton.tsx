@@ -20,9 +20,9 @@ const ChatbotButton: React.FC = () => {
   return (
     <Button
       onClick={openChatbot}
-      className="fixed bottom-4 right-4 z-40 rounded-full w-12 h-12 p-0 shadow-lg bg-primary hover:bg-primary/90 animate-pulse"
+      className="fixed bottom-8 right-8 z-40 rounded-full w-14 h-14 p-0 shadow-lg bg-primary hover:bg-primary/90 animate-pulse"
     >
-      <MessageCircle className="h-5 w-5" />
+      <MessageCircle className="h-6 w-6" />
       <span className="sr-only">Open Chat Assistant</span>
     </Button>
   );

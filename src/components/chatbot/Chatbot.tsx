@@ -6,7 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useChatbot } from '@/contexts/ChatbotContext';
-import { Bot, MessageCircle, Send, XCircle, Trash2, Loader2 } from 'lucide-react';
+import { Bot, Laptop, MessageCircle, Send, XCircle, Trash2, Loader2 } from 'lucide-react';
 
 const Chatbot: React.FC = () => {
   const { isOpen, messages, loading, sendMessage, closeChatbot, clearChat, currentRoute } = useChatbot();
@@ -42,7 +42,7 @@ const Chatbot: React.FC = () => {
   };
   
   return (
-    <div className="fixed bottom-4 right-4 z-50 w-80 md:w-96 shadow-xl">
+    <div className="fixed bottom-8 right-8 z-50 w-96 lg:w-[450px] shadow-xl">
       <Card className="overflow-hidden border-primary/10 bg-white">
         <CardHeader className="bg-primary text-primary-foreground p-4 flex flex-row justify-between items-center">
           <CardTitle className="text-lg flex items-center">
@@ -77,13 +77,45 @@ const Chatbot: React.FC = () => {
           </div>
         </CardHeader>
         
-        <ScrollArea className="h-[350px] py-4">
+        <ScrollArea className="h-[450px] lg:h-[550px] py-4">
           <CardContent>
             <div className="flex flex-col gap-4">
+              {messages.length === 0 && (
+                <div className="text-center py-8">
+                  <Laptop className="h-12 w-12 mx-auto text-primary/40 mb-4" />
+                  <h3 className="text-lg font-medium mb-2">Welcome to LawAssistant</h3>
+                  <p className="text-sm text-gray-500">
+                    How can I help you with your legal practice today?
+                  </p>
+                  <div className="mt-6 space-y-2">
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start text-left" 
+                      onClick={() => sendMessage("Tell me about case management features")}
+                    >
+                      Tell me about case management features
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start text-left" 
+                      onClick={() => sendMessage("How do I add a new client?")}
+                    >
+                      How do I add a new client?
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start text-left" 
+                      onClick={() => sendMessage("What billing features are available?")}
+                    >
+                      What billing features are available?
+                    </Button>
+                  </div>
+                </div>
+              )}
               {messages.map((message) => (
                 <div 
                   key={message.id} 
-                  className={`flex items-start gap-2 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
+                  className={`flex items-start gap-3 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
                 >
                   <Avatar className={`h-8 w-8 ${message.role === 'user' ? 'bg-blue-500' : 'bg-primary'}`}>
                     {message.role === 'user' ? (
@@ -101,7 +133,7 @@ const Chatbot: React.FC = () => {
                   
                   <div 
                     className={`
-                      rounded-lg px-3 py-2 max-w-[75%] text-sm
+                      rounded-lg px-4 py-3 max-w-[75%] text-sm
                       ${message.role === 'user' 
                         ? 'bg-blue-500 text-white' 
                         : 'bg-gray-100 text-gray-900'
@@ -125,7 +157,7 @@ const Chatbot: React.FC = () => {
           </CardContent>
         </ScrollArea>
         
-        <CardFooter className="border-t p-3">
+        <CardFooter className="border-t p-4">
           <form onSubmit={handleSendMessage} className="flex w-full gap-2">
             <Input
               ref={inputRef}
@@ -139,6 +171,7 @@ const Chatbot: React.FC = () => {
               size="icon" 
               type="submit" 
               disabled={loading || !inputValue.trim()}
+              className="h-10 w-10"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             </Button>
