@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useChatbot } from '@/contexts/ChatbotContext';
-import { Bot, Laptop, MessageCircle, Send, XCircle, Trash2, Loader2, HelpCircle, Info, Scale, FileText, Gavel } from 'lucide-react';
+import { Bot, Send, XCircle, Trash2, Loader2, HelpCircle, Info, Scale, FileText, Gavel } from 'lucide-react';
 
 const Chatbot: React.FC = () => {
   const { isOpen, messages, loading, sendMessage, closeChatbot, clearChat, currentRoute } = useChatbot();
@@ -163,7 +162,7 @@ const Chatbot: React.FC = () => {
         <CardHeader className="bg-gradient-to-r from-lawfirm-purple to-lawfirm-purple-dark text-white p-4 flex flex-row justify-between items-center">
           <CardTitle className="text-lg flex items-center">
             <Scale className="h-5 w-5 mr-2" />
-            AI LYZ Assistant
+            AI Legal Assistant
             {currentRoute && (
               <span className="ml-2 text-xs bg-white/20 px-2 py-1 rounded-full">
                 {getCurrentPageName()}
@@ -203,9 +202,9 @@ const Chatbot: React.FC = () => {
                   <div className="bg-lawfirm-purple/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                     <Scale className="h-8 w-8 text-lawfirm-purple" />
                   </div>
-                  <h3 className="text-lg font-medium mb-2">Welcome to AI LYZ Legal Assistant</h3>
+                  <h3 className="text-lg font-medium mb-2">Legal Assistant</h3>
                   <p className="text-sm text-gray-500">
-                    I can assist with all aspects of your legal case management. How can I help you today?
+                    How can I help with your legal case management today?
                   </p>
                   
                   {currentRoute && currentRoute !== '/' && currentRoute !== '/home' && (
@@ -214,10 +213,7 @@ const Chatbot: React.FC = () => {
                         <Gavel className="h-5 w-5 text-lawfirm-purple mr-2 mt-0.5" />
                         <div className="text-left">
                           <p className="text-sm font-medium text-blue-700">
-                            You're currently in the {getCurrentPageName()} section
-                          </p>
-                          <p className="text-xs text-blue-600 mt-1">
-                            I can provide specific legal guidance for this area
+                            {getCurrentPageName()} section
                           </p>
                         </div>
                       </div>
@@ -225,40 +221,34 @@ const Chatbot: React.FC = () => {
                   )}
                   
                   <div className="mt-6 space-y-2">
-                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-1">
-                      {currentRoute && currentRoute !== '/' && currentRoute !== '/home' 
-                        ? `${getCurrentPageName()} Assistance` 
-                        : 'Legal Inquiries'}
-                    </p>
-                    {getRouteSuggestions().map((suggestion, index) => (
-                      <Button 
-                        key={index}
-                        variant="outline" 
-                        className="w-full justify-start text-left text-sm border-lawfirm-purple/20 hover:bg-lawfirm-purple/5" 
-                        onClick={() => sendMessage(suggestion)}
-                      >
-                        <FileText className="h-4 w-4 mr-2 text-lawfirm-purple" />
-                        {suggestion}
-                      </Button>
-                    ))}
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {getRouteSuggestions().slice(0, 3).map((suggestion, index) => (
+                        <Button 
+                          key={index}
+                          variant="outline" 
+                          className="text-left text-sm border-lawfirm-purple/20 hover:bg-lawfirm-purple/5" 
+                          onClick={() => sendMessage(suggestion)}
+                        >
+                          <FileText className="h-4 w-4 mr-2 text-lawfirm-purple" />
+                          <span className="line-clamp-1">{suggestion}</span>
+                        </Button>
+                      ))}
+                    </div>
                     
                     {(currentRoute && currentRoute !== '/' && currentRoute !== '/home') && (
-                      <>
-                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-1 mt-4">
-                          General Legal Help
-                        </p>
-                        {getGeneralSuggestions().map((suggestion, index) => (
+                      <div className="flex flex-wrap gap-2 justify-center mt-4">
+                        {getGeneralSuggestions().slice(0, 2).map((suggestion, index) => (
                           <Button 
                             key={`general-${index}`}
                             variant="outline" 
-                            className="w-full justify-start text-left text-sm border-lawfirm-purple/20 hover:bg-lawfirm-purple/5" 
+                            className="text-left text-sm border-lawfirm-purple/20 hover:bg-lawfirm-purple/5" 
                             onClick={() => sendMessage(suggestion)}
                           >
                             <HelpCircle className="h-4 w-4 mr-2 text-lawfirm-purple" />
-                            {suggestion}
+                            <span className="line-clamp-1">{suggestion}</span>
                           </Button>
                         ))}
-                      </>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -271,12 +261,10 @@ const Chatbot: React.FC = () => {
                   <Avatar className={`h-8 w-8 ${message.role === 'user' ? 'bg-blue-500' : 'bg-lawfirm-purple'}`}>
                     {message.role === 'user' ? (
                       <>
-                        <AvatarImage src="/placeholder.svg" alt="User" />
                         <AvatarFallback>U</AvatarFallback>
                       </>
                     ) : (
                       <>
-                        <AvatarImage src="/placeholder.svg" alt="AI Assistant" />
                         <AvatarFallback><Scale className="h-4 w-4" /></AvatarFallback>
                       </>
                     )}

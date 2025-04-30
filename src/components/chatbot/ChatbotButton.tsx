@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { useChatbot } from '@/contexts/ChatbotContext';
-import { MessageCircle, HelpCircle, Bot, Scale } from 'lucide-react';
+import { MessageCircle, Scale } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
 
@@ -23,8 +23,8 @@ const ChatbotButton: React.FC = () => {
     if (!hasSeenChatNotification && location.pathname !== '/login') {
       setTimeout(() => {
         toast({
-          title: "Need legal assistance?",
-          description: "Our AI LYZ Assistant can guide you through all our legal services.",
+          title: "Legal Assistant Available",
+          description: "Our AI assistant can help with all legal services.",
           action: (
             <Button 
               variant="outline" 
@@ -34,7 +34,7 @@ const ChatbotButton: React.FC = () => {
                 localStorage.setItem('hasSeenChatNotification', 'true');
               }}
             >
-              Connect Now
+              Connect
             </Button>
           )
         });
@@ -56,30 +56,19 @@ const ChatbotButton: React.FC = () => {
   };
   
   const isLandingPage = location.pathname === '/' || location.pathname === '/home';
-  const currentSection = location.pathname.split('/')[1] || 'home';
   
   return (
     <Button
       onClick={handleOpenChat}
-      className={`fixed bottom-8 right-8 z-40 rounded-full shadow-lg ${
-        isLandingPage 
-          ? 'w-auto px-4 py-6 bg-lawfirm-purple hover:bg-lawfirm-purple-dark text-white'
-          : 'w-auto px-4 py-2 bg-lawfirm-purple hover:bg-lawfirm-purple-dark text-white border border-white/20'
-      }`}
+      className="fixed bottom-8 right-8 z-40 rounded-full shadow-lg bg-lawfirm-purple hover:bg-lawfirm-purple-dark text-white p-0 h-14 w-14 flex items-center justify-center"
+      aria-label="Open Legal Assistant"
     >
       {isLandingPage ? (
-        <>
-          <Scale className="h-5 w-5 mr-2" />
-          <span className="font-medium">Legal Assistant</span>
-        </>
+        <Scale className="h-6 w-6" />
       ) : (
-        <>
-          <MessageCircle className="h-5 w-5 mr-2" />
-          <span className="hidden md:inline font-medium">Legal help with {currentSection}?</span>
-          <span className="md:hidden">Help</span>
-        </>
+        <MessageCircle className="h-6 w-6" />
       )}
-      <span className="sr-only">Open Legal Assistant</span>
+      <span className="sr-only">Legal Assistant</span>
     </Button>
   );
 };
