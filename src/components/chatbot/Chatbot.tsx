@@ -47,7 +47,7 @@ const Chatbot: React.FC = () => {
         <CardHeader className="bg-primary text-primary-foreground p-4 flex flex-row justify-between items-center">
           <CardTitle className="text-lg flex items-center">
             <Bot className="h-5 w-5 mr-2" />
-            LawAssistant
+            AI LYZ Assistant
             {currentRoute && (
               <span className="ml-2 text-xs bg-white/20 px-2 py-1 rounded-full">
                 {getCurrentPageName()}
