@@ -4,7 +4,10 @@ import { HelmetProvider } from 'react-helmet-async';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './contexts/AuthContext';
 import { UserProvider } from './contexts/UserContext';
+import { ChatbotProvider } from './contexts/ChatbotContext';
 import { Toaster } from './components/ui/toaster';
+import Chatbot from './components/chatbot/Chatbot';
+import ChatbotButton from './components/chatbot/ChatbotButton';
 
 import './App.css';
 
@@ -38,28 +41,32 @@ function App() {
         <Router>
           <AuthProvider>
             <UserProvider>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                <Route path="/clients/*" element={<ProtectedRoute><Clients /></ProtectedRoute>} />
-                <Route path="/cases/*" element={<ProtectedRoute><Cases /></ProtectedRoute>} />
-                <Route path="/documents/*" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
-                <Route path="/files/*" element={<ProtectedRoute><Files /></ProtectedRoute>} />
-                <Route path="/medical/*" element={<ProtectedRoute><Medical /></ProtectedRoute>} />
-                <Route path="/billing/*" element={<ProtectedRoute><Billing /></ProtectedRoute>} />
-                <Route path="/calculator" element={<ProtectedRoute><Calculator /></ProtectedRoute>} />
-                <Route path="/reports/*" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
-                <Route path="/calendar/*" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
-                <Route path="/messages/*" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
-                <Route path="/admin/*" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
-                <Route path="/settings/*" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-                <Route path="/depositions/*" element={<ProtectedRoute><Depositions /></ProtectedRoute>} />
-                <Route path="/attorneys/*" element={<ProtectedRoute><Attorneys /></ProtectedRoute>} />
-                <Route path="/patients/*" element={<ProtectedRoute><Patients /></ProtectedRoute>} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              <Toaster />
+              <ChatbotProvider>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                  <Route path="/clients/*" element={<ProtectedRoute><Clients /></ProtectedRoute>} />
+                  <Route path="/cases/*" element={<ProtectedRoute><Cases /></ProtectedRoute>} />
+                  <Route path="/documents/*" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
+                  <Route path="/files/*" element={<ProtectedRoute><Files /></ProtectedRoute>} />
+                  <Route path="/medical/*" element={<ProtectedRoute><Medical /></ProtectedRoute>} />
+                  <Route path="/billing/*" element={<ProtectedRoute><Billing /></ProtectedRoute>} />
+                  <Route path="/calculator" element={<ProtectedRoute><Calculator /></ProtectedRoute>} />
+                  <Route path="/reports/*" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+                  <Route path="/calendar/*" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
+                  <Route path="/messages/*" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+                  <Route path="/admin/*" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+                  <Route path="/settings/*" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+                  <Route path="/depositions/*" element={<ProtectedRoute><Depositions /></ProtectedRoute>} />
+                  <Route path="/attorneys/*" element={<ProtectedRoute><Attorneys /></ProtectedRoute>} />
+                  <Route path="/patients/*" element={<ProtectedRoute><Patients /></ProtectedRoute>} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+                <Toaster />
+                <Chatbot />
+                <ChatbotButton />
+              </ChatbotProvider>
             </UserProvider>
           </AuthProvider>
         </Router>

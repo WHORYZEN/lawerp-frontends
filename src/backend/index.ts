@@ -8,6 +8,7 @@ import { medicalApi } from './medical-api';
 import { patientsApi } from './patients-api';
 import { depositionsApi } from '../lib/api/depositions-api';
 import { attorneysApi } from '../lib/api/attorneys-api';
+import { chatbotApi } from './chatbot-api';
 
 // Export all backend APIs
 export {
@@ -18,5 +19,6 @@ export {
   medicalApi,
   patientsApi,
   depositionsApi,
-  attorneysApi
+  attorneysApi,
+  chatbotApi
 };
