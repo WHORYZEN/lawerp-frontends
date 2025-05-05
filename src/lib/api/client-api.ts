@@ -1,3 +1,4 @@
+
 import apiClient from './api-client';
 import { Client } from '@/types/client';
 import { v4 as uuidv4 } from 'uuid';
@@ -40,7 +41,77 @@ export interface Communication {
   actionRequired: boolean;
 }
 
-// Mock data for clients with extended patient information
+// Mock clients data
+const mockClients: Client[] = [
+  {
+    id: 'client1',
+    accountNumber: 'A001',
+    fullName: 'John Doe',
+    email: 'john@example.com',
+    phone: '555-0123',
+    address: '123 Main St, Anytown, CA 12345',
+    companyName: 'Acme Inc.',
+    tags: ['Personal Injury', 'Active'],
+    notes: 'Client involved in a car accident on March 25, 2025',
+    createdAt: '2025-04-01T10:00:00Z',
+    updatedAt: '2025-04-20T15:30:00Z',
+    dateOfBirth: '1985-05-15',
+    profilePhoto: 'https://i.pravatar.cc/150?img=1',
+    caseStatus: 'Active Treatment',
+    assignedAttorneyId: 'attorney1',
+    accidentDate: '2025-03-25',
+    accidentLocation: 'Intersection of 5th Ave and Main St',
+    injuryType: 'Back and Neck Injury',
+    caseDescription: 'Client was involved in a rear-end collision causing back and neck injuries requiring physical therapy.',
+    insuranceCompany: 'ABC Insurance',
+    insurancePolicyNumber: 'ABC123456',
+    insuranceAdjusterName: 'Michael Thompson',
+    dateRegistered: '2025-04-01'
+  },
+  {
+    id: 'client2',
+    accountNumber: 'A002',
+    fullName: 'Jane Smith',
+    email: 'jane@example.com',
+    phone: '555-0124',
+    address: '456 Oak St, Sometown, CA 12346',
+    companyName: 'Smith Co.',
+    tags: ['Medical Malpractice', 'Review'],
+    notes: 'Client seeking representation for medical malpractice case',
+    createdAt: '2025-04-05T09:15:00Z',
+    updatedAt: '2025-04-18T11:45:00Z',
+    dateOfBirth: '1970-08-22',
+    profilePhoto: 'https://i.pravatar.cc/150?img=2',
+    caseStatus: 'Initial Consultation',
+    assignedAttorneyId: 'attorney2',
+    dateRegistered: '2025-04-05'
+  },
+  {
+    id: 'client3',
+    accountNumber: 'A003',
+    fullName: 'Robert Johnson',
+    email: 'robert@example.com',
+    phone: '555-0125',
+    address: '789 Pine St, Othertown, CA 12347',
+    companyName: 'Johnson Enterprises',
+    tags: ['Slip and Fall', 'Active', 'Priority'],
+    notes: 'Client slipped and fell at local grocery store',
+    createdAt: '2025-04-10T14:20:00Z',
+    updatedAt: '2025-04-22T10:10:00Z',
+    dateOfBirth: '1992-03-17',
+    profilePhoto: 'https://i.pravatar.cc/150?img=3',
+    caseStatus: 'Settlement Negotiation',
+    assignedAttorneyId: 'attorney1',
+    accidentDate: '2025-04-02',
+    accidentLocation: 'Fresh Foods Grocery Store',
+    injuryType: 'Broken Wrist, Hip Injury',
+    insuranceCompany: 'XYZ Insurance',
+    insurancePolicyNumber: 'XYZ789012',
+    dateRegistered: '2025-04-10'
+  }
+];
+
+// Mock data for client-related information
 const mockAppointments: Appointment[] = [
   {
     id: 'apt1',
@@ -53,7 +124,28 @@ const mockAppointments: Appointment[] = [
     location: 'PT Associates',
     type: 'Physical Therapy'
   },
-  // Other mock appointments can be added here
+  {
+    id: 'apt2',
+    clientId: 'client1',
+    doctorFacilityName: 'Dr. Sarah White',
+    visitDate: '2025-04-15',
+    visitTime: '3:30 PM',
+    visitStatus: 'missed',
+    treatmentDescription: 'MRI Scan',
+    location: 'City Medical Center',
+    type: 'Diagnostic'
+  },
+  {
+    id: 'apt3',
+    clientId: 'client2',
+    doctorFacilityName: 'Dr. James Wilson',
+    visitDate: '2025-05-05',
+    visitTime: '2:00 PM',
+    visitStatus: 'scheduled',
+    treatmentDescription: 'Initial Evaluation',
+    location: 'Wilson Medical Practice',
+    type: 'Consultation'
+  }
 ];
 
 const mockDocuments: Document[] = [
@@ -68,7 +160,28 @@ const mockDocuments: Document[] = [
     url: '/documents/initial-evaluation.pdf',
     uploadedBy: 'Dr. Smith'
   },
-  // Other mock documents can be added here
+  {
+    id: 'doc2',
+    clientId: 'client1',
+    name: 'Police Report',
+    type: 'legal',
+    category: 'Accident Reports',
+    uploadDate: '2025-04-02',
+    fileType: 'pdf',
+    url: '/documents/police-report.pdf',
+    uploadedBy: 'Jane Doelawyer'
+  },
+  {
+    id: 'doc3',
+    clientId: 'client2',
+    name: 'Medical Records Release Form',
+    type: 'legal',
+    category: 'Forms',
+    uploadDate: '2025-04-06',
+    fileType: 'pdf',
+    url: '/documents/release-form.pdf',
+    uploadedBy: 'Jane Smith'
+  }
 ];
 
 const mockCommunications: Communication[] = [
@@ -84,15 +197,42 @@ const mockCommunications: Communication[] = [
     read: true,
     actionRequired: false
   },
-  // Other mock communications can be added here
+  {
+    id: 'comm2',
+    clientId: 'client1',
+    date: '2025-04-15',
+    time: '3:30 PM',
+    type: 'sms',
+    sender: 'LYZ Law Firm',
+    subject: 'Appointment Reminder',
+    content: 'Reminder: You have an MRI appointment tomorrow at 3:30 PM at City Medical Center.',
+    read: true,
+    actionRequired: false
+  },
+  {
+    id: 'comm3',
+    clientId: 'client2',
+    date: '2025-04-18',
+    time: '9:45 AM',
+    type: 'email',
+    sender: 'Jane Doelawyer',
+    subject: 'Initial Consultation Follow-up',
+    content: 'Thank you for meeting with us yesterday. As discussed, we need additional medical records...',
+    read: false,
+    actionRequired: true
+  }
 ];
 
 export const clientsApi = {
-  // Original client methods
+  // Client methods
   getClients: async (): Promise<Client[]> => {
     try {
-      const response = await apiClient.get('/clients');
-      return response.data;
+      // In a real app, this would call the API
+      // const response = await apiClient.get('/clients');
+      // return response.data;
+      
+      // For now, return mock data
+      return mockClients;
     } catch (error) {
       console.error('Error fetching clients:', error);
       return [];
@@ -101,8 +241,13 @@ export const clientsApi = {
 
   getClient: async (id: string): Promise<Client | null> => {
     try {
-      const response = await apiClient.get(`/clients/${id}`);
-      return response.data;
+      // In a real app, this would call the API
+      // const response = await apiClient.get(`/clients/${id}`);
+      // return response.data;
+      
+      // For now, return mock data
+      const client = mockClients.find(c => c.id === id);
+      return client || null;
     } catch (error) {
       console.error('Error fetching client:', error);
       return null;
@@ -111,8 +256,20 @@ export const clientsApi = {
 
   createClient: async (clientData: Omit<Client, 'id' | 'createdAt' | 'updatedAt'>): Promise<Client | null> => {
     try {
-      const response = await apiClient.post('/clients', clientData);
-      return response.data;
+      // In a real app, this would call the API
+      // const response = await apiClient.post('/clients', clientData);
+      // return response.data;
+      
+      // For now, create a new client with mock data
+      const newClient: Client = {
+        ...clientData,
+        id: uuidv4(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      
+      mockClients.push(newClient);
+      return newClient;
     } catch (error) {
       console.error('Error creating client:', error);
       return null;
@@ -121,8 +278,21 @@ export const clientsApi = {
 
   updateClient: async (id: string, clientData: Partial<Client>): Promise<Client | null> => {
     try {
-      const response = await apiClient.put(`/clients/${id}`, clientData);
-      return response.data;
+      // In a real app, this would call the API
+      // const response = await apiClient.put(`/clients/${id}`, clientData);
+      // return response.data;
+      
+      // For now, update the mock client
+      const index = mockClients.findIndex(c => c.id === id);
+      if (index === -1) return null;
+      
+      mockClients[index] = {
+        ...mockClients[index],
+        ...clientData,
+        updatedAt: new Date().toISOString()
+      };
+      
+      return mockClients[index];
     } catch (error) {
       console.error('Error updating client:', error);
       return null;
@@ -131,7 +301,14 @@ export const clientsApi = {
 
   deleteClient: async (id: string): Promise<boolean> => {
     try {
-      await apiClient.delete(`/clients/${id}`);
+      // In a real app, this would call the API
+      // await apiClient.delete(`/clients/${id}`);
+      
+      // For now, delete from mock data
+      const index = mockClients.findIndex(c => c.id === id);
+      if (index === -1) return false;
+      
+      mockClients.splice(index, 1);
       return true;
     } catch (error) {
       console.error('Error deleting client:', error);
@@ -139,9 +316,8 @@ export const clientsApi = {
     }
   },
 
-  // Additional patient-related methods
+  // Additional client-related methods
   getAppointments: async (clientId: string): Promise<Appointment[]> => {
-    // Mock implementation using the mock data
     return mockAppointments.filter(apt => apt.clientId === clientId);
   },
 
