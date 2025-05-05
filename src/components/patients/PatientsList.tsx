@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Search, Filter, UserPlus, FileText, ClipboardList } from 'lucide-react';
 import { Patient } from '@/backend/patients-api';
-import { patientsApi } from '@/backend';
+import { clientsApi } from '@/backend'; // Updated to use clientsApi instead of patientsApi
 import { useToast } from '@/hooks/use-toast';
 
 interface PatientsListProps {
@@ -29,7 +29,7 @@ const PatientsList: React.FC<PatientsListProps> = ({ onPatientSelect }) => {
     const fetchPatients = async () => {
       try {
         setIsLoading(true);
-        const data = await patientsApi.getPatients();
+        const data = await clientsApi.getPatients();
         setPatients(data);
         setFilteredPatients(data);
       } catch (error) {

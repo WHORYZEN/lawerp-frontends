@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Patient, Appointment, Document } from '@/backend/patients-api';
-import { patientsApi } from '@/backend';
+import { clientsApi } from '@/backend'; // Updated to use clientsApi instead of patientsApi
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Calendar, FileText, Phone, Mail, Clock, MapPin, Activity, User, AlertCircle } from 'lucide-react';
 
@@ -30,9 +29,9 @@ const PatientDetail: React.FC = () => {
       setIsLoading(true);
       try {
         const [patientData, appointmentsData, documentsData] = await Promise.all([
-          patientsApi.getPatient(patientId),
-          patientsApi.getAppointments(patientId),
-          patientsApi.getDocuments(patientId)
+          clientsApi.getPatient(patientId),
+          clientsApi.getAppointments(patientId),
+          clientsApi.getDocuments(patientId)
         ]);
 
         if (patientData) {
