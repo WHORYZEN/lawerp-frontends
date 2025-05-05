@@ -1,9 +1,11 @@
-
-import apiClient from './api-client';
+import axios from 'axios';
 import { Client } from '@/types/client';
 import { v4 as uuidv4 } from 'uuid';
 
-// Define additional types from patient model
+// Define API base URL from environment variable or default to localhost
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+// Define additional types from client model
 export interface Appointment {
   id: string;
   clientId: string;
@@ -41,7 +43,7 @@ export interface Communication {
   actionRequired: boolean;
 }
 
-// Mock clients data
+// Mock clients data for fallback
 const mockClients: Client[] = [
   {
     id: 'client1',
@@ -111,7 +113,7 @@ const mockClients: Client[] = [
   }
 ];
 
-// Mock data for client-related information
+// Mock data for client-related information for fallback
 const mockAppointments: Appointment[] = [
   {
     id: 'apt1',
@@ -223,44 +225,41 @@ const mockCommunications: Communication[] = [
   }
 ];
 
+// API service with both real API calls and fallback to mock data
 export const clientsApi = {
   // Client methods
   getClients: async (): Promise<Client[]> => {
     try {
-      // In a real app, this would call the API
-      // const response = await apiClient.get('/clients');
-      // return response.data;
-      
-      // For now, return mock data
-      return mockClients;
+      const response = await axios.get(`${API_BASE_URL}/clients`);
+      return response.data;
     } catch (error) {
       console.error('Error fetching clients:', error);
-      return [];
+      console.warn('Falling back to mock data');
+      return mockClients;
     }
   },
 
   getClient: async (id: string): Promise<Client | null> => {
     try {
-      // In a real app, this would call the API
-      // const response = await apiClient.get(`/clients/${id}`);
-      // return response.data;
-      
-      // For now, return mock data
-      const client = mockClients.find(c => c.id === id);
-      return client || null;
+      const response = await axios.get(`${API_BASE_URL}/clients/${id}`);
+      return response.data;
     } catch (error) {
       console.error('Error fetching client:', error);
-      return null;
+      console.warn('Falling back to mock data');
+      const client = mockClients.find(c => c.id === id);
+      return client || null;
     }
   },
 
   createClient: async (clientData: Omit<Client, 'id' | 'createdAt' | 'updatedAt'>): Promise<Client | null> => {
     try {
-      // In a real app, this would call the API
-      // const response = await apiClient.post('/clients', clientData);
-      // return response.data;
+      const response = await axios.post(`${API_BASE_URL}/clients`, clientData);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating client:', error);
+      console.warn('Falling back to mock data');
       
-      // For now, create a new client with mock data
+      // For mock data fallback
       const newClient: Client = {
         ...clientData,
         id: uuidv4(),
@@ -270,19 +269,18 @@ export const clientsApi = {
       
       mockClients.push(newClient);
       return newClient;
-    } catch (error) {
-      console.error('Error creating client:', error);
-      return null;
     }
   },
 
   updateClient: async (id: string, clientData: Partial<Client>): Promise<Client | null> => {
     try {
-      // In a real app, this would call the API
-      // const response = await apiClient.put(`/clients/${id}`, clientData);
-      // return response.data;
+      const response = await axios.put(`${API_BASE_URL}/clients/${id}`, clientData);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating client:', error);
+      console.warn('Falling back to mock data');
       
-      // For now, update the mock client
+      // For mock data fallback
       const index = mockClients.findIndex(c => c.id === id);
       if (index === -1) return null;
       
@@ -293,77 +291,106 @@ export const clientsApi = {
       };
       
       return mockClients[index];
-    } catch (error) {
-      console.error('Error updating client:', error);
-      return null;
     }
   },
 
   deleteClient: async (id: string): Promise<boolean> => {
     try {
-      // In a real app, this would call the API
-      // await apiClient.delete(`/clients/${id}`);
+      await axios.delete(`${API_BASE_URL}/clients/${id}`);
+      return true;
+    } catch (error) {
+      console.error('Error deleting client:', error);
+      console.warn('Falling back to mock data');
       
-      // For now, delete from mock data
+      // For mock data fallback
       const index = mockClients.findIndex(c => c.id === id);
       if (index === -1) return false;
       
       mockClients.splice(index, 1);
       return true;
-    } catch (error) {
-      console.error('Error deleting client:', error);
-      return false;
     }
   },
 
   // Additional client-related methods
   getAppointments: async (clientId: string): Promise<Appointment[]> => {
-    return mockAppointments.filter(apt => apt.clientId === clientId);
-  },
-
-  getAppointmentsByStatus: async (clientId: string, status: string): Promise<Appointment[]> => {
-    return mockAppointments.filter(apt => apt.clientId === clientId && apt.visitStatus === status);
+    try {
+      const response = await axios.get(`${API_BASE_URL}/clients/${clientId}/appointments`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+      console.warn('Falling back to mock data');
+      return mockAppointments.filter(apt => apt.clientId === clientId);
+    }
   },
 
   getDocuments: async (clientId: string): Promise<Document[]> => {
-    return mockDocuments.filter(doc => doc.clientId === clientId);
-  },
-
-  getDocumentsByType: async (clientId: string, type: string): Promise<Document[]> => {
-    return mockDocuments.filter(doc => doc.clientId === clientId && doc.type === type);
+    try {
+      const response = await axios.get(`${API_BASE_URL}/clients/${clientId}/documents`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching documents:', error);
+      console.warn('Falling back to mock data');
+      return mockDocuments.filter(doc => doc.clientId === clientId);
+    }
   },
 
   getCommunications: async (clientId: string): Promise<Communication[]> => {
-    return mockCommunications.filter(comm => comm.clientId === clientId);
+    try {
+      const response = await axios.get(`${API_BASE_URL}/clients/${clientId}/communications`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching communications:', error);
+      console.warn('Falling back to mock data');
+      return mockCommunications.filter(comm => comm.clientId === clientId);
+    }
+  },
+
+  // Utility functions
+  getAppointmentsByStatus: async (clientId: string, status: string): Promise<Appointment[]> => {
+    const appointments = await clientsApi.getAppointments(clientId);
+    return appointments.filter(apt => apt.visitStatus === status);
+  },
+
+  getDocumentsByType: async (clientId: string, type: string): Promise<Document[]> => {
+    const documents = await clientsApi.getDocuments(clientId);
+    return documents.filter(doc => doc.type === type);
   },
 
   markCommunicationAsRead: async (communicationId: string): Promise<Communication | null> => {
-    const index = mockCommunications.findIndex(comm => comm.id === communicationId);
-    if (index !== -1) {
-      mockCommunications[index].read = true;
-      return mockCommunications[index];
+    try {
+      const response = await axios.patch(`${API_BASE_URL}/communications/${communicationId}`, { read: true });
+      return response.data;
+    } catch (error) {
+      console.error('Error marking communication as read:', error);
+      console.warn('Falling back to mock data');
+      
+      // For mock data fallback
+      const index = mockCommunications.findIndex(comm => comm.id === communicationId);
+      if (index !== -1) {
+        mockCommunications[index].read = true;
+        return mockCommunications[index];
+      }
+      return null;
     }
-    return null;
   },
 
   getMissedAppointmentsCount: async (clientId: string): Promise<number> => {
-    return mockAppointments.filter(apt => apt.clientId === clientId && apt.visitStatus === 'missed').length;
+    const appointments = await clientsApi.getAppointmentsByStatus(clientId, 'missed');
+    return appointments.length;
   },
 
   getUpcomingAppointment: async (clientId: string): Promise<Appointment | null> => {
-    const upcomingAppointments = mockAppointments
-      .filter(apt => apt.clientId === clientId && apt.visitStatus === 'scheduled')
-      .sort((a, b) => new Date(a.visitDate).getTime() - new Date(b.visitDate).getTime());
-    
-    return upcomingAppointments.length > 0 ? upcomingAppointments[0] : null;
+    const upcomingAppointments = await clientsApi.getAppointmentsByStatus(clientId, 'scheduled');
+    return upcomingAppointments.length > 0 
+      ? upcomingAppointments.sort((a, b) => new Date(a.visitDate).getTime() - new Date(b.visitDate).getTime())[0] 
+      : null;
   },
 
   getLastDocumentUploaded: async (clientId: string): Promise<Document | null> => {
-    const documents = mockDocuments
-      .filter(doc => doc.clientId === clientId)
-      .sort((a, b) => new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime());
-    
-    return documents.length > 0 ? documents[0] : null;
+    const documents = await clientsApi.getDocuments(clientId);
+    return documents.length > 0 
+      ? documents.sort((a, b) => new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime())[0]
+      : null;
   },
 
   getSmartNotifications: async (clientId: string): Promise<string[]> => {

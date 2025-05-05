@@ -160,7 +160,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const calendarTab = urlParams.get('tab');
   const messagesTab = urlParams.get('tab');
   const adminTab = urlParams.get('tab');
-  const patientsTab = urlParams.get('tab');
   const { logout } = useAuth();
   const { userProfile, isLoading } = useUser();
 
@@ -187,55 +186,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               to="/dashboard"
               active={pathname === "/dashboard"}
             />
-
-            <NavItem
-              icon={<User className="h-5 w-5" />}
-              label="Patients"
-              to="/patients"
-              active={pathname === "/patients" || pathname.startsWith("/patients/")}
-              hasSubmenu
-            >
-              <SubNavItem 
-                label="Dashboard" 
-                to="/patients" 
-                active={pathname === "/patients" && !patientsTab} 
-              />
-              <SubNavItem 
-                label="Patient List" 
-                to="/patients/list" 
-                active={pathname === "/patients/list"} 
-              />
-              <SubNavItem 
-                label="Case Report" 
-                to="/patients/case-report" 
-                active={pathname === "/patients/case-report"} 
-              />
-              <SubNavItem 
-                label="Document Center" 
-                to="/patients/documents" 
-                active={pathname === "/patients/documents"} 
-              />
-              <SubNavItem 
-                label="Medical Records" 
-                to="/patients/medical-records" 
-                active={pathname === "/patients/medical-records"} 
-              />
-              <SubNavItem 
-                label="Appointments" 
-                to="/patients/appointments" 
-                active={pathname === "/patients/appointments"} 
-              />
-              <SubNavItem 
-                label="Communication" 
-                to="/patients/communication" 
-                active={pathname === "/patients/communication"} 
-              />
-              <SubNavItem 
-                label="Legal Documents" 
-                to="/patients/legal-documents" 
-                active={pathname === "/patients/legal-documents"} 
-              />
-            </NavItem>
 
             <NavItem
               icon={<Users className="h-5 w-5" />}

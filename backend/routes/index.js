@@ -1,20 +1,19 @@
 
-const clientRoutes = require('./client.routes');
-const caseRoutes = require('./case.routes');
-const medicalRoutes = require('./medical.routes');
-const chatbotRoutes = require('./chatbot.routes');
-const depositionRoutes = require('./deposition.routes');
-const attorneyRoutes = require('./attorney.routes');
-const messageRoutes = require('./message.routes');
-const calendarRoutes = require('./calendar.routes');
+const clientRoutes = require('./clientRoutes');
+
+// Import other route files here when they're created
+// For example: const caseRoutes = require('./caseRoutes');
 
 module.exports = {
   clientRoutes,
-  caseRoutes,
-  medicalRoutes,
-  chatbotRoutes,
-  depositionRoutes,
-  attorneyRoutes,
-  messageRoutes,
-  calendarRoutes
+  // Export other routes here when they're created
+  // For example: caseRoutes,
+  // Add empty placeholders for routes referenced in server.js but not implemented yet
+  caseRoutes: require('express').Router(),
+  medicalRoutes: require('express').Router(),
+  chatbotRoutes: require('express').Router(),
+  depositionRoutes: require('express').Router(),
+  attorneyRoutes: require('express').Router(),
+  messageRoutes: require('express').Router(),
+  calendarRoutes: require('express').Router()
 };

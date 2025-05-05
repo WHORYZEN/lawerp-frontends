@@ -1,24 +1,20 @@
 
 import axios from 'axios';
 
-// API base URL - will use the environment variable in production
-// and default to localhost in development
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
-
-// Create axios instance with default config
+// Create an Axios instance with default config
 const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Add a request interceptor to include auth token if available
+// Request interceptor for adding auth token
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('auth_token');
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers['Authorization'] = `Bearer ${token}`;
     }
     return config;
   },
@@ -27,24 +23,31 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Response interceptor for error handling
+// Response interceptor for handling common errors
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    return response;
+  },
   (error) => {
-    // Handle specific error codes
+    // Handle specific error cases
     if (error.response) {
-      const { status } = error.response;
-      
-      // Auth errors
-      if (status === 401) {
-        // Redirect to login or refresh token
-        console.error('Authentication error');
+      // Server responded with a status code outside 2xx range
+      if (error.response.status === 401) {
+        // Auth error, redirect to login
+        localStorage.removeItem('auth_token');
+        // Redirect to login can be added here if needed
       }
       
-      // Server errors
-      if (status >= 500) {
-        console.error('Server error occurred');
+      if (error.response.status === 403) {
+        // Permission denied
+        console.error('Permission denied:', error.response.data);
       }
+    } else if (error.request) {
+      // Network error or no response received
+      console.error('Network error:', error.request);
+    } else {
+      // Request error
+      console.error('Request error:', error.message);
     }
     
     return Promise.reject(error);

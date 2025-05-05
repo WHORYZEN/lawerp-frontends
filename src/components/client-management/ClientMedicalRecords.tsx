@@ -1,146 +1,62 @@
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { FileText, Download, Plus } from "lucide-react";
-import { clientsApi } from "@/lib/api/client-api";
-import { useToast } from "@/hooks/use-toast";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Loader2 } from "lucide-react";
+import { clientsApi, Document } from "@/lib/api/client-api";
 
 interface ClientMedicalRecordsProps {
   clientId: string;
 }
 
 const ClientMedicalRecords: React.FC<ClientMedicalRecordsProps> = ({ clientId }) => {
-  const [documents, setDocuments] = useState<any[]>([]);
+  const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
   useEffect(() => {
     const fetchMedicalRecords = async () => {
       try {
         setLoading(true);
-        const docs = await clientsApi.getDocumentsByType(clientId, 'medical');
-        setDocuments(docs);
+        const allDocuments = await clientsApi.getDocuments(clientId);
+        const medicalDocs = allDocuments.filter(doc => doc.type === 'medical');
+        setDocuments(medicalDocs);
       } catch (error) {
         console.error("Error fetching medical records:", error);
-        toast({
-          title: "Error",
-          description: "Failed to load medical records.",
-          variant: "destructive",
-        });
       } finally {
         setLoading(false);
       }
     };
 
     fetchMedicalRecords();
-  }, [clientId, toast]);
+  }, [clientId]);
 
-  const handleUploadRecord = () => {
-    toast({
-      title: "Feature Coming Soon",
-      description: "The ability to upload new medical records will be available in a future update.",
-    });
-  };
-
-  const handleDownload = (documentId: string) => {
-    const doc = documents.find(d => d.id === documentId);
-    if (doc) {
-      toast({
-        title: "Downloading Document",
-        description: `Downloading ${doc.name}...`,
-      });
-    }
-  };
-
-  const handleViewDocument = (documentId: string) => {
-    const doc = documents.find(d => d.id === documentId);
-    if (doc) {
-      toast({
-        title: "Opening Document",
-        description: `Opening ${doc.name} in document viewer...`,
-      });
-    }
-  };
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-32">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader>
         <CardTitle>Medical Records</CardTitle>
-        <Button onClick={handleUploadRecord} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          Upload Record
-        </Button>
       </CardHeader>
       <CardContent>
-        {loading ? (
+        {documents.length === 0 ? (
+          <p className="text-center py-8 text-muted-foreground">No medical records found for this client.</p>
+        ) : (
           <div className="space-y-4">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="flex items-center space-x-4">
-                <Skeleton className="h-12 w-12" />
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-[250px]" />
-                  <Skeleton className="h-4 w-[200px]" />
+            {documents.map((doc) => (
+              <div key={doc.id} className="border rounded-md p-4 hover:bg-muted/50 transition-colors">
+                <h3 className="font-medium">{doc.name}</h3>
+                <p className="text-sm text-muted-foreground">{doc.category}</p>
+                <div className="mt-1 text-sm">
+                  <span>Uploaded: {doc.uploadDate} by {doc.uploadedBy}</span>
                 </div>
               </div>
             ))}
           </div>
-        ) : documents.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-muted-foreground">No medical records found for this client.</p>
-            <Button 
-              variant="outline" 
-              className="mt-4"
-              onClick={handleUploadRecord}
-            >
-              Upload First Record
-            </Button>
-          </div>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Document Name</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Uploaded By</TableHead>
-                <TableHead>File Type</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {documents.map((doc) => (
-                <TableRow key={doc.id}>
-                  <TableCell className="font-medium">{doc.name}</TableCell>
-                  <TableCell>{doc.category}</TableCell>
-                  <TableCell>{doc.uploadDate}</TableCell>
-                  <TableCell>{doc.uploadedBy}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{doc.fileType.toUpperCase()}</Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      onClick={() => handleViewDocument(doc.id)}
-                    >
-                      <FileText className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      onClick={() => handleDownload(doc.id)}
-                    >
-                      <Download className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
         )}
       </CardContent>
     </Card>

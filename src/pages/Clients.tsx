@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { Routes, Route } from 'react-router-dom';
 import PageLayout from '@/components/layout/PageLayout';
 import ClientManagement from "@/components/client-management/ClientManagement";
+import { ClientProvider } from '@/contexts/ClientContext';
 
 const Clients = () => {
   return (
@@ -21,10 +22,12 @@ const Clients = () => {
         </div>
         
         <div className="max-w-7xl mx-auto">
-          <Routes>
-            <Route index element={<ClientManagement />} />
-            <Route path="*" element={<ClientManagement />} />
-          </Routes>
+          <ClientProvider>
+            <Routes>
+              <Route index element={<ClientManagement />} />
+              <Route path="*" element={<ClientManagement />} />
+            </Routes>
+          </ClientProvider>
         </div>
       </div>
     </PageLayout>
