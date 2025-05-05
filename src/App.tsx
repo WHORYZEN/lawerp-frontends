@@ -29,7 +29,6 @@ import Admin from './pages/Admin';
 import Settings from './pages/Settings';
 import Depositions from './pages/Depositions';
 import Attorneys from './pages/Attorneys';
-import Patients from './pages/Patients';
 import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
@@ -62,7 +61,6 @@ function App() {
                   <Route path="/settings/*" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                   <Route path="/depositions/*" element={<ProtectedRoute><Depositions /></ProtectedRoute>} />
                   <Route path="/attorneys/*" element={<ProtectedRoute><Attorneys /></ProtectedRoute>} />
-                  <Route path="/patients/*" element={<ProtectedRoute><Patients /></ProtectedRoute>} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 <Toaster />

@@ -1,259 +1,351 @@
 
-import { useEffect, useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Edit, FileText, MessageSquare, Briefcase, Loader2, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AlertCircle, Calendar, FileText, Phone, Mail, MapPin, Clock, Activity, User } from "lucide-react";
 import { Client } from "@/types/client";
-import { Case } from "@/types/case"; 
-import { casesApi } from "@/lib/api/mongodb-api";
-import { format } from "date-fns";
+import { clientsApi, Appointment, Document } from "@/lib/api/client-api";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
 
 interface ClientDetailsProps {
   client: Client;
   onBack: () => void;
-  onEdit: (client: Client) => void;
+  onEdit: () => void;
 }
 
-const ClientDetails = ({ client, onBack, onEdit }: ClientDetailsProps) => {
-  const [linkedCases, setLinkedCases] = useState<Case[]>([]);
-  const [loading, setLoading] = useState(true);
+const ClientDetails: React.FC<ClientDetailsProps> = ({ client, onBack, onEdit }) => {
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [activeTab, setActiveTab] = useState("overview");
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchLinkedCases = async () => {
+    const fetchClientData = async () => {
       try {
-        setLoading(true);
-        const cases = await casesApi.getCasesByClientId(client.id);
-        setLinkedCases(cases);
+        const [appointmentsData, documentsData] = await Promise.all([
+          clientsApi.getAppointments(client.id),
+          clientsApi.getDocuments(client.id)
+        ]);
+
+        setAppointments(appointmentsData);
+        setDocuments(documentsData);
       } catch (error) {
-        console.error("Failed to fetch linked cases:", error);
+        console.error('Error fetching client data:', error);
         toast({
           title: "Error",
-          description: "Failed to load linked cases. Please try again later.",
+          description: "Failed to load client data. Please try again.",
           variant: "destructive",
         });
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchLinkedCases();
+    fetchClientData();
   }, [client.id, toast]);
 
-  const handleCreateCase = () => {
-    navigate(`/cases/create?clientId=${client.id}`);
+  const getCaseStatusColor = (status: string | undefined) => {
+    if (!status) return "bg-gray-100 text-gray-800";
+    
+    const statusLower = status.toLowerCase();
+    if (statusLower.includes('active') && !statusLower.includes('inactive')) return "bg-green-100 text-green-800";
+    if (statusLower.includes('closed') || statusLower.includes('inactive')) return "bg-red-100 text-red-800";
+    if (statusLower.includes('review') || statusLower.includes('consultation')) return "bg-blue-100 text-blue-800";
+    if (statusLower.includes('negotiation')) return "bg-purple-100 text-purple-800";
+    return "bg-gray-100 text-gray-800";
   };
 
-  const handleViewCase = (caseId: string) => {
-    navigate(`/cases/${caseId}`);
-  };
-
-  const handleUploadDocument = () => {
-    navigate(`/documents?clientId=${client.id}`);
-  };
-
-  const handleLogCommunication = () => {
-    navigate(`/messages?clientId=${client.id}`);
-  };
-
-  const getBadgeVariant = (status: string) => {
-    switch(status) {
-      case 'open':
-        return 'default';
-      case 'closed':
-        return 'secondary';
-      case 'settled':
-        return 'outline';
-      case 'pending':
-        return 'secondary';
-      default:
-        return 'outline';
+  const getAppointmentStatusColor = (status: 'completed' | 'missed' | 'scheduled') => {
+    switch (status) {
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'missed': return 'bg-red-100 text-red-800';
+      case 'scheduled': return 'bg-blue-100 text-blue-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <Button 
-          variant="ghost" 
-          className="gap-1" 
-          onClick={onBack}
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to List
-        </Button>
-        <Button 
-          className="gap-1"
-          onClick={() => onEdit(client)}
-        >
-          <Edit className="h-4 w-4" />
-          Edit Client
-        </Button>
-      </div>
-
-      <Card>
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-2xl">{client.fullName}</CardTitle>
-            <div className="flex flex-wrap gap-1">
-              {client.tags?.map(tag => (
-                <Badge key={tag} variant="outline">{tag}</Badge>
-              ))}
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-sm font-semibold text-muted-foreground">Contact Information</h3>
-                <div className="mt-2 space-y-2">
-                  <p><span className="font-medium">Email:</span> {client.email}</p>
-                  <p><span className="font-medium">Phone:</span> {client.phone}</p>
-                  {client.address && <p><span className="font-medium">Address:</span> {client.address}</p>}
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* Client Info Card */}
+        <Card className="md:w-1/3">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <Avatar className="h-16 w-16">
+                  <AvatarImage src={client.profilePhoto || `https://i.pravatar.cc/100?u=${client.id}`} />
+                  <AvatarFallback className="bg-purple-100 text-purple-800 text-xl font-semibold">
+                    {client.fullName.split(' ').map(name => name[0]).join('')}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <CardTitle className="text-xl">{client.fullName}</CardTitle>
+                  <CardDescription className="flex items-center mt-1">
+                    <span className="text-sm font-medium mr-1">Account #:</span>
+                    <span>{client.accountNumber || `A${client.id.substring(0, 3)}`}</span>
+                  </CardDescription>
                 </div>
               </div>
-              
+            </div>
+
+            <div className="mt-4">
+              <Badge className={getCaseStatusColor(client.caseStatus)}>
+                {client.caseStatus || "No Status"}
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex items-center text-sm">
+                <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                <span className="text-muted-foreground">Date of Birth:</span>
+                <span className="ml-auto font-medium">{client.dateOfBirth || 'Not provided'}</span>
+              </div>
+              <div className="flex items-center text-sm">
+                <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
+                <span className="text-muted-foreground">Phone:</span>
+                <span className="ml-auto font-medium">{client.phone}</span>
+              </div>
+              <div className="flex items-center text-sm">
+                <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
+                <span className="text-muted-foreground">Email:</span>
+                <span className="ml-auto font-medium">{client.email}</span>
+              </div>
+              <div className="flex items-center text-sm">
+                <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
+                <span className="text-muted-foreground">Address:</span>
+                <span className="ml-auto font-medium">{client.address || 'Not provided'}</span>
+              </div>
+              <div className="flex items-center text-sm">
+                <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
+                <span className="text-muted-foreground">Registered:</span>
+                <span className="ml-auto font-medium">{client.dateRegistered || client.createdAt?.split('T')[0] || 'Not provided'}</span>
+              </div>
               {client.companyName && (
-                <div>
-                  <h3 className="text-sm font-semibold text-muted-foreground">Company</h3>
-                  <p className="mt-2">{client.companyName}</p>
+                <div className="flex items-center text-sm">
+                  <User className="h-4 w-4 mr-2 text-muted-foreground" />
+                  <span className="text-muted-foreground">Company:</span>
+                  <span className="ml-auto font-medium">{client.companyName}</span>
                 </div>
               )}
             </div>
-            
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-sm font-semibold text-muted-foreground">Client Since</h3>
-                <p className="mt-2">{format(new Date(client.createdAt), 'MMMM d, yyyy')}</p>
-              </div>
-              
-              <div>
-                <h3 className="text-sm font-semibold text-muted-foreground">Last Updated</h3>
-                <p className="mt-2">{format(new Date(client.updatedAt), 'MMMM d, yyyy')}</p>
-              </div>
-              
-              {client.notes && (
-                <div>
-                  <h3 className="text-sm font-semibold text-muted-foreground">Notes</h3>
-                  <p className="mt-2 whitespace-pre-wrap">{client.notes}</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
-      <Tabs defaultValue="cases" className="w-full">
-        <TabsList className="grid grid-cols-3 w-full max-w-md">
-          <TabsTrigger value="cases" className="flex items-center gap-2">
-            <Briefcase className="h-4 w-4" />
-            Cases
-          </TabsTrigger>
-          <TabsTrigger value="documents" className="flex items-center gap-2">
-            <FileText className="h-4 w-4" />
-            Documents
-          </TabsTrigger>
-          <TabsTrigger value="communication" className="flex items-center gap-2">
-            <MessageSquare className="h-4 w-4" />
-            Communication
-          </TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="cases">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Linked Cases</CardTitle>
-                <Button variant="outline" onClick={handleCreateCase} className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  Add New Case
-                </Button>
+            <Separator />
+
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium">Accident Information</h3>
+              <div className="flex items-center text-sm">
+                <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                <span className="text-muted-foreground">Date:</span>
+                <span className="ml-auto font-medium">{client.accidentDate || 'N/A'}</span>
               </div>
-            </CardHeader>
-            <CardContent>
-              {loading ? (
-                <div className="text-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
-                  <p className="mt-2 text-muted-foreground">Loading cases...</p>
-                </div>
-              ) : linkedCases.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground">No cases found for this client.</p>
-                  <Button variant="outline" className="mt-4" onClick={handleCreateCase}>Create First Case</Button>
-                </div>
-              ) : (
-                <div className="divide-y">
-                  {linkedCases.map(caseItem => (
-                    <div key={caseItem.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <div>
-                        <h3 className="font-medium">{caseItem.title}</h3>
-                        <div className="flex items-center mt-1 gap-3">
-                          <Badge variant={getBadgeVariant(caseItem.status)}>
-                            {caseItem.status}
-                          </Badge>
-                          <span className="text-sm text-muted-foreground">
-                            Case #{caseItem.caseNumber}
-                          </span>
-                        </div>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {caseItem.description?.substring(0, 100)}{caseItem.description && caseItem.description.length > 100 ? '...' : ''}
-                        </p>
-                      </div>
-                      <Button variant="outline" onClick={() => handleViewCase(caseItem.id)}>View Case</Button>
+              <div className="flex items-center text-sm">
+                <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
+                <span className="text-muted-foreground">Location:</span>
+                <span className="ml-auto font-medium truncate max-w-[150px]" title={client.accidentLocation}>
+                  {client.accidentLocation || 'N/A'}
+                </span>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium">Insurance Information</h3>
+              <div className="flex items-center text-sm">
+                <span className="text-muted-foreground">Company:</span>
+                <span className="ml-auto font-medium">{client.insuranceCompany || 'N/A'}</span>
+              </div>
+              <div className="flex items-center text-sm">
+                <span className="text-muted-foreground">Policy #:</span>
+                <span className="ml-auto font-medium">{client.insurancePolicyNumber || 'N/A'}</span>
+              </div>
+              <div className="flex items-center text-sm">
+                <span className="text-muted-foreground">Adjuster:</span>
+                <span className="ml-auto font-medium">{client.insuranceAdjusterName || 'N/A'}</span>
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            <Button variant="outline" onClick={onBack}>
+              Back to List
+            </Button>
+            <Button onClick={onEdit}>
+              Edit Client
+            </Button>
+          </CardFooter>
+        </Card>
+
+        {/* Detail Tabs */}
+        <div className="flex-1">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="appointments">Appointments</TabsTrigger>
+              <TabsTrigger value="documents">Documents</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="overview" className="space-y-4 mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Case Overview</CardTitle>
+                  <CardDescription>Summary of the client's injury case</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="text-sm font-medium mb-1">Injury Type</h4>
+                      <p className="text-sm text-muted-foreground">{client.injuryType || 'Not specified'}</p>
                     </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="documents">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Client Documents</CardTitle>
-                <Button variant="outline" onClick={handleUploadDocument} className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  Upload Document
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">No documents found for this client.</p>
-                <Button variant="outline" className="mt-4" onClick={handleUploadDocument}>Upload First Document</Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="communication">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Communication Log</CardTitle>
-                <Button variant="outline" onClick={handleLogCommunication} className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  New Message
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">No communication records found.</p>
-                <Button variant="outline" className="mt-4" onClick={handleLogCommunication}>Log Communication</Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+                    
+                    <div>
+                      <h4 className="text-sm font-medium mb-1">Case Description</h4>
+                      <p className="text-sm text-muted-foreground">{client.caseDescription || 'No description available'}</p>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-medium mb-1">Assigned Attorney</h4>
+                      <div className="flex items-center">
+                        <Avatar className="h-8 w-8 mr-2">
+                          <AvatarFallback>JS</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="text-sm">Jane Smith</p>
+                          <p className="text-xs text-muted-foreground">Personal Injury Specialist</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {client.notes && (
+                      <div>
+                        <h4 className="text-sm font-medium mb-1">Notes</h4>
+                        <p className="text-sm text-muted-foreground">{client.notes}</p>
+                      </div>
+                    )}
+                    
+                    {client.tags && client.tags.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-medium mb-1">Tags</h4>
+                        <div className="flex flex-wrap gap-1">
+                          {client.tags.map(tag => (
+                            <Badge key={tag} variant="outline">{tag}</Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-amber-50 border-amber-200">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center">
+                    <AlertCircle className="h-5 w-5 text-amber-600 mr-2" />
+                    <CardTitle className="text-sm font-medium text-amber-800">Notifications</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {appointments.some(apt => apt.visitStatus === 'missed') && (
+                      <div className="flex items-start">
+                        <AlertCircle className="h-4 w-4 text-amber-600 mr-2 mt-0.5" />
+                        <p className="text-sm text-amber-800">Client has missed appointments that need to be rescheduled.</p>
+                      </div>
+                    )}
+                    
+                    {client.caseStatus === 'Active Treatment' && (
+                      <div className="flex items-start">
+                        <AlertCircle className="h-4 w-4 text-amber-600 mr-2 mt-0.5" />
+                        <p className="text-sm text-amber-800">Treatment in progress. Regular follow-ups required.</p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="appointments" className="mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Appointments History</CardTitle>
+                  <CardDescription>Past and upcoming appointments</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {appointments.length === 0 ? (
+                    <p className="text-center py-8 text-muted-foreground">No appointments found for this client.</p>
+                  ) : (
+                    <div className="space-y-4">
+                      {appointments.sort((a, b) => new Date(b.visitDate).getTime() - new Date(a.visitDate).getTime())
+                        .map((appointment) => (
+                          <div key={appointment.id} className="flex items-start space-x-4 p-4 rounded-md border">
+                            <div className={`p-2 rounded-full ${
+                              appointment.visitStatus === 'completed' ? 'bg-green-100' :
+                              appointment.visitStatus === 'missed' ? 'bg-red-100' : 'bg-blue-100'
+                            }`}>
+                              <Calendar className={`h-5 w-5 ${
+                                appointment.visitStatus === 'completed' ? 'text-green-600' :
+                                appointment.visitStatus === 'missed' ? 'text-red-600' : 'text-blue-600'
+                              }`} />
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex justify-between">
+                                <h3 className="font-medium">{appointment.doctorFacilityName}</h3>
+                                <Badge className={getAppointmentStatusColor(appointment.visitStatus)}>
+                                  {appointment.visitStatus.charAt(0).toUpperCase() + appointment.visitStatus.slice(1)}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-muted-foreground">{appointment.type}</p>
+                              <div className="flex items-center mt-1">
+                                <Calendar className="h-4 w-4 mr-1 text-muted-foreground" />
+                                <span className="text-sm">{appointment.visitDate}</span>
+                                <Clock className="h-4 w-4 ml-3 mr-1 text-muted-foreground" />
+                                <span className="text-sm">{appointment.visitTime}</span>
+                              </div>
+                              <p className="text-sm mt-2">{appointment.treatmentDescription || 'No description available'}</p>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="documents" className="mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Client Documents</CardTitle>
+                  <CardDescription>Medical records, legal documents, and more</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {documents.length === 0 ? (
+                    <p className="text-center py-8 text-muted-foreground">No documents found for this client.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {documents.map((document) => (
+                        <div key={document.id} className="flex items-center justify-between p-3 rounded-md border hover:bg-muted/50 cursor-pointer">
+                          <div className="flex items-center">
+                            <FileText className="h-5 w-5 mr-2 text-blue-500" />
+                            <div>
+                              <p className="font-medium">{document.name}</p>
+                              <p className="text-xs text-muted-foreground">{document.uploadDate} • {document.category} • Uploaded by: {document.uploadedBy}</p>
+                            </div>
+                          </div>
+                          <Badge variant="outline" className="text-xs">
+                            {document.fileType.toUpperCase()}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
     </div>
   );
 };
