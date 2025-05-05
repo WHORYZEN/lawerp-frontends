@@ -5,10 +5,10 @@ import { adminApi } from './admin-api';
 import { billingApi } from './billing-api';
 import { settingsApi } from './settings-api';
 import { medicalApi } from './medical-api';
-import { patientsApi } from './patients-api';
 import { depositionsApi } from '../lib/api/depositions-api';
 import { attorneysApi } from '../lib/api/attorneys-api';
 import { chatbotApi } from './chatbot-api';
+import { clientsApi } from '../lib/api/client-api'; // Updated to use client-api instead of patients-api
 
 // Export all backend APIs
 export {
@@ -17,7 +17,7 @@ export {
   billingApi,
   settingsApi,
   medicalApi,
-  patientsApi,
+  clientsApi, // Export clientsApi instead of patientsApi
   depositionsApi,
   attorneysApi,
   chatbotApi

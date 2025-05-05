@@ -34,9 +34,15 @@ router.get('/:id', async (req, res) => {
 // Create a new client
 router.post('/', async (req, res) => {
   try {
+    // Generate a unique account number for new clients
+    const clientsCount = await db.collection('clients').countDocuments();
+    const accountNumber = `A${(clientsCount + 1).toString().padStart(3, '0')}`;
+    
     const newClient = {
       ...req.body,
       id: uuidv4(),
+      accountNumber: req.body.accountNumber || accountNumber,
+      dateRegistered: req.body.dateRegistered || new Date().toISOString().split('T')[0],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -86,6 +92,76 @@ router.delete('/:id', async (req, res) => {
     res.json({ message: 'Client deleted successfully' });
   } catch (error) {
     console.error('Error deleting client:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Get client appointments (mock)
+router.get('/:id/appointments', async (req, res) => {
+  try {
+    // Mock implementation - in a real app this would fetch from DB
+    res.json([
+      {
+        id: 'apt1',
+        clientId: req.params.id,
+        doctorFacilityName: 'Dr. Michael Johnson',
+        visitDate: '2025-05-10',
+        visitTime: '10:30 AM',
+        visitStatus: 'scheduled',
+        treatmentDescription: 'Follow-up consultation',
+        location: 'PT Associates',
+        type: 'Physical Therapy'
+      }
+    ]);
+  } catch (error) {
+    console.error('Error fetching appointments:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Get client documents (mock)
+router.get('/:id/documents', async (req, res) => {
+  try {
+    // Mock implementation - in a real app this would fetch from DB
+    res.json([
+      {
+        id: 'doc1',
+        clientId: req.params.id,
+        name: 'Initial Medical Evaluation',
+        type: 'medical',
+        category: 'Medical Reports',
+        uploadDate: '2025-04-05',
+        fileType: 'pdf',
+        url: '/documents/initial-evaluation.pdf',
+        uploadedBy: 'Dr. Smith'
+      }
+    ]);
+  } catch (error) {
+    console.error('Error fetching documents:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Get client communications (mock)
+router.get('/:id/communications', async (req, res) => {
+  try {
+    // Mock implementation - in a real app this would fetch from DB
+    res.json([
+      {
+        id: 'comm1',
+        clientId: req.params.id,
+        date: '2025-04-20',
+        time: '10:15 AM',
+        type: 'email',
+        sender: 'Jane Doelawyer',
+        subject: 'Case Update - Treatment Progress',
+        content: 'Your case is progressing as expected...',
+        read: true,
+        actionRequired: false
+      }
+    ]);
+  } catch (error) {
+    console.error('Error fetching communications:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
