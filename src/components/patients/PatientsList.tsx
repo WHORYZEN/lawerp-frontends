@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -9,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Search, Filter, UserPlus, FileText, ClipboardList } from 'lucide-react';
 import { Patient } from '@/backend/patients-api';
-import { clientsApi } from '@/backend'; // Updated to use clientsApi instead of patientsApi
+import { patientsApi } from '@/backend'; // Use patientsApi compatibility layer
 import { useToast } from '@/hooks/use-toast';
 
 interface PatientsListProps {
@@ -29,7 +30,7 @@ const PatientsList: React.FC<PatientsListProps> = ({ onPatientSelect }) => {
     const fetchPatients = async () => {
       try {
         setIsLoading(true);
-        const data = await clientsApi.getPatients();
+        const data = await patientsApi.getPatients();
         setPatients(data);
         setFilteredPatients(data);
       } catch (error) {
