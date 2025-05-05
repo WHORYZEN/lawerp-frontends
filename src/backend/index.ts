@@ -29,13 +29,36 @@ export const patientsApi = {
   },
   
   createPatient: async (patientData: Omit<Patient, 'id' | 'accountNumber' | 'dateRegistered'>): Promise<Patient> => {
-    const clientData = convertPatientToClient(patientData as any);
+    // Create a proper client data object with required fields
+    const clientData: Omit<Client, 'id' | 'createdAt' | 'updatedAt'> = {
+      fullName: patientData.fullName,
+      email: patientData.email,
+      phone: patientData.phone,
+      // Include other fields from patientData
+      address: patientData.address,
+      dateOfBirth: patientData.dateOfBirth,
+      profilePhoto: patientData.profilePhoto,
+      caseStatus: patientData.caseStatus,
+      assignedAttorneyId: patientData.assignedAttorneyId,
+      accidentDate: patientData.accidentDate,
+      accidentLocation: patientData.accidentLocation,
+      injuryType: patientData.injuryType,
+      caseDescription: patientData.caseDescription,
+      insuranceCompany: patientData.insuranceCompany,
+      insurancePolicyNumber: patientData.insurancePolicyNumber,
+      insuranceAdjusterName: patientData.insuranceAdjusterName
+    };
+    
     const newClient = await clientsApi.createClient(clientData);
     return convertClientToPatient(newClient as Client);
   },
   
   updatePatient: async (id: string, patientData: Partial<Patient>): Promise<Patient | null> => {
-    const clientData = convertPatientToClient(patientData as any);
+    // We need to ensure we're not passing any Patient-specific fields that don't exist in Client
+    const clientData: Partial<Client> = { ...patientData };
+    // Delete any patientId properties if they exist to avoid confusion
+    if ('patientId' in clientData) delete clientData['patientId'];
+    
     const updatedClient = await clientsApi.updateClient(id, clientData);
     if (!updatedClient) return null;
     return convertClientToPatient(updatedClient);
@@ -128,17 +151,17 @@ function convertClientToPatient(client: Client): Patient {
     phone: client.phone,
     email: client.email,
     address: client.address || "Not provided",
-    profilePhoto: client.profilePhoto,
+    profilePhoto: client.profilePhoto || "",
     dateRegistered: client.dateRegistered || client.createdAt?.split('T')[0] || "Not provided",
     caseStatus: client.caseStatus || "Initial Consultation",
     assignedAttorneyId: client.assignedAttorneyId || "",
-    accidentDate: client.accidentDate,
-    accidentLocation: client.accidentLocation,
-    injuryType: client.injuryType,
-    caseDescription: client.caseDescription,
-    insuranceCompany: client.insuranceCompany,
-    insurancePolicyNumber: client.insurancePolicyNumber,
-    insuranceAdjusterName: client.insuranceAdjusterName
+    accidentDate: client.accidentDate || "",
+    accidentLocation: client.accidentLocation || "",
+    injuryType: client.injuryType || "",
+    caseDescription: client.caseDescription || "",
+    insuranceCompany: client.insuranceCompany || "",
+    insurancePolicyNumber: client.insurancePolicyNumber || "",
+    insuranceAdjusterName: client.insuranceAdjusterName || ""
   } as Patient;
 }
 
