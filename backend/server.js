@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
-const { connectToDatabase, closeConnection } = require('./backend/config/database');
+const { connectToDatabase, closeConnection } = require('./config/database');
 
 // Load environment variables
 dotenv.config();
@@ -26,7 +26,7 @@ const {
   attorneyRoutes,
   messageRoutes,
   calendarRoutes
-} = require('./backend/routes');
+} = require('./routes');
 
 // API Routes
 app.use('/api/clients', clientRoutes);
